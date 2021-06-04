@@ -1,4 +1,4 @@
-package sample;
+package main;
 
 import javafx.event.EventHandler;
 import javafx.scene.*;

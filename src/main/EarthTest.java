@@ -1,4 +1,4 @@
-package sample;
+package main;
 import com.interactivemesh.jfx.importer.ImportException;
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import javafx.application.Application;
@@ -7,18 +7,15 @@ import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 public class EarthTest extends Application {
@@ -27,17 +24,17 @@ public class EarthTest extends Application {
     private static final float TEXTURE_LON_OFFSET = 2.8f;
 
     @Override
-    public void start(Stage primaryStage) throws FileNotFoundException {
+    public void start(Stage primaryStage) throws FileNotFoundException, URISyntaxException {
 
         //Create a Pane et graph scene root for the 3D content
         Group root3D = new Group();
         Pane pane3D = new Pane(root3D);
-        System.out.println(System.getProperty("user.dir"));
+        System.out.println();
         // Load geometry
         ObjModelImporter objModelImporter = new ObjModelImporter();
         try {
-            URL modelURL = this.getClass().getResource("Earth/earth.obj");
 
+            URL modelURL = this.getClass().getResource("/Earth/earth.obj");
             objModelImporter.read(modelURL);
         } catch (ImportException e) {
             System.out.println(e.getMessage());
@@ -121,12 +118,12 @@ public class EarthTest extends Application {
 
     private static Skybox initSkybox(PerspectiveCamera camera){
         // Load images
-        InputStream stream = EarthTest.class.getResourceAsStream("skybox/py(2).png");
-        InputStream stream1 = EarthTest.class.getResourceAsStream("skybox/ny(2).png");
-        InputStream stream2 = EarthTest.class.getResourceAsStream("skybox/nx(2).png");
-        InputStream stream3 = EarthTest.class.getResourceAsStream("skybox/px(2).png");
-        InputStream stream4 = EarthTest.class.getResourceAsStream("skybox/pz(2).png");
-        InputStream stream5 = EarthTest.class.getResourceAsStream("skybox/nz(2).png");
+        InputStream stream = EarthTest.class.getResourceAsStream("/skybox/py(2).png");
+        InputStream stream1 = EarthTest.class.getResourceAsStream("/skybox/ny(2).png");
+        InputStream stream2 = EarthTest.class.getResourceAsStream("/skybox/nx(2).png");
+        InputStream stream3 = EarthTest.class.getResourceAsStream("/skybox/px(2).png");
+        InputStream stream4 = EarthTest.class.getResourceAsStream("/skybox/pz(2).png");
+        InputStream stream5 = EarthTest.class.getResourceAsStream("/skybox/nz(2).png");
         Image imageTop = new Image(stream);
         Image imageBtm = new Image(stream1);
         Image imageLeft = new Image(stream2);

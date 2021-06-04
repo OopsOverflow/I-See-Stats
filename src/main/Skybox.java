@@ -1,4 +1,4 @@
-package sample;
+package main;
 
 /*
  * Copyright (C) 2013-2015 F(X)yz,
