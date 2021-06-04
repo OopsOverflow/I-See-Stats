@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.net.URL;
 
 public class EarthTest extends Application {
@@ -31,7 +32,7 @@ public class EarthTest extends Application {
         //Create a Pane et graph scene root for the 3D content
         Group root3D = new Group();
         Pane pane3D = new Pane(root3D);
-
+        System.out.println(System.getProperty("user.dir"));
         // Load geometry
         ObjModelImporter objModelImporter = new ObjModelImporter();
         try {
@@ -61,18 +62,16 @@ public class EarthTest extends Application {
         light.setTranslateZ(-120);
         light.getScope().addAll(root3D);
         root3D.getChildren().add(light);
-//        String cwd = System.getProperty("user.dir");
-//        System.out.println(cwd + "\\files\\skybox\\nx.png");
-        FileInputStream stream = new FileInputStream("C:\\Users\\houss\\IdeaProjects\\tuto\\src\\sample\\skybox\\nx(1).png");
-        Image image = new Image(stream);
-        Skybox skybox = new Skybox(image, image, image, image, image, image, 512, camera);
+
+        // Skybox
+        Skybox sky = initSkybox(camera);
 
         // Add ambient light
         AmbientLight ambientLight = new AmbientLight(Color.WHITE);
         ambientLight.getScope().addAll(root3D);
         root3D.getChildren().add(ambientLight);
         root3D.getChildren().addAll(earth);
-        pane3D.getChildren().addAll(skybox);
+        pane3D.getChildren().addAll(sky);
         // Create scene
         Scene scene = new Scene(pane3D, 600, 600, true);
         scene.setCamera(camera);
@@ -118,6 +117,23 @@ public class EarthTest extends Application {
                 -java.lang.Math.sin(java.lang.Math.toRadians(lat_cor)),
                 java.lang.Math.cos(java.lang.Math.toRadians(lon_cor))
                         * java.lang.Math.cos(java.lang.Math.toRadians(lat_cor)));
+    }
+
+    private static Skybox initSkybox(PerspectiveCamera camera){
+        // Load images
+        InputStream stream = EarthTest.class.getResourceAsStream("skybox/py(2).png");
+        InputStream stream1 = EarthTest.class.getResourceAsStream("skybox/ny(2).png");
+        InputStream stream2 = EarthTest.class.getResourceAsStream("skybox/nx(2).png");
+        InputStream stream3 = EarthTest.class.getResourceAsStream("skybox/px(2).png");
+        InputStream stream4 = EarthTest.class.getResourceAsStream("skybox/pz(2).png");
+        InputStream stream5 = EarthTest.class.getResourceAsStream("skybox/nz(2).png");
+        Image imageTop = new Image(stream);
+        Image imageBtm = new Image(stream1);
+        Image imageLeft = new Image(stream2);
+        Image imageRight = new Image(stream3);
+        Image imageFront = new Image(stream4);
+        Image imageBack = new Image(stream5);
+        return new Skybox(imageTop, imageBtm, imageLeft, imageRight, imageFront, imageBack, 2048, camera);
     }
 
 }
