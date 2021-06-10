@@ -12,6 +12,7 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import model.GeoHash;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;

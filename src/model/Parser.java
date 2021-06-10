@@ -1,4 +1,4 @@
-package main;
+package model;
 
 import javax.security.auth.callback.Callback;
 import java.util.ArrayList;

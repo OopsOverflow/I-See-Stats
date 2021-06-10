@@ -1,4 +1,6 @@
-package main;
+package model;
+
+import model.GeoHash;
 
 public class Region {
     private int count;

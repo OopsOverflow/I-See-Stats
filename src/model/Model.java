@@ -1,6 +1,5 @@
-package main;
+package model;
 
-import javax.swing.text.html.HTMLDocument;
 import java.util.ArrayList;
 
 public class Model {
