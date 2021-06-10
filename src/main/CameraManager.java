@@ -16,10 +16,10 @@ public class CameraManager {
     private static final double CAMERA_NEAR_CLIP = 0.1;
     private static final double CAMERA_FAR_CLIP = 10000.0;
     private static final double CONTROL_MULTIPLIER = 0.1;
-    private static final double SHIFT_MULTIPLIER = 10.0;
-    private static final double MOUSE_SPEED = 0.05;
-    private static final double ROTATION_SPEED = 2.0;
-    private static final double TRACK_SPEED = 0.6;
+    private static final double SHIFT_MULTIPLIER = 5.0;
+    private static final double MOUSE_SPEED = 0.04;
+    private static final double ROTATION_SPEED = 0.7;
+    private static final double TRACK_SPEED = 0.1;
 
     private final Group cameraXform = new Group();
     private final Group cameraXform2 = new Group();
@@ -96,12 +96,14 @@ public class CameraManager {
                     cameraXform2.setTranslateX(cameraXform2.getTranslateX() - mouseDeltaX * MOUSE_SPEED * modifier * TRACK_SPEED);
                     cameraXform2.setTranslateY(cameraXform2.getTranslateY() - mouseDeltaY * MOUSE_SPEED * modifier * TRACK_SPEED);
                 }
+                ry.setAngle(ry.getAngle() + mouseDeltaX * modifier * ROTATION_SPEED);
+                rx.setAngle(rx.getAngle() - mouseDeltaY * modifier * ROTATION_SPEED);
             }
         });
         mainRoot.setOnScroll(new EventHandler<ScrollEvent>() {
             @Override
             public void handle(ScrollEvent event) {
-                double modifier = 1.0;
+                double modifier = 0.7;
 
                 if (event.isControlDown()) {
                     modifier = CONTROL_MULTIPLIER;
