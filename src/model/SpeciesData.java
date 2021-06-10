@@ -5,9 +5,17 @@ import java.util.Date;
 
 public class SpeciesData {
     private int precision;
-    private ArrayList<Species> species;
-    private ArrayList<Region> regions;
+    private Species species;
     private Date date;
+    private ArrayList<Region> regions;
+
+    public SpeciesData(int precision, Species species, Date date, ArrayList<Region> regions) {
+		super();
+		this.precision = precision;
+		this.species = species;
+		this.date = date;
+		this.regions = regions;
+	}
 
     /**
      *

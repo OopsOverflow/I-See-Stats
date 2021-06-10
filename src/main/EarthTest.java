@@ -12,7 +12,11 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import model.GeoHash;
+import model.JasonParser;
+import model.Parser;
+import model.ParserException;
+import model.ParserSettings;
+import model.Species;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -79,9 +83,21 @@ public class EarthTest extends Application {
     }
 
     public static void main(String[] args) {
-    	GeoHash hash = GeoHash.fromString("u09t17jng2pg"); // Polytech
-    	System.out.println(hash.getLatLon());
-    	System.out.println(hash);
+//    	GeoHash hash = GeoHash.fromString("u09t17jng2pg"); // Polytech
+//    	System.out.println(hash.getLatLon());
+//    	System.out.println(hash);
+    	Parser parser = new JasonParser();
+    	ParserSettings settings = new ParserSettings();
+    	Species dolphin = new Species();
+    	dolphin.name = "Delphinidae";
+		settings.species = dolphin;
+		
+    	try {
+			parser.load(settings);
+		} catch (ParserException e) {
+			e.printStackTrace();
+		}
+    	
         launch(args);
     }
 

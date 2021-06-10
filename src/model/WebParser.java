@@ -4,11 +4,12 @@ import org.json.*;
 import java.net.URI;
 import java.net.http.*;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 
 
-public class WebParser extends Parser {
+public class WebParser implements Parser {
 
     public void setApiUrl(String url){
 
@@ -38,4 +39,22 @@ public class WebParser extends Parser {
 
         return new JSONObject(json);
     }
+
+	@Override
+	public SpeciesData load(ParserSettings settings) throws ParserException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<String> querySpeciesNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<Species> querySpeciesByName(String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

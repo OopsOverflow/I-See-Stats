@@ -1,8 +1,8 @@
 package model;
 
 public class Species {
-    private String name;
-    private String scientificName;
-    private String order;
-    private String superclass;
+    public String name;
+    public String scientificName;
+    public String order;
+    public String superclass;
 }

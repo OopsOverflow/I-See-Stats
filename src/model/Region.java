@@ -4,6 +4,11 @@ public class Region {
     private int count;
     private GeoHash area;
 
+	public Region(int count, GeoHash area) {
+		this.count = count;
+		this.area = area;
+	}
+
     /**
      *
      * @return number of species in the geohash
