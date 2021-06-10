@@ -19,10 +19,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 public class EarthTest extends Application {
-
-    private static final float TEXTURE_LAT_OFFSET = -0.2f;
-    private static final float TEXTURE_LON_OFFSET = 2.8f;
-
+	
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException, URISyntaxException {
 
@@ -34,7 +31,7 @@ public class EarthTest extends Application {
         ObjModelImporter objModelImporter = new ObjModelImporter();
         try {
 
-            URL modelURL = this.getClass().getResource("/Earth/earth.obj");
+            URL modelURL = this.getClass().getResource("/resources/Earth/earth.obj");
             objModelImporter.read(modelURL);
         } catch (ImportException e) {
             System.out.println(e.getMessage());
@@ -81,6 +78,9 @@ public class EarthTest extends Application {
     }
 
     public static void main(String[] args) {
+    	GeoHash hash = GeoHash.fromString("u09t17jng2pg"); // Polytech
+    	System.out.println(hash.getLatLon());
+    	System.out.println(hash);
         launch(args);
     }
 
@@ -105,25 +105,14 @@ public class EarthTest extends Application {
         return line;
     }
 
-    public static Point3D geoCoordTo3dCoord(float lat, float lon) {
-        float lat_cor = lat + TEXTURE_LAT_OFFSET;
-        float lon_cor = lon + TEXTURE_LON_OFFSET;
-        return new Point3D(
-                -java.lang.Math.sin(java.lang.Math.toRadians(lon_cor))
-                        * java.lang.Math.cos(java.lang.Math.toRadians(lat_cor)),
-                -java.lang.Math.sin(java.lang.Math.toRadians(lat_cor)),
-                java.lang.Math.cos(java.lang.Math.toRadians(lon_cor))
-                        * java.lang.Math.cos(java.lang.Math.toRadians(lat_cor)));
-    }
-
     private static Skybox initSkybox(PerspectiveCamera camera){
         // Load images
-        InputStream stream = EarthTest.class.getResourceAsStream("/skybox/py(2).png");
-        InputStream stream1 = EarthTest.class.getResourceAsStream("/skybox/ny(2).png");
-        InputStream stream2 = EarthTest.class.getResourceAsStream("/skybox/nx(2).png");
-        InputStream stream3 = EarthTest.class.getResourceAsStream("/skybox/px(2).png");
-        InputStream stream4 = EarthTest.class.getResourceAsStream("/skybox/pz(2).png");
-        InputStream stream5 = EarthTest.class.getResourceAsStream("/skybox/nz(2).png");
+        InputStream stream = EarthTest.class.getResourceAsStream("/resources/skybox/py(2).png");
+        InputStream stream1 = EarthTest.class.getResourceAsStream("/resources/skybox/ny(2).png");
+        InputStream stream2 = EarthTest.class.getResourceAsStream("/resources/skybox/nx(2).png");
+        InputStream stream3 = EarthTest.class.getResourceAsStream("/resources/skybox/px(2).png");
+        InputStream stream4 = EarthTest.class.getResourceAsStream("/resources/skybox/pz(2).png");
+        InputStream stream5 = EarthTest.class.getResourceAsStream("/resources/skybox/nz(2).png");
         Image imageTop = new Image(stream);
         Image imageBtm = new Image(stream1);
         Image imageLeft = new Image(stream2);
@@ -132,5 +121,4 @@ public class EarthTest extends Application {
         Image imageBack = new Image(stream5);
         return new Skybox(imageTop, imageBtm, imageLeft, imageRight, imageFront, imageBack, 2048, camera);
     }
-
 }

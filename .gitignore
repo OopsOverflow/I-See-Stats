@@ -24,3 +24,6 @@ hs_err_pid*
 # IntelliJ
 /.idea/
 /ISeeStats.iml
+
+# Eclipse
+bin
