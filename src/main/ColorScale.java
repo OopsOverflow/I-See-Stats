@@ -2,8 +2,10 @@ package main;
 
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
+
 public class ColorScale {
-    private Color colors[];
+    private ArrayList<Color> colors;
     private int minRange;
     private int maxRange;
 
@@ -16,8 +18,8 @@ public class ColorScale {
         if(value>maxRange)value=maxRange;
         if(value<minRange)value=minRange;
 
-        int indice = Math.round(colors.length * (value-minRange)/(float)(maxRange-minRange));
-        return colors[indice];
+        int indice = (int) Math.floor(colors.size() * (value-minRange)/(float)(maxRange-minRange));
+        return colors.get(indice);
 
     }
 
@@ -38,7 +40,7 @@ public class ColorScale {
      * Set colors of the range
      * @param colors colors of the range you want
      */
-    public void setColors(Color[] colors) {
+    public void setColors(ArrayList<Color> colors) {
         this.colors = colors;
     }
 }
