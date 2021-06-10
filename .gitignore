@@ -22,8 +22,12 @@
 hs_err_pid*
 
 # IntelliJ
+/.idea/
+i_see_stats.iml
 
 
 # Eclipse
 bin
 src/module-info.java
+.classpath
+.project
