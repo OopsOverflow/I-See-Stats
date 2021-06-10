@@ -8,13 +8,20 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 
-
+/**
+ * Parses a JSON Object from the URL of a Web API
+ */
 public class WebParser implements Parser {
 
     public void setApiUrl(String url){
 
     }
 
+    /**
+     * Reads a JSON file from a webpage
+     * @param URL url to the page API
+     * @return parsed JSON file
+     */
     public static JSONObject readJsonFromUrl(String URL){
         String json = "";
         HttpClient client = HttpClient.newBuilder()
