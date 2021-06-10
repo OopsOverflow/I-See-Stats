@@ -23,8 +23,11 @@ hs_err_pid*
 
 # IntelliJ
 /.idea/
-/ISeeStats.iml
+i_see_stats.iml
+
 
 # Eclipse
 bin
 src/module-info.java
+.classpath
+.project
