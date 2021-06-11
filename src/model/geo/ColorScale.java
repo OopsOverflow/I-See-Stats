@@ -1,4 +1,4 @@
-package model;
+package model.geo;
 
 import javafx.scene.paint.Color;
 
