@@ -1,6 +1,8 @@
 package main;
 import com.interactivemesh.jfx.importer.ImportException;
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
+import gui.CameraManager;
+import gui.Skybox;
 import javafx.application.Application;
 import javafx.geometry.Point3D;
 import javafx.scene.*;
@@ -12,11 +14,11 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import model.JasonParser;
-import model.Parser;
-import model.ParserException;
-import model.ParserSettings;
-import model.Species;
+import model.parser.JasonParser;
+import model.parser.Parser;
+import model.parser.ParserException;
+import model.parser.ParserSettings;
+import model.species.Species;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;

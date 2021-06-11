@@ -1,5 +1,8 @@
 package model;
 
+import model.geo.ColorScale;
+import model.species.SpeciesData;
+
 import java.util.ArrayList;
 
 public class Model {

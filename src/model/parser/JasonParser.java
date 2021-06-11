@@ -1,17 +1,18 @@
-package model;
+package model.parser;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.net.URL;
 import java.util.ArrayList;
 
+import model.geo.GeoHash;
+import model.geo.Region;
+import model.species.Species;
+import model.species.SpeciesData;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import model.Parser;
 
 public class JasonParser implements Parser {
 	

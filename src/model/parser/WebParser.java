@@ -1,5 +1,7 @@
-package model;
+package model.parser;
 
+import model.species.Species;
+import model.species.SpeciesData;
 import org.json.*;
 import java.net.URI;
 import java.net.http.*;

@@ -1,4 +1,7 @@
-package model;
+package model.parser;
+
+import model.geo.GeoHash;
+import model.species.Species;
 
 import java.util.Date;
 

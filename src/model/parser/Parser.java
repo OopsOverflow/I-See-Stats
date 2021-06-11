@@ -1,4 +1,7 @@
-package model;
+package model.parser;
+
+import model.species.Species;
+import model.species.SpeciesData;
 
 import java.util.ArrayList;
 

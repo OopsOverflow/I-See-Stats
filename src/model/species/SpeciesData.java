@@ -1,4 +1,6 @@
-package model;
+package model.species;
+
+import model.geo.Region;
 
 import java.util.ArrayList;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package model;
+package model.species;
 
 public class Species {
     public String name;
