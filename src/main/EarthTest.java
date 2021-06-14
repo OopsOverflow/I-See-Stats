@@ -7,17 +7,15 @@ import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Material;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.MeshView;
+import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
-import model.GeoHash;
-import model.JasonParser;
-import model.Parser;
-import model.ParserException;
-import model.ParserSettings;
-import model.Species;
+import model.*;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -25,30 +23,85 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 public class EarthTest extends Application {
-	
+
+    private Group earth;
+
+    private void addQuad(Group parent, Point3D topRight, Point3D bottomRight, Point3D bottomLeft, Point3D topLeft, Material mat) {
+    	final TriangleMesh mesh = new TriangleMesh();
+
+    	final float[] points = {
+    		(float)topRight.getX(),    (float)topRight.getY(),    (float)topRight.getZ(),
+    		(float)topLeft.getX(),     (float)topLeft.getY(),     (float)topLeft.getZ(),
+    		(float)bottomLeft.getX(),  (float)bottomLeft.getY(),  (float)bottomLeft.getZ(),
+    		(float)bottomRight.getX(), (float)bottomRight.getY(), (float)bottomRight.getZ(),
+    	};
+
+    	final float[] texCoords = {
+    		1, 1,
+    		1, 0,
+    		0, 1,
+    		0, 0,
+    	};
+
+    	final int[] faces = {
+			0, 1, 1, 0, 2, 2,
+			0, 1, 2, 2, 3, 3
+    	};
+
+    	mesh.getPoints().setAll(points);
+    	mesh.getTexCoords().setAll(texCoords);
+    	mesh.getFaces().setAll(faces);
+
+    	final MeshView view = new MeshView(mesh);
+    	view.setMaterial(mat);
+    	parent.getChildren().add(view);
+    }
+
+    private Group createEarth() {
+        ObjModelImporter objModelImporter = new ObjModelImporter();
+        try {
+            URL modelURL = this.getClass().getResource("/resources/Earth/earth.obj");
+            objModelImporter.read(modelURL);
+        } catch (ImportException e) {
+            e.printStackTrace();
+        }
+
+        MeshView[] meshView = objModelImporter.getImport();
+        Group earth = new Group(meshView);
+
+        return earth;
+    }
+
+    private void addGeoHashes(Group earth) throws ParserException {
+    	Parser parser = new JasonParser();
+    	ParserSettings settings = new ParserSettings();
+    	Species dolphin = new Species();
+    	dolphin.name = "Delphinidae";
+		settings.species = dolphin;
+
+        final PhongMaterial redMaterial = new PhongMaterial();
+        redMaterial.setDiffuseColor(Color.RED);
+        redMaterial.setSpecularColor(Color.RED);
+
+        SpeciesData data = parser.load(settings);
+
+        for(Region region : data.getRegions()) {
+            GeoHash hash = region.getGeoHash();
+            Point3D[] points = hash.getRectCoords();
+            points[0] = points[0].multiply(1.01);
+            points[1] = points[1].multiply(1.01);
+            points[2] = points[2].multiply(1.01);
+            points[3] = points[3].multiply(1.01);
+            addQuad(earth, points[0], points[1], points[2], points[3], redMaterial);
+        }
+    }
+
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException, URISyntaxException {
 
         //Create a Pane et graph scene root for the 3D content
         Group root3D = new Group();
         Pane pane3D = new Pane(root3D);
-        System.out.println();
-        // Load geometry
-        ObjModelImporter objModelImporter = new ObjModelImporter();
-        try {
-
-            URL modelURL = this.getClass().getResource("/resources/Earth/earth.obj");
-            objModelImporter.read(modelURL);
-        } catch (ImportException e) {
-            System.out.println(e.getMessage());
-        }
-        MeshView[] meshViews = objModelImporter.getImport();
-        Group earth = new Group(meshViews);
-        // Draw a line
-
-        // Draw an helix
-
-        // Draw city on the earth
 
 
         // Add a camera group
@@ -63,15 +116,28 @@ public class EarthTest extends Application {
         light.getScope().addAll(root3D);
         root3D.getChildren().add(light);
 
-        // Skybox
-        Skybox sky = initSkybox(camera);
 
         // Add ambient light
         AmbientLight ambientLight = new AmbientLight(Color.WHITE);
         ambientLight.getScope().addAll(root3D);
         root3D.getChildren().add(ambientLight);
+
+        // Add earth
+        Group earth = createEarth();
         root3D.getChildren().addAll(earth);
+
+        // Add skybox
+        Skybox sky = initSkybox(camera);
         pane3D.getChildren().addAll(sky);
+
+        // Add geoHashes
+        try {
+            addGeoHashes(earth);
+        }
+        catch(ParserException e) {
+            e.printStackTrace();
+        }
+
         // Create scene
         Scene scene = new Scene(pane3D, 600, 600, true);
         scene.setCamera(camera);
@@ -84,26 +150,6 @@ public class EarthTest extends Application {
     }
 
     public static void main(String[] args) {
-    	GeoHash hash = GeoHash.fromString("u09t17jng2pg"); // Polytech
-    	System.out.println(hash.getLatLon());
-    	System.out.println(hash);
-    	
-    	GeoHash hash2 = GeoHash.fromLatLon(48.709044959396124, 2.171322964131832, 12); // Polytech
-    	System.out.println(hash2.getLatLon());
-    	System.out.println(hash2);
-    	
-    	Parser parser = new JasonParser();
-    	ParserSettings settings = new ParserSettings();
-    	Species dolphin = new Species();
-    	dolphin.name = "Delphinidae";
-		settings.species = dolphin;
-		
-    	try {
-			parser.load(settings);
-		} catch (ParserException e) {
-			e.printStackTrace();
-		}
-    	
         launch(args);
     }
 

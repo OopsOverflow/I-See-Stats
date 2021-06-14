@@ -79,19 +79,23 @@ public class JasonParser implements Parser {
 				JSONObject properties = feature.getJSONObject("properties");
 
 				JSONObject geometry = feature.getJSONObject("geometry");
-				if(!root.getString("type").equals("Polygon")) continue;
+				if(!geometry.getString("type").equals("Polygon")) continue;
 				JSONArray coordinates = geometry.getJSONArray("coordinates");
 
 				int count = properties.getInt("n");
 
 				// finds the area bounds
-				double latMin = -90.0, lonMin = -180.0, latMax = 90.0, lonMax = 180.0;
+				double latMin = 90.0, lonMin = 180.0, latMax = -90.0, lonMax = -180.0;
 				for(int i = 0; i < 4; i++) {
-					JSONArray coords = coordinates.getJSONArray(i);
-					latMin = Math.min(latMin, coords.getDouble(0));
-					latMax = Math.max(latMax, coords.getDouble(0));
-					lonMin = Math.min(lonMin, coords.getDouble(1));
-					lonMax = Math.max(lonMax, coords.getDouble(1));
+					JSONArray coords = coordinates.getJSONArray(0).getJSONArray(i);
+					latMin = Math.min(latMin, coords.getDouble(1));
+					latMax = Math.max(latMax, coords.getDouble(1));
+					lonMin = Math.min(lonMin, coords.getDouble(0));
+					lonMax = Math.max(lonMax, coords.getDouble(0));
+				}
+
+				if(lonMax > 150.0 || latMax > 150.0) {
+					System.out.println(latMax + " " + lonMax);
 				}
 
 				GeoHash hash = GeoHash.fromArea(new Point2D(latMin, lonMin), new Point2D(latMax, lonMax));
