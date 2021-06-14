@@ -24,7 +24,7 @@ import java.net.URL;
 
 public class EarthTest extends Application {
 
-    private Group earth;
+    private Model model;
 
     private void addQuad(Group parent, Point3D topRight, Point3D bottomRight, Point3D bottomLeft, Point3D topLeft, Material mat) {
     	final TriangleMesh mesh = new TriangleMesh();
@@ -73,17 +73,19 @@ public class EarthTest extends Application {
     }
 
     private void addGeoHashes(Group earth) throws ParserException {
-    	Parser parser = new JasonParser();
-    	ParserSettings settings = new ParserSettings();
-    	Species dolphin = new Species();
-    	dolphin.name = "Delphinidae";
-		settings.species = dolphin;
-
-        final PhongMaterial redMaterial = new PhongMaterial(new Color(0.5, 0.0, 0.0, 0.1));
+        Parser parser = model.getParser();
+        ParserSettings settings = new ParserSettings();
+        Species dolphin = new Species();
+        dolphin.name = "Delphinidae";
+        settings.species = dolphin;
 
         SpeciesData data = parser.load(settings);
+        model.addSpecies(data);
 
         for(Region region : data.getRegions()) {
+            Color col = model.getColorScale().getColor(region.getCount());
+            final PhongMaterial redMaterial = new PhongMaterial(col);
+
             GeoHash hash = region.getGeoHash();
             Point3D[] points = hash.getRectCoords();
             points[0] = points[0].multiply(1.01);
@@ -96,6 +98,7 @@ public class EarthTest extends Application {
 
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException, URISyntaxException {
+        model = new Model();
 
         //Create a Pane et graph scene root for the 3D content
         Group root3D = new Group();

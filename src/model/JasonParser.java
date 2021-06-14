@@ -94,10 +94,6 @@ public class JasonParser implements Parser {
 					lonMax = Math.max(lonMax, coords.getDouble(0));
 				}
 
-				if(lonMax > 150.0 || latMax > 150.0) {
-					System.out.println(latMax + " " + lonMax);
-				}
-
 				GeoHash hash = GeoHash.fromArea(new Point2D(latMin, lonMin), new Point2D(latMax, lonMax));
 				Region region = new Region(count, hash);
 				regions.add(region);

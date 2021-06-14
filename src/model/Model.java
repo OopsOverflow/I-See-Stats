@@ -1,16 +1,35 @@
 package model;
 
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import javafx.scene.paint.Color;
 
 public class Model {
-    private ArrayList<SpeciesData> species;
+    private Set<SpeciesData> species;
     private ColorScale colorScale;
+    private Parser parser;
+
+    public Model() {
+        Color minCol = new Color(0.0, 0.5, 0.0, 0.1);
+        Color maxCol = new Color(0.5, 0.0, 0.0, 0.1);
+        colorScale = new ColorScale(0, 1000, minCol, maxCol, 200);
+        species = new HashSet<SpeciesData>();
+        parser = new JasonParser();
+    }
+
+    public ColorScale getColorScale() {
+        return colorScale;
+    }
+
+    public Parser getParser() {
+        return parser;
+    }
 
     /**
      *
      * @return list of species
      */
-    public ArrayList<SpeciesData> getSpecies() {
+    public Set<SpeciesData> getSpecies() {
         return species;
     }
 
@@ -20,9 +39,7 @@ public class Model {
      * @return true if the species have been added
      */
     public boolean addSpecies(SpeciesData species){
-        if(this.species.contains(species))return false;
-        this.species.add(species);
-        return true;
+        return this.species.add(species);
     }
 
     /**
@@ -31,8 +48,6 @@ public class Model {
      * @return true if the species have been removed
      */
     public boolean removeSpecies(SpeciesData species){
-        if(!this.species.contains(species))return false;
-        this.species.remove(species);
-        return true;
+        return this.species.remove(species);
     }
 }
