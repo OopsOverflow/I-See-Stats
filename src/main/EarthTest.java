@@ -38,7 +38,7 @@ public class EarthTest extends Application {
         ObjModelImporter objModelImporter = new ObjModelImporter();
         try {
 
-            URL modelURL = this.getClass().getResource("/resources/Earth/earth.obj");
+            URL modelURL = this.getClass().getResource("/earth/earth.obj");
             objModelImporter.read(modelURL);
         } catch (ImportException e) {
             System.out.println(e.getMessage());

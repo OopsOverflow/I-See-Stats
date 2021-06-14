@@ -3,7 +3,14 @@ package model.parser;
 import model.species.Species;
 import model.species.SpeciesData;
 import org.json.*;
+
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.net.http.*;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -15,16 +22,28 @@ import java.util.concurrent.TimeUnit;
  */
 public class WebParser implements Parser {
 
-    public void setApiUrl(String url){
+    URL apiUrl;
+    JSONObject data;
 
+    public WebParser(String url){
+        setApiUrl(url);
+        data = readJsonFromUrl();
+    }
+
+    public void setApiUrl(String url){
+        try {
+            apiUrl = new URL(url);
+        } catch (MalformedURLException e) {
+            System.err.println("Invalid API URL");
+            e.printStackTrace();
+        }
     }
 
     /**
      * Reads a JSON file from a webpage
-     * @param URL url to the page API
      * @return parsed JSON file
      */
-    public static JSONObject readJsonFromUrl(String URL){
+    public JSONObject readJsonFromUrl(){
         String json = "";
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
@@ -33,7 +52,7 @@ public class WebParser implements Parser {
                 .build();
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(URL))
+                .uri(URI.create(this.apiUrl.toString()))
                 .timeout(Duration.ofMinutes(2))
                 .header("Content-Type", "application/json")
                 .GET()
@@ -51,8 +70,17 @@ public class WebParser implements Parser {
 
 	@Override
 	public SpeciesData load(ParserSettings settings) throws ParserException {
-		// TODO Auto-generated method stub
-		return null;
+
+        // TODO: 14/06/2021 Change filename for later or find better solution
+        try (FileWriter file = new FileWriter("resources/JSON/output.json")) {
+            file.write(data.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("JSON file created.");
+
+        return new JasonParser("src/resources/JSON/output.json")
+                .load(settings);
 	}
 
 	@Override

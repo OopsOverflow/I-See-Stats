@@ -22,6 +22,10 @@ public class JasonParser implements Parser {
 		root = "src/resources/JSON/";
 	}
 
+	public JasonParser(String root){
+		this.root = root;
+	}
+
     public void setRootDirectory(String dirname){
     	this.root = dirname;
     }
