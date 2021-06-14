@@ -79,9 +79,7 @@ public class EarthTest extends Application {
     	dolphin.name = "Delphinidae";
 		settings.species = dolphin;
 
-        final PhongMaterial redMaterial = new PhongMaterial();
-        redMaterial.setDiffuseColor(Color.RED);
-        redMaterial.setSpecularColor(Color.RED);
+        final PhongMaterial redMaterial = new PhongMaterial(new Color(0.5, 0.0, 0.0, 0.1));
 
         SpeciesData data = parser.load(settings);
 
