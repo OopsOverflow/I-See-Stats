@@ -4,19 +4,19 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.net.URL;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import javafx.geometry.Point2D;
 import model.Parser;
 
 public class JasonParser implements Parser {
-	
+
 	private String root;
-	
+
 	public JasonParser() {
 		root = "src/resources/JSON/";
 	}
@@ -24,15 +24,15 @@ public class JasonParser implements Parser {
     public void setRootDirectory(String dirname){
     	this.root = dirname;
     }
-    
+
     private String readAll(Reader rd) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		int cp;
-		
+
 		while((cp = rd.read()) != -1) {
 			sb.append((char)cp);
 		}
-		
+
 		return sb.toString();
     }
 
@@ -40,7 +40,7 @@ public class JasonParser implements Parser {
 	public SpeciesData load(ParserSettings settings) throws ParserException {
 		String text = null;
 		String filename = root + settings.species.name + ".json";
-				
+
 		try(Reader reader = new FileReader(filename)) {
 			BufferedReader rd = new BufferedReader(reader);
 			text = readAll(rd);
@@ -48,63 +48,61 @@ public class JasonParser implements Parser {
 		catch(IOException e) {
 			throw new ParserException("JSON file not found or unreadable: " + filename);
 		}
-		
+
 		ArrayList<Region> regions =  loadRegionsFromJSON(new JSONObject(text));
-		
+
 		SpeciesData data = new SpeciesData(
-				settings.precision, 
-				settings.species, 
+				settings.precision,
+				settings.species,
 				settings.startDate,
 				regions);
-		
+
 		return data;
 	}
-	
+
 	protected ArrayList<Region> loadRegionsFromJSON(JSONObject root) throws ParserException {
 		ArrayList<Region> regions = new ArrayList<Region>();
-		
+
 		try {
 	 		if(!root.getString("type").equals("FeatureCollection")) {
 				throw new ParserException("Incompatible JSON file");
 			}
-			
+
 			JSONArray features = root.getJSONArray("features");
-			
+
 			for(Object obj : features) {
-				
+
 				if(!(obj instanceof JSONObject)) continue;
-				
+
 				JSONObject feature = (JSONObject)obj;
 				if(!feature.getString("type").equals("Feature")) continue;
 				JSONObject properties = feature.getJSONObject("properties");
-				
+
 				JSONObject geometry = feature.getJSONObject("geometry");
 				if(!root.getString("type").equals("Polygon")) continue;
 				JSONArray coordinates = geometry.getJSONArray("coordinates");
-				
+
 				int count = properties.getInt("n");
-				
-				// finds the area's latitude, longitude and size
-				float avgLat = 0;
-				float avgLon = 0;
+
+				// finds the area bounds
+				double latMin = -90.0, lonMin = -180.0, latMax = 90.0, lonMax = 180.0;
 				for(int i = 0; i < 4; i++) {
 					JSONArray coords = coordinates.getJSONArray(i);
-					avgLat += coords.getFloat(0);
-					avgLon += coords.getFloat(1);
+					latMin = Math.min(latMin, coords.getDouble(0));
+					latMax = Math.max(latMax, coords.getDouble(0));
+					lonMin = Math.min(lonMin, coords.getDouble(1));
+					lonMax = Math.max(lonMax, coords.getDouble(1));
 				}
-				avgLat /= 4;
-				avgLon /= 4;
-				
-				
-				// TODO: use GeoHash.fromLatLon(avgLat, avgLon, precision) once available. 
-				Region region = new Region(count, GeoHash.fromString("000"));
+
+				GeoHash hash = GeoHash.fromArea(new Point2D(latMin, lonMin), new Point2D(latMax, lonMax));
+				Region region = new Region(count, hash);
 				regions.add(region);
 			}
 		}
 		catch (JSONException e) {
 			throw new ParserException("Malformed JSON file");
 		}
-		
+
 		return regions;
 	}
 
@@ -121,6 +119,6 @@ public class JasonParser implements Parser {
 		// TODO: idk
 		return null;
 	}
-    
-    
+
+
 }

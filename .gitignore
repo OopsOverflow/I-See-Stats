@@ -31,3 +31,4 @@ bin
 src/module-info.java
 .classpath
 .project
+.settings

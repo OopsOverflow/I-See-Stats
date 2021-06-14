@@ -2,6 +2,8 @@ package model;
 
 import java.util.BitSet;
 
+import org.json.JSONArray;
+
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 
@@ -52,6 +54,67 @@ public class GeoHash {
         }
 
 		return hash;
+	}
+	
+	/**
+	 * Creates a GeoHash from a latitude / longitude and a precision.
+	 * @param lat - the latitude
+	 * @param lon - the longitude
+	 * @param precision - the hash precision
+	 * @return a new GeoHash
+	 */
+	public static GeoHash fromLatLon(double lat, double lon, int precision) {
+		GeoHash hash = new GeoHash(precision);
+		
+		double div = 1.0;
+		
+		lat += 90.0;
+		lon += 180.0;
+		
+		for(int i = 5 * precision - 1; i >= 0; i--) {
+			boolean bit;
+			
+			if(i % 2 == 1) { // longitude
+				double thresold = 180.0 / div;
+				bit = lon >= thresold;
+				if(bit) lon -= thresold;
+			}
+			else { // latitude
+				double thresold = 90.0 / div;
+				bit = lat >= thresold;
+				if(bit) lat -= thresold;
+				div *= 2.0;
+			}
+			
+			hash.hash.set(i, bit);
+		}
+		
+		return hash;
+	}
+	
+	/**
+	 * Creates an (approximate) GeoHash two latitude / longitude pairs delimiting a rectangle.
+	 * This method tries to generate a GeoHash that covers the area by guessing the precision. The resulting area 
+	 * will be bigger than the given rectangle.
+	 * The two points make a rectangle boundaries, where x / y components are respectively latitude and longitude.
+	 * @param pointA - the first rectangle boundary
+	 * @param pointB - the second rectangle boundary
+	 * @return a new GeoHash
+	 */
+	public static GeoHash fromArea(Point2D pointA, Point2D pointB) {
+		
+		// finds the area's latitude, longitude and size
+		double avgLat = (pointA.getX() + pointB.getX()) / 2.0;
+		double avgLon = (pointA.getY() + pointB.getY()) / 2.0;
+		double latDist = Math.abs(pointA.getX() - pointB.getX());
+		double lonDist = Math.abs(pointA.getY() - pointB.getY());
+		
+		
+		int lonPrecision = (int)Math.floor(2.0 / 5.0 * Math.log(360.0 / lonDist) / Math.log(2));
+		int latPrecision = (int)Math.floor(2.0 / 5.0 * Math.log(180.0 / latDist) / Math.log(2));
+		int precision = Math.max(latPrecision, lonPrecision);
+		
+		return GeoHash.fromLatLon(avgLat, avgLon, precision);
 	}
 	
 	
