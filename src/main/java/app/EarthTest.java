@@ -10,16 +10,22 @@ import javafx.scene.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Material;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.MeshView;
+import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
+import model.geo.GeoHash;
+import model.geo.Region;
 import model.parser.JasonParser;
 import model.parser.Parser;
 import model.parser.ParserException;
 import model.parser.ParserSettings;
 import model.species.Species;
+import model.species.SpeciesData;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -146,11 +152,9 @@ public class EarthTest extends Application {
         root3D.getChildren().add(ambientLight);
 
         // Add earth
-        Group earth = createEarth();
         root3D.getChildren().addAll(earth);
 
         // Add skybox
-        Skybox sky = initSkybox(camera);
         pane3D.getChildren().addAll(sky);
 
         // Add geoHashes

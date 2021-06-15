@@ -39,19 +39,19 @@ public class GeoHash {
 		GeoHash hash = new GeoHash(str.length());
 		boolean found = false;
 
-        for (int i = 0; i < str.length(); i++) {
-        	char digit = str.charAt(i);
-        	found = false;
-        	for(byte num = 0; num < conversionTable.length && !found; num++) {
-        		if(conversionTable[num] == digit) {
-        			hash.setHashDigit(str.length() - 1 - i, num);
-        			found = true;
-        		}
-        	}
-        	if(!found) {
-        		throw new RuntimeException("invalid geohash character: " + digit);
-        	}
-        }
+		for (int i = 0; i < str.length(); i++) {
+			char digit = str.charAt(i);
+			found = false;
+			for(byte num = 0; num < conversionTable.length && !found; num++) {
+				if(conversionTable[num] == digit) {
+					hash.setHashDigit(str.length() - 1 - i, num);
+					found = true;
+				}
+			}
+			if(!found) {
+				throw new RuntimeException("invalid geohash character: " + digit);
+			}
+		}
 
 		return hash;
 	}
@@ -224,18 +224,18 @@ public class GeoHash {
 		double latError = 180.0 / Math.pow(2, latDivisions);
 
 		Point3D[] points = {
-			latLonToCoords(new Point2D( // top right
-					latlon.getX() + latError / 2.0,
-					latlon.getY() + lonError / 2.0)),
-			latLonToCoords(new Point2D( // bottom right
-					latlon.getX() - latError / 2.0,
-					latlon.getY() + lonError / 2.0)),
-			latLonToCoords(new Point2D( // bottom left
-					latlon.getX() - latError / 2.0,
-					latlon.getY() - lonError / 2.0)),
-			latLonToCoords(new Point2D( // top left
-					latlon.getX() + latError / 2.0,
-					latlon.getY() - lonError / 2.0)),
+				latLonToCoords(new Point2D( // top right
+						latlon.getX() + latError / 2.0,
+						latlon.getY() + lonError / 2.0)),
+				latLonToCoords(new Point2D( // bottom right
+						latlon.getX() - latError / 2.0,
+						latlon.getY() + lonError / 2.0)),
+				latLonToCoords(new Point2D( // bottom left
+						latlon.getX() - latError / 2.0,
+						latlon.getY() - lonError / 2.0)),
+				latLonToCoords(new Point2D( // top left
+						latlon.getX() + latError / 2.0,
+						latlon.getY() - lonError / 2.0)),
 		};
 
 		return points;
@@ -246,22 +246,22 @@ public class GeoHash {
 	 * The coordinates are given as if the earth was a sphere centered at the origin of radius 1.
 	 * @return the coordinates of the point on the surface of the earth
 	 */
-    public static Point3D latLonToCoords(Point2D latlon) {
-        double lat_cor = Math.toRadians(latlon.getX() + latOffset);
-        double lon_cor = Math.toRadians(latlon.getY() + lonOffset);
+	public static Point3D latLonToCoords(Point2D latlon) {
+		double lat_cor = Math.toRadians(latlon.getX() + latOffset);
+		double lon_cor = Math.toRadians(latlon.getY() + lonOffset);
 
-        return new Point3D(
-                -Math.sin(lon_cor) * Math.cos(lat_cor),
-                -Math.sin(lat_cor),
-                 Math.cos(lon_cor) * Math.cos(lat_cor));
-    }
+		return new Point3D(
+				-Math.sin(lon_cor) * Math.cos(lat_cor),
+				-Math.sin(lat_cor),
+				Math.cos(lon_cor) * Math.cos(lat_cor));
+	}
 
 	/**
 	 * Converts 3D coordinates on the globe to latitude / longitude.
 	 * The coordinates are given as if the earth was a sphere centered at the origin of radius 1.
 	 * @return a points, where x / y components are respectively latitude and longitude
 	 */
-    public static Point2D coordsToLatLon(Point3D p) {
+	public static Point2D coordsToLatLon(Point3D p) {
 		double lat, lon;
 
 		lat = Math.asin(-p.getY());
@@ -275,10 +275,5 @@ public class GeoHash {
 		}
 
 		return new Point2D(lat * 180.0 / Math.PI, lon * 180.0 / Math.PI);
-	}
-
-	public static void main(String[] args) {
-		GeoHash geo = new GeoHash(20);
-		//System.out.println(fromString());
 	}
 }
