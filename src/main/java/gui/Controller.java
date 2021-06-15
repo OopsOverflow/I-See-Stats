@@ -7,33 +7,23 @@ import com.interactivemesh.jfx.importer.ImportException;
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 
 import app.EarthTest;
-import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
-import javafx.scene.Camera;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
-import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.PickResult;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Sphere;
 import javafx.scene.shape.TriangleMesh;
-import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
+import model.Model;
 import model.geo.GeoHash;
 import model.geo.Region;
 import model.parser.JasonParser;
@@ -44,13 +34,21 @@ import model.species.Species;
 import model.species.SpeciesData;
 
 public class Controller {
-	
+
+	private Model model;
+
 	@FXML
 	private Pane earthPane;
-	
+
+    @FXML
+    private ColorPicker btnMinColor;
+
+    @FXML
+    private ColorPicker btnMaxColor;
+
 	private Group root3D;
 	private PerspectiveCamera camera;
-	
+
     private void addQuad(Group parent, Point3D topRight, Point3D bottomRight, Point3D bottomLeft, Point3D topLeft, Material mat) {
     	final TriangleMesh mesh = new TriangleMesh();
 
@@ -96,15 +94,13 @@ public class Controller {
 
         return earth;
     }
-	
+
     private void addGeoHashes(Group earth) {
     	Parser parser = new JasonParser();
     	ParserSettings settings = new ParserSettings();
     	Species dolphin = new Species();
     	dolphin.name = "Delphinidae";
 		settings.species = dolphin;
-
-        final PhongMaterial redMaterial = new PhongMaterial(new Color(0.5, 0.0, 0.0, 0.1));
 
         SpeciesData data = null;
 		try {
@@ -113,17 +109,23 @@ public class Controller {
 			e.printStackTrace();
 		}
 
+		model.addSpecies(data);
+
         for(Region region : data.getRegions()) {
+    		Color color = model.getColorScale().getColor(region.getCount());
+	        PhongMaterial redMaterial = new PhongMaterial(color);
+        	
             GeoHash hash = region.getGeoHash();
             Point3D[] points = hash.getRectCoords();
             points[0] = points[0].multiply(1.01);
             points[1] = points[1].multiply(1.01);
             points[2] = points[2].multiply(1.01);
             points[3] = points[3].multiply(1.01);
+            
             addQuad(earth, points[0], points[1], points[2], points[3], redMaterial);
         }
     }
-    
+
     private static Skybox initSkybox(PerspectiveCamera camera){
         // Load images
         InputStream stream = EarthTest.class.getResourceAsStream("/skybox/py(2).png");
@@ -140,7 +142,7 @@ public class Controller {
         Image imageBack = new Image(stream5);
         return new Skybox(imageTop, imageBtm, imageLeft, imageRight, imageFront, imageBack, 2048, camera);
     }
-	
+
 	private void createEarthScene() {
         // Add point light
         PointLight light = new PointLight(Color.WHITE);
@@ -158,7 +160,7 @@ public class Controller {
         // Add skybox
         Skybox sky = initSkybox(camera);
         root3D.getChildren().add(sky);
-        
+
         // Add earth
         Group earth = createEarth();
         root3D.getChildren().add(earth);
@@ -167,18 +169,25 @@ public class Controller {
         // Add geoHashes
         addGeoHashes(earth);
 	}
-	
+
+	private void onColorRangeChanged() {
+		Color minColor = btnMinColor.getValue();
+		Color maxColor = btnMaxColor.getValue();
+	}
+
 	@FXML
 	public void initialize() {
+		model = new Model();
+
 		root3D = new Group();
         camera = new PerspectiveCamera(true);
         SubScene scene = new SubScene(root3D, 600, 600);
-        
+
         new CameraManager(camera, earthPane, root3D);
         scene.setCamera(camera);
         scene.setFill(Color.GREY);
         earthPane.getChildren().add(scene);
-		
+
 		createEarthScene();
 	}
 }
