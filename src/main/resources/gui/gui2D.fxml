@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<SplitPane fx:controller="gui.Controller" dividerPositions="0.63636363636363" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+  <items>
+    <AnchorPane fx:id="earthPane" maxWidth="1.7976931348623157E308" minHeight="500.0" minWidth="500.0" prefHeight="699.0" prefWidth="615.0" />
+      <TabPane prefHeight="699.0" prefWidth="449.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Earth view">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Text layoutX="14.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Zoom :">
+                           <font>
+                              <Font size="25.0" />
+                           </font>
+                        </Text>
+                        <Slider layoutX="10.0" layoutY="55.0" prefWidth="348.0" />
+                        <Text layoutX="293.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" text="100%">
+                           <font>
+                              <Font size="25.0" />
+                           </font>
+                        </Text>
+                        <CheckBox layoutX="10.0" layoutY="98.0" mnemonicParsing="false" text="Sun">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </CheckBox>
+                        <CheckBox layoutX="10.0" layoutY="146.0" mnemonicParsing="false" text="Histogram">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </CheckBox>
+                        <CheckBox layoutX="10.0" layoutY="194.0" mnemonicParsing="false" text="View color range">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </CheckBox>
+                        <Separator layoutX="-36.0" layoutY="262.0" prefHeight="11.0" prefWidth="440.0" />
+                        <Text layoutX="16.0" layoutY="300.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Color :">
+                           <font>
+                              <Font size="25.0" />
+                           </font>
+                        </Text>
+                        <HBox alignment="CENTER_RIGHT" layoutX="10.0" layoutY="326.0" prefHeight="37.0" prefWidth="348.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Min color : ">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </Text>
+                              <ColorPicker prefHeight="26.0" prefWidth="220.0">
+                                 <value>
+                                    <Color green="1.0" />
+                                 </value>
+                              </ColorPicker>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </HBox>
+                        <HBox alignment="CENTER_RIGHT" layoutX="10.0" layoutY="380.0" prefHeight="31.0" prefWidth="348.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Max color : ">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </Text>
+                              <ColorPicker prefHeight="26.0" prefWidth="220.0">
+                                 <value>
+                                    <Color red="1.0" />
+                                 </value>
+                              </ColorPicker>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </HBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Search">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0">
+                     <children>
+                        <Text layoutX="23.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Search : ">
+                           <font>
+                              <Font size="25.0" />
+                           </font>
+                        </Text>
+                        <Text layoutX="16.0" layoutY="131.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Precision : ">
+                           <font>
+                              <Font size="25.0" />
+                           </font>
+                        </Text>
+                        <Slider layoutX="10.0" layoutY="138.0" prefHeight="24.0" prefWidth="348.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </Slider>
+                        <Text layoutX="21.0" layoutY="181.0" strokeType="OUTSIDE" strokeWidth="0.0" text="8">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Text>
+                        <Text layoutX="16.0" layoutY="253.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Time :">
+                           <font>
+                              <Font size="25.0" />
+                           </font>
+                        </Text>
+                        <Slider layoutX="10.0" layoutY="260.0" prefWidth="348.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </Slider>
+                        <Text layoutX="21.0" layoutY="303.0" strokeType="OUTSIDE" strokeWidth="0.0" text="From : 01/01/1970">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Text>
+                        <Slider layoutX="10.0" layoutY="335.0" prefWidth="348.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </Slider>
+                        <Text layoutX="21.0" layoutY="378.0" strokeType="OUTSIDE" strokeWidth="0.0" text="To : 16/04/2001">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Text>
+                        <Button layoutX="134.0" layoutY="607.0" mnemonicParsing="false" text="Add">
+                           <font>
+                              <Font size="36.0" />
+                           </font>
+                        </Button>
+                        <TextField layoutX="15.0" layoutY="46.0" prefWidth="338.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Observable list">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+  </items>
+</SplitPane>
