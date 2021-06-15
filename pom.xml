@@ -22,14 +22,14 @@
             <version>16</version>
         </dependency>
         <dependency>
-            <groupId>com.json.parser</groupId>
-            <artifactId>json-parser</artifactId>
-            <version>1.0</version>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20210307</version>
         </dependency>
         <dependency>
-            <groupId>com.model.importer</groupId>
-            <artifactId>model-importer</artifactId>
-            <version>1.0</version>
+            <groupId>com.interactivemesh</groupId>
+            <artifactId>objmodelimporterjfx</artifactId>
+            <version>0.8</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
