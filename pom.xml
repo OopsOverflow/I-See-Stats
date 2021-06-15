@@ -73,26 +73,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${basedir}/target/earth/</outputDirectory>
+                            <outputDirectory>${basedir}/target/resources/</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/main/resources/earth</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-resources-2</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/skybox</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/resources/skybox</directory>
+                                    <directory>src/main/resources/</directory>
                                     <filtering>true</filtering>
                                 </resource>
                             </resources>
