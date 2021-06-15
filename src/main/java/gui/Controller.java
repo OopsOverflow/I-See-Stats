@@ -2,6 +2,7 @@ package gui;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 
 import com.interactivemesh.jfx.importer.ImportException;
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
@@ -11,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.SubScene;
@@ -24,6 +26,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import model.Model;
+import model.geo.ColorScale;
 import model.geo.GeoHash;
 import model.geo.Region;
 import model.parser.JasonParser;
@@ -37,6 +40,8 @@ public class Controller {
 
 	private Model model;
 
+	private Group currentRegions;
+
 	@FXML
 	private Pane earthPane;
 
@@ -49,7 +54,7 @@ public class Controller {
 	private Group root3D;
 	private PerspectiveCamera camera;
 
-    private void addQuad(Group parent, Point3D topRight, Point3D bottomRight, Point3D bottomLeft, Point3D topLeft, Material mat) {
+    private MeshView createQuad(Point3D topRight, Point3D bottomRight, Point3D bottomLeft, Point3D topLeft, Material mat) {
     	final TriangleMesh mesh = new TriangleMesh();
 
     	final float[] points = {
@@ -77,7 +82,7 @@ public class Controller {
 
     	final MeshView view = new MeshView(mesh);
     	view.setMaterial(mat);
-    	parent.getChildren().add(view);
+    	return view;
     }
 
     private Group createEarth() {
@@ -95,7 +100,8 @@ public class Controller {
         return earth;
     }
 
-    private void addGeoHashes(Group earth) {
+ 
+    private SpeciesData getInitialSpeciesData() {
     	Parser parser = new JasonParser();
     	ParserSettings settings = new ParserSettings();
     	Species dolphin = new Species();
@@ -108,11 +114,17 @@ public class Controller {
 		} catch (ParserException e) {
 			e.printStackTrace();
 		}
-
-		model.addSpecies(data);
+		
+		return data;
+    }
+    
+    private Group createGeoHashes(SpeciesData data) {
+    	Group regions = new Group();
+		ColorScale colScale = model.getColorScale();
+		colScale.setRange(data.getMinCount(), data.getMaxCount());
 
         for(Region region : data.getRegions()) {
-    		Color color = model.getColorScale().getColor(region.getCount());
+    		Color color = colScale.getColor(region.getCount());
 	        PhongMaterial redMaterial = new PhongMaterial(color);
         	
             GeoHash hash = region.getGeoHash();
@@ -122,8 +134,11 @@ public class Controller {
             points[2] = points[2].multiply(1.01);
             points[3] = points[3].multiply(1.01);
             
-            addQuad(earth, points[0], points[1], points[2], points[3], redMaterial);
+            MeshView quad = createQuad(points[0], points[1], points[2], points[3], redMaterial);
+            regions.getChildren().add(quad);
         }
+        
+        return regions;
     }
 
     private static Skybox initSkybox(PerspectiveCamera camera){
@@ -165,20 +180,34 @@ public class Controller {
         Group earth = createEarth();
         root3D.getChildren().add(earth);
 
-
         // Add geoHashes
-        addGeoHashes(earth);
+        currentRegions = new Group();
+        root3D.getChildren().add(currentRegions);
+        SpeciesData data = getInitialSpeciesData();
+        model.addSpecies(data);
+        currentRegions.getChildren().add(createGeoHashes(data));
 	}
-
+	
+	@FXML
 	private void onColorRangeChanged() {
 		Color minColor = btnMinColor.getValue();
 		Color maxColor = btnMaxColor.getValue();
+		
+		model.getColorScale().setInterpolatedColors(minColor, maxColor, 100);
+		
+		currentRegions.getChildren().clear();
+		
+		for(SpeciesData data : model.getSpecies()) {
+			currentRegions.getChildren().add(createGeoHashes(data));
+		}
 	}
 
 	@FXML
 	public void initialize() {
 		model = new Model();
-
+		
+		model.addSpecies(getInitialSpeciesData());
+		
 		root3D = new Group();
         camera = new PerspectiveCamera(true);
         SubScene scene = new SubScene(root3D, 600, 600);

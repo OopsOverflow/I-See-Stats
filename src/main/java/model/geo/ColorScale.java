@@ -47,13 +47,13 @@ public class ColorScale {
      * Set the color range
      * @param minRange minimum of the range
      * @param maxRange maximum of the range
-     * @throws Exception send exeption in case of error
+     * @throws RuntimeException send exeption in case of error
      */
-    public void setRange(int minRange,int maxRange) throws Exception {
-        if(minRange>=maxRange)
-            throw new Exception("Ranges are invalid");
-        this.minRange=minRange;
-        this.maxRange=maxRange;
+    public void setRange(int minRange, int maxRange) {
+        if(minRange >= maxRange)
+            throw new RuntimeException("Ranges are invalid");
+        this.minRange = minRange;
+        this.maxRange = maxRange;
     }
 
     /**
