@@ -18,4 +18,8 @@ public class Region {
     public int getCount() {
         return count;
     }
+
+    public GeoHash getGeoHash() {
+        return area;
+    }
 }

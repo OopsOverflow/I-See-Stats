@@ -28,6 +28,77 @@ import java.net.URL;
 
 public class EarthTest extends Application {
 
+    private Group earth;
+
+    private void addQuad(Group parent, Point3D topRight, Point3D bottomRight, Point3D bottomLeft, Point3D topLeft, Material mat) {
+    	final TriangleMesh mesh = new TriangleMesh();
+
+    	final float[] points = {
+    		(float)topRight.getX(),    (float)topRight.getY(),    (float)topRight.getZ(),
+    		(float)topLeft.getX(),     (float)topLeft.getY(),     (float)topLeft.getZ(),
+    		(float)bottomLeft.getX(),  (float)bottomLeft.getY(),  (float)bottomLeft.getZ(),
+    		(float)bottomRight.getX(), (float)bottomRight.getY(), (float)bottomRight.getZ(),
+    	};
+
+    	final float[] texCoords = {
+    		1, 1,
+    		1, 0,
+    		0, 1,
+    		0, 0,
+    	};
+
+    	final int[] faces = {
+			0, 1, 1, 0, 2, 2,
+			0, 1, 2, 2, 3, 3
+    	};
+
+    	mesh.getPoints().setAll(points);
+    	mesh.getTexCoords().setAll(texCoords);
+    	mesh.getFaces().setAll(faces);
+
+    	final MeshView view = new MeshView(mesh);
+    	view.setMaterial(mat);
+    	parent.getChildren().add(view);
+    }
+
+    private Group createEarth() {
+        ObjModelImporter objModelImporter = new ObjModelImporter();
+        try {
+            URL modelURL = this.getClass().getResource("/resources/Earth/earth.obj");
+            objModelImporter.read(modelURL);
+        } catch (ImportException e) {
+            e.printStackTrace();
+        }
+
+        MeshView[] meshView = objModelImporter.getImport();
+        Group earth = new Group(meshView);
+
+        return earth;
+    }
+
+    private void addGeoHashes(Group earth) throws ParserException {
+    	Parser parser = new JasonParser();
+    	ParserSettings settings = new ParserSettings();
+    	Species dolphin = new Species();
+    	dolphin.name = "Delphinidae";
+		settings.species = dolphin;
+
+        final PhongMaterial redMaterial = new PhongMaterial(new Color(0.5, 0.0, 0.0, 0.1));
+
+        SpeciesData data = parser.load(settings);
+
+        for(Region region : data.getRegions()) {
+            GeoHash hash = region.getGeoHash();
+            Point3D[] points = hash.getRectCoords();
+            points[0] = points[0].multiply(1.01);
+            points[1] = points[1].multiply(1.01);
+            points[2] = points[2].multiply(1.01);
+            points[3] = points[3].multiply(1.01);
+            addQuad(earth, points[0], points[1], points[2], points[3], redMaterial);
+        }
+    }
+
+
     @Override
     public void start(Stage primaryStage) throws FileNotFoundException, URISyntaxException {
 
@@ -73,8 +144,23 @@ public class EarthTest extends Application {
         AmbientLight ambientLight = new AmbientLight(Color.WHITE);
         ambientLight.getScope().addAll(root3D);
         root3D.getChildren().add(ambientLight);
+
+        // Add earth
+        Group earth = createEarth();
         root3D.getChildren().addAll(earth);
+
+        // Add skybox
+        Skybox sky = initSkybox(camera);
         pane3D.getChildren().addAll(sky);
+
+        // Add geoHashes
+        try {
+            addGeoHashes(earth);
+        }
+        catch(ParserException e) {
+            e.printStackTrace();
+        }
+
         // Create scene
         Scene scene = new Scene(pane3D, 600, 600, true);
         scene.setCamera(camera);
@@ -87,23 +173,9 @@ public class EarthTest extends Application {
     }
 
     public static void main(String[] args) {
-//    	GeoHash hash = GeoHash.fromString("u09t17jng2pg"); // Polytech
-//    	System.out.println(hash.getLatLon());
-//    	System.out.println(hash);
-        Parser parser = new JasonParser();
-        ParserSettings settings = new ParserSettings();
-        Species dolphin = new Species();
-        dolphin.name = "Delphinidae";
-        settings.species = dolphin;
-
-        try {
-            parser.load(settings);
-        } catch (ParserException e) {
-            e.printStackTrace();
-        }
-
         launch(args);
     }
+
 
     // From Rahel Lüthy : https://netzwerg.ch/blog/2015/03/22/javafx-3d-line/
     public Cylinder createLine(Point3D origin, Point3D target) {
