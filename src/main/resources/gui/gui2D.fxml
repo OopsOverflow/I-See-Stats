@@ -16,7 +16,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<SplitPane fx:controller="gui.Controller" dividerPositions="0.63636363636363" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<SplitPane dividerPositions="0.63636363636363" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
   <items>
     <AnchorPane fx:id="earthPane" maxWidth="1.7976931348623157E308" minHeight="500.0" minWidth="500.0" prefHeight="699.0" prefWidth="615.0" />
       <TabPane prefHeight="699.0" prefWidth="449.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
@@ -76,7 +76,7 @@
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </HBox.margin>
                               </Text>
-                              <ColorPicker prefHeight="26.0" prefWidth="220.0">
+                              <ColorPicker fx:id="btnMinColor" onAction="#onColorRangeChanged" prefHeight="26.0" prefWidth="220.0">
                                  <value>
                                     <Color green="1.0" />
                                  </value>
@@ -96,7 +96,7 @@
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </HBox.margin>
                               </Text>
-                              <ColorPicker prefHeight="26.0" prefWidth="220.0">
+                              <ColorPicker fx:id="btnMaxColor" onAction="#onColorRangeChanged" prefHeight="26.0" prefWidth="220.0">
                                  <value>
                                     <Color red="1.0" />
                                  </value>
