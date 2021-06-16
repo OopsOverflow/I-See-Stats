@@ -20,10 +20,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.TriangleMesh;
 import model.Model;
 import model.geo.ColorScale;
@@ -50,6 +52,9 @@ public class Controller {
 
     @FXML
     private ColorPicker btnMaxColor;
+    
+    @FXML
+    private VBox boxColorScale;
 
 	private Group root3D;
 	private PerspectiveCamera camera;
@@ -140,6 +145,19 @@ public class Controller {
 
         return regions;
     }
+    
+    private void updatePaneColorScale(ArrayList<Color> colors) {
+    	boxColorScale.getChildren().clear();
+    	boxColorScale.toFront();
+    	
+    	double width = boxColorScale.getPrefWidth();
+    	double height = boxColorScale.getPrefHeight() / colors.size();
+    	
+    	for(Color color : colors) {
+    		Rectangle rect = new Rectangle(width, height, color);
+    		boxColorScale.getChildren().add(0, rect);
+    	}
+    }
 
     private static Skybox initSkybox(PerspectiveCamera camera){
         // Load images
@@ -186,6 +204,9 @@ public class Controller {
         SpeciesData data = getInitialSpeciesData();
         model.addSpecies(data);
         currentRegions.getChildren().add(createGeoHashes(data));
+        
+        // Add color scale widget
+        updatePaneColorScale(model.getColorScale().getColors());
 	}
 
 	@FXML
@@ -194,6 +215,7 @@ public class Controller {
 		Color maxColor = ColorScale.setOpacity(btnMaxColor.getValue(), 0.5);
 		ColorScale colScale = model.getColorScale();
 		colScale.setInterpolatedColors(minColor, maxColor, colScale.getColorCount());
+		updatePaneColorScale(model.getColorScale().getColors());
 
 		currentRegions.getChildren().clear();
 

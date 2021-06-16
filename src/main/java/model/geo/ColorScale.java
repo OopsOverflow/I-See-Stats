@@ -33,6 +33,10 @@ public class ColorScale {
     public ColorScale(int minRange, int maxRange, Color minColor, Color maxColor, int count) {
         this(minRange, maxRange, interpolateColors(minColor, maxColor, count));
     }
+    
+    public ArrayList<Color> getColors() {
+    	return colors;
+    }
 
     /**
      * Return the color for a given value
