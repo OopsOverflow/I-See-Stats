@@ -3,6 +3,8 @@ package gui;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.interactivemesh.jfx.importer.ImportException;
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
@@ -63,6 +65,8 @@ public class Controller {
 
 	private Group root3D;
 	private PerspectiveCamera camera;
+
+	private Map<Color, Material> materials;
 
     private MeshView createQuad(Point3D topRight, Point3D bottomRight, Point3D bottomLeft, Point3D topLeft, Material mat) {
     	final TriangleMesh mesh = new TriangleMesh();
@@ -131,11 +135,20 @@ public class Controller {
     private Group createGeoHashes(SpeciesData data) {
     	Group regions = new Group();
 		ColorScale colScale = model.getColorScale();
+        double opacity = sliderColorRangeOpacity.getValue();
 		colScale.setRange(data.getMinCount(), data.getMaxCount());
 
+		materials = new HashMap<Color, Material>();
+
         for(Region region : data.getRegions()) {
-    		Color color = colScale.getColor(region.getCount());
-	        PhongMaterial redMaterial = new PhongMaterial(color);
+    		Color opaque = colScale.getColor(region.getCount());
+    		Material mat = materials.get(opaque);
+
+    		if(mat == null) {
+    			Color color = ColorScale.setOpacity(opaque, opacity);
+    			mat = new PhongMaterial(color);
+    			materials.put(opaque, mat);
+    		}
 
             GeoHash hash = region.getGeoHash();
             Point3D[] points = hash.getRectCoords();
@@ -144,7 +157,7 @@ public class Controller {
             points[2] = points[2].multiply(1.01);
             points[3] = points[3].multiply(1.01);
 
-            MeshView quad = createQuad(points[0], points[1], points[2], points[3], redMaterial);
+            MeshView quad = createQuad(points[0], points[1], points[2], points[3], mat);
             regions.getChildren().add(quad);
         }
 
@@ -207,13 +220,7 @@ public class Controller {
         // Add geoHashes
         currentRegions = new Group();
         root3D.getChildren().add(currentRegions);
-        SpeciesData data = getInitialSpeciesData();
-        model.addSpecies(data);
-        currentRegions.getChildren().add(createGeoHashes(data));
 
-        // Add color scale widget
-        updatePaneColorRange(model.getColorScale().getColors());
-        
         // update model state based on initial button states
         onColorRangeChanged(); // update opacity
         onColorRangeToggled(); // update color range widget visibility
@@ -228,11 +235,11 @@ public class Controller {
 
 	@FXML
 	private void onColorRangeChanged() {
-		double opacity = sliderColorRangeOpacity.getValue();
-		Color minColor = ColorScale.setOpacity(btnMinColor.getValue(), opacity);
-		Color maxColor = ColorScale.setOpacity(btnMaxColor.getValue(), opacity);
+		Color minColor = btnMinColor.getValue();
+		Color maxColor = btnMaxColor.getValue();
 		ColorScale colScale = model.getColorScale();
 		colScale.setInterpolatedColors(minColor, maxColor, colScale.getColorCount());
+
 		updatePaneColorRange(model.getColorScale().getColors());
 
 		currentRegions.getChildren().clear();
@@ -240,6 +247,18 @@ public class Controller {
 		for(SpeciesData data : model.getSpecies()) {
 			currentRegions.getChildren().add(createGeoHashes(data));
 		}
+	}
+
+	private void onOpacityChanged() {
+		double opacity = sliderColorRangeOpacity.getValue();
+		System.out.println(opacity);
+
+		materials.forEach((key, val) -> {
+			PhongMaterial mat = (PhongMaterial)val;
+			Color opaque = (Color)key;
+			Color col = ColorScale.setOpacity(opaque, opacity);
+			mat.setDiffuseColor(col);
+		});
 	}
 
 	@FXML
@@ -258,7 +277,7 @@ public class Controller {
         earthPane.getChildren().add(scene);
 
 		createEarthScene();
-		
-		sliderColorRangeOpacity.valueProperty().addListener((_1) -> onColorRangeChanged());
+
+		sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());
 	}
 }

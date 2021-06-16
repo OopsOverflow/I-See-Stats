@@ -120,7 +120,7 @@
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </HBox.margin>
                               </Text>
-                              <Slider fx:id="sliderColorRangeOpacity" blockIncrement="0.01" max="1.0" onDragDetected="#onColorRangeChanged" prefHeight="16.0" prefWidth="209.0" />
+                              <Slider fx:id="sliderColorRangeOpacity" blockIncrement="0.01" max="1.0" prefHeight="16.0" prefWidth="209.0" value="0.5" />
                            </children>
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
