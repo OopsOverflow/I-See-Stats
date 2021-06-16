@@ -14,8 +14,8 @@ public class Model {
     private Parser parser;
 
     public Model() {
-        Color minCol = new Color(0.0, 0.5, 0.0, 0.1);
-        Color maxCol = new Color(0.5, 0.0, 0.0, 0.1);
+        Color minCol = ColorScale.setOpacity(Color.GREEN, 0.5);
+        Color maxCol = ColorScale.setOpacity(Color.RED, 0.5);
         colorScale = new ColorScale(0, 1000, minCol, maxCol, 10);
         colorScale.setInterpolationType(ColorScale.Interpolation.LOGARITHMIC);
         species = new HashSet<SpeciesData>();

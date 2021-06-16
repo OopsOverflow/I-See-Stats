@@ -190,8 +190,8 @@ public class Controller {
 
 	@FXML
 	private void onColorRangeChanged() {
-		Color minColor = btnMinColor.getValue();
-		Color maxColor = btnMaxColor.getValue();
+		Color minColor = ColorScale.setOpacity(btnMinColor.getValue(), 0.5);
+		Color maxColor = ColorScale.setOpacity(btnMaxColor.getValue(), 0.5);
 		ColorScale colScale = model.getColorScale();
 		colScale.setInterpolatedColors(minColor, maxColor, colScale.getColorCount());
 
