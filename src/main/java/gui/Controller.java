@@ -100,7 +100,7 @@ public class Controller {
         return earth;
     }
 
- 
+
     private SpeciesData getInitialSpeciesData() {
     	Parser parser = new JasonParser();
     	ParserSettings settings = new ParserSettings();
@@ -114,10 +114,10 @@ public class Controller {
 		} catch (ParserException e) {
 			e.printStackTrace();
 		}
-		
+
 		return data;
     }
-    
+
     private Group createGeoHashes(SpeciesData data) {
     	Group regions = new Group();
 		ColorScale colScale = model.getColorScale();
@@ -126,18 +126,18 @@ public class Controller {
         for(Region region : data.getRegions()) {
     		Color color = colScale.getColor(region.getCount());
 	        PhongMaterial redMaterial = new PhongMaterial(color);
-        	
+
             GeoHash hash = region.getGeoHash();
             Point3D[] points = hash.getRectCoords();
             points[0] = points[0].multiply(1.01);
             points[1] = points[1].multiply(1.01);
             points[2] = points[2].multiply(1.01);
             points[3] = points[3].multiply(1.01);
-            
+
             MeshView quad = createQuad(points[0], points[1], points[2], points[3], redMaterial);
             regions.getChildren().add(quad);
         }
-        
+
         return regions;
     }
 
@@ -187,16 +187,16 @@ public class Controller {
         model.addSpecies(data);
         currentRegions.getChildren().add(createGeoHashes(data));
 	}
-	
+
 	@FXML
 	private void onColorRangeChanged() {
 		Color minColor = btnMinColor.getValue();
 		Color maxColor = btnMaxColor.getValue();
-		
-		model.getColorScale().setInterpolatedColors(minColor, maxColor, 100);
-		
+		ColorScale colScale = model.getColorScale();
+		colScale.setInterpolatedColors(minColor, maxColor, colScale.getColorCount());
+
 		currentRegions.getChildren().clear();
-		
+
 		for(SpeciesData data : model.getSpecies()) {
 			currentRegions.getChildren().add(createGeoHashes(data));
 		}
@@ -205,9 +205,9 @@ public class Controller {
 	@FXML
 	public void initialize() {
 		model = new Model();
-		
+
 		model.addSpecies(getInitialSpeciesData());
-		
+
 		root3D = new Group();
         camera = new PerspectiveCamera(true);
         SubScene scene = new SubScene(root3D, 600, 600);

@@ -8,12 +8,16 @@ public class ColorScale {
     private ArrayList<Color> colors;
     private int minRange;
     private int maxRange;
+    
+    public enum Interpolation { LINEAR, LOGARITHMIC };
+    private Interpolation interpolation;
 
 
     public ColorScale(int minRange, int maxRange, ArrayList<Color> colors) {
         this.minRange = minRange;
         this.maxRange = maxRange;
         this.colors = colors;
+        this.interpolation = Interpolation.LINEAR;
     }
 
     /**
@@ -36,11 +40,25 @@ public class ColorScale {
      * @return the color corresponding to the value
      */
     public Color getColor(int value) {
-        if(value > maxRange) value = maxRange;
-        if(value < minRange) value = minRange;
+		
+    	double val, min, max;
+    	
+    	if(interpolation == Interpolation.LINEAR) {
+            val = value;
+            min = minRange;
+            max = maxRange;
+    	}
+    	else {
+            val = Math.log(value);
+            min = Math.log(minRange);
+            max = Math.log(maxRange);
+    	}
 
-        int indice = (colors.size() - 1) * (value-minRange) / (maxRange-minRange);
-        return colors.get(indice);
+        double indice = (colors.size() - 1) * (val-min) / (max-min);
+        int clamped = (int)indice;
+        clamped = Math.max(clamped, 0);
+        clamped = Math.min(clamped, colors.size() - 1);
+        return colors.get(clamped);
     }
 
     /**
@@ -81,6 +99,24 @@ public class ColorScale {
         Color first = colors.get(0);
         Color last = colors.get(colors.size() - 1);
         setInterpolatedColors(first, last, count);
+    }
+    
+
+    /**
+     * Gets the number of colors in the scale.
+     * @return count - the total number of colors
+     */
+    public int getColorCount() {
+    	return colors.size();
+    }
+    
+    public void setInterpolationType(Interpolation interpolation) {
+    	this.interpolation = interpolation;
+    	
+    }
+    
+    public Interpolation getInterpolationType() {
+    	return interpolation;
     }
 
     /**

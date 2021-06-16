@@ -16,7 +16,8 @@ public class Model {
     public Model() {
         Color minCol = new Color(0.0, 0.5, 0.0, 0.1);
         Color maxCol = new Color(0.5, 0.0, 0.0, 0.1);
-        colorScale = new ColorScale(0, 1000, minCol, maxCol, 200);
+        colorScale = new ColorScale(0, 1000, minCol, maxCol, 10);
+        colorScale.setInterpolationType(ColorScale.Interpolation.LOGARITHMIC);
         species = new HashSet<SpeciesData>();
         parser = new JasonParser();
     }
