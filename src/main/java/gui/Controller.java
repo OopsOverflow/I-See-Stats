@@ -69,8 +69,6 @@ public class Controller {
 	private Map<Color, Material> materials;
 
     private MeshView createQuad(Point3D topRight, Point3D bottomRight, Point3D bottomLeft, Point3D topLeft, Material mat) {
-    	final TriangleMesh mesh = new TriangleMesh();
-
     	final float[] points = {
     		(float)topRight.getX(),    (float)topRight.getY(),    (float)topRight.getZ(),
     		(float)topLeft.getX(),     (float)topLeft.getY(),     (float)topLeft.getZ(),
@@ -90,11 +88,12 @@ public class Controller {
 			0, 1, 2, 2, 3, 3
     	};
 
+        TriangleMesh mesh = new TriangleMesh();
     	mesh.getPoints().setAll(points);
     	mesh.getTexCoords().setAll(texCoords);
     	mesh.getFaces().setAll(faces);
 
-    	final MeshView view = new MeshView(mesh);
+    	MeshView view = new MeshView(mesh);
     	view.setMaterial(mat);
     	return view;
     }
@@ -138,6 +137,8 @@ public class Controller {
         double opacity = sliderColorRangeOpacity.getValue();
 		colScale.setRange(data.getMinCount(), data.getMaxCount());
 
+        // this stores the opaque colors of the color scale and associates them
+        // with a material.
 		materials = new HashMap<Color, Material>();
 
         for(Region region : data.getRegions()) {
@@ -164,22 +165,7 @@ public class Controller {
         return regions;
     }
 
-    private void updatePaneColorRange(ArrayList<Color> colors) {
-    	boxColorRange.getChildren().clear();
-    	boxColorRange.toFront();
-
-    	double width = boxColorRange.getPrefWidth();
-    	double height = boxColorRange.getPrefHeight() / colors.size();
-
-    	for(Color color : colors) {
-    		Color opaque = ColorScale.setOpacity(color, 1.0);
-    		Rectangle rect = new Rectangle(width, height, opaque);
-    		boxColorRange.getChildren().add(0, rect);
-    	}
-    }
-
-    private static Skybox initSkybox(PerspectiveCamera camera){
-        // Load images
+    private static Skybox initSkybox(PerspectiveCamera camera) {
         InputStream stream = EarthTest.class.getResourceAsStream("/skybox/py(2).png");
         InputStream stream1 = EarthTest.class.getResourceAsStream("/skybox/ny(2).png");
         InputStream stream2 = EarthTest.class.getResourceAsStream("/skybox/nx(2).png");
@@ -217,15 +203,27 @@ public class Controller {
         Group earth = createEarth();
         root3D.getChildren().add(earth);
 
-        // Add geoHashes
+        // Add regions group
         currentRegions = new Group();
         root3D.getChildren().add(currentRegions);
 
         // update model state based on initial button states
-        onColorRangeChanged(); // update opacity
+        onColorRangeChanged(); // update the currently visible regions
         onColorRangeToggled(); // update color range widget visibility
 	}
 
+    private void updatePaneColorRange(ArrayList<Color> colors) {
+        boxColorRange.getChildren().clear();
+        boxColorRange.toFront();
+
+        double width = boxColorRange.getPrefWidth();
+        double height = boxColorRange.getPrefHeight() / colors.size();
+
+        for(Color color : colors) {
+            Rectangle rect = new Rectangle(width, height, color);
+            boxColorRange.getChildren().add(0, rect);
+        }
+    }
 
 	@FXML
 	private void onColorRangeToggled() {
@@ -251,7 +249,6 @@ public class Controller {
 
 	private void onOpacityChanged() {
 		double opacity = sliderColorRangeOpacity.getValue();
-		System.out.println(opacity);
 
 		materials.forEach((key, val) -> {
 			PhongMaterial mat = (PhongMaterial)val;
@@ -264,7 +261,6 @@ public class Controller {
 	@FXML
 	public void initialize() {
 		model = new Model();
-
 		model.addSpecies(getInitialSpeciesData());
 
 		root3D = new Group();
