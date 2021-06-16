@@ -174,11 +174,15 @@ public class ColorScale {
     /**
      * Makes a color with the given opacity.
      * linearly interpolated between 'minColor' and 'maxColor'.
-     * @param minColor - the first color of the range
-     * @param maxColor - the last color of the range
-     * @param count - the total number of colors, including min and max
+     * @param color - the input color
+     * @param opacity - the opacity to set
+     * @return the output color
      */
-    public static Color setOpacity(Color opaque, double opacity) {
-    	return opaque.deriveColor(0, 1, 1, opacity);
+    public static Color setOpacity(Color color, double opacity) {
+		double red   = opacity * color.getRed();
+		double green = opacity * color.getGreen();
+		double blue  = opacity * color.getBlue();
+    	return new Color(red, green, blue, opacity);
+//    	return opaque.deriveColor(0, 1, opacity, opacity);
     }
 }

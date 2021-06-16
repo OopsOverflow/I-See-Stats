@@ -17,7 +17,9 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.SubScene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -49,12 +51,15 @@ public class Controller {
 
     @FXML
     private ColorPicker btnMinColor;
-
     @FXML
     private ColorPicker btnMaxColor;
-    
     @FXML
-    private VBox boxColorScale;
+    private CheckBox btnToggleColorRange;
+    @FXML
+    private Slider sliderColorRangeOpacity;
+
+    @FXML
+    private VBox boxColorRange;
 
 	private Group root3D;
 	private PerspectiveCamera camera;
@@ -145,17 +150,18 @@ public class Controller {
 
         return regions;
     }
-    
-    private void updatePaneColorScale(ArrayList<Color> colors) {
-    	boxColorScale.getChildren().clear();
-    	boxColorScale.toFront();
-    	
-    	double width = boxColorScale.getPrefWidth();
-    	double height = boxColorScale.getPrefHeight() / colors.size();
-    	
+
+    private void updatePaneColorRange(ArrayList<Color> colors) {
+    	boxColorRange.getChildren().clear();
+    	boxColorRange.toFront();
+
+    	double width = boxColorRange.getPrefWidth();
+    	double height = boxColorRange.getPrefHeight() / colors.size();
+
     	for(Color color : colors) {
-    		Rectangle rect = new Rectangle(width, height, color);
-    		boxColorScale.getChildren().add(0, rect);
+    		Color opaque = ColorScale.setOpacity(color, 1.0);
+    		Rectangle rect = new Rectangle(width, height, opaque);
+    		boxColorRange.getChildren().add(0, rect);
     	}
     }
 
@@ -204,18 +210,30 @@ public class Controller {
         SpeciesData data = getInitialSpeciesData();
         model.addSpecies(data);
         currentRegions.getChildren().add(createGeoHashes(data));
-        
+
         // Add color scale widget
-        updatePaneColorScale(model.getColorScale().getColors());
+        updatePaneColorRange(model.getColorScale().getColors());
+        
+        // update model state based on initial button states
+        onColorRangeChanged(); // update opacity
+        onColorRangeToggled(); // update color range widget visibility
+	}
+
+
+	@FXML
+	private void onColorRangeToggled() {
+        boolean state = btnToggleColorRange.isSelected();
+        boxColorRange.setVisible(state);
 	}
 
 	@FXML
 	private void onColorRangeChanged() {
-		Color minColor = ColorScale.setOpacity(btnMinColor.getValue(), 0.5);
-		Color maxColor = ColorScale.setOpacity(btnMaxColor.getValue(), 0.5);
+		double opacity = sliderColorRangeOpacity.getValue();
+		Color minColor = ColorScale.setOpacity(btnMinColor.getValue(), opacity);
+		Color maxColor = ColorScale.setOpacity(btnMaxColor.getValue(), opacity);
 		ColorScale colScale = model.getColorScale();
 		colScale.setInterpolatedColors(minColor, maxColor, colScale.getColorCount());
-		updatePaneColorScale(model.getColorScale().getColors());
+		updatePaneColorRange(model.getColorScale().getColors());
 
 		currentRegions.getChildren().clear();
 
@@ -240,5 +258,7 @@ public class Controller {
         earthPane.getChildren().add(scene);
 
 		createEarthScene();
+		
+		sliderColorRangeOpacity.valueProperty().addListener((_1) -> onColorRangeChanged());
 	}
 }
