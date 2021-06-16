@@ -11,7 +11,7 @@ public class EarthTest extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/gui/gui2D.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/gui/gui.fxml"));
 		Scene scene = new Scene(root);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("tuto ihm");

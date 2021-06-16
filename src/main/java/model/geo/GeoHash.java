@@ -276,4 +276,5 @@ public class GeoHash {
 
 		return new Point2D(lat * 180.0 / Math.PI, lon * 180.0 / Math.PI);
 	}
+
 }
