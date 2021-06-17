@@ -9,11 +9,13 @@ import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
@@ -34,6 +36,7 @@ import model.species.SpeciesData;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,6 +66,16 @@ public class Controller {
     private TextField searchBar;
     @FXML
     private Button btnSearchAdd;
+    @FXML
+    private Slider sliderPrecision;
+    @FXML
+    private DatePicker startDate;
+    @FXML
+    private DatePicker endDate;
+    @FXML
+    private CheckBox btnTimeRestriction;
+    @FXML
+    private VBox boxTimeRestriction;
 
 
     private Group root3D;
@@ -211,6 +224,7 @@ public class Controller {
         // update model state based on initial button states
         onColorRangeChanged(); // update the currently visible regions
         onColorRangeToggled(); // update color range widget visibility
+        onToggleTimeRestriction(); // enable / disable datepickers
     }
 
     private void updatePaneColorRange(ArrayList<Color> colors) {
@@ -269,7 +283,13 @@ public class Controller {
         ParserSettings settings = new ParserSettings();
         Species species = new Species(searchBar.getText());
         settings.species = species;
-        settings.precision = 4;
+        settings.precision = (int)sliderPrecision.getValue();
+        
+        if(btnTimeRestriction.isSelected()) {
+        	settings.startDate = startDate.getValue();
+        	settings.endDate = endDate.getValue();        	
+        }
+        
         SpeciesData data = null;
         
     	try {
@@ -281,7 +301,19 @@ public class Controller {
     	model.getSpecies().add(data);
     	updateAllRegions();
     }
-
+    
+    @FXML
+    public void onToggleTimeRestriction() {
+    	boxTimeRestriction.setDisable(!btnTimeRestriction.isSelected());
+    	
+    	if(btnTimeRestriction.isSelected()) {
+    		if(startDate.getValue() == null)
+    			startDate.setValue(LocalDate.of(1900, 1, 1));
+    		if(endDate.getValue() == null)
+    			endDate.setValue(LocalDate.now());
+    	}
+    }
+    
     @FXML
     public void initialize() {
         model = new Model();
@@ -299,10 +331,6 @@ public class Controller {
         scene.heightProperty().bind(earthPane.heightProperty());
         scene.widthProperty().bind(earthPane.widthProperty());
         createEarthScene();
-
-        // Start with drawn geos
-        sliderColorRangeOpacity.setValue(1);
-        onOpacityChanged();
 
         sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());
     }

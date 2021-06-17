@@ -2,16 +2,17 @@ package model.species;
 
 import model.geo.Region;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class SpeciesData {
     private int precision;
     private Species species;
-    private Date date;
+    private LocalDate date;
     private ArrayList<Region> regions;
 
-    public SpeciesData(int precision, Species species, Date date, ArrayList<Region> regions) {
+    public SpeciesData(int precision, Species species, LocalDate date, ArrayList<Region> regions) {
 		super();
 		this.precision = precision;
 		this.species = species;
@@ -67,7 +68,7 @@ public class SpeciesData {
      *
      * @return date of the measure
      */
-    public Date getDate() {
+    public LocalDate getDate() {
         return date;
     }
 }

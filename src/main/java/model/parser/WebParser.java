@@ -12,7 +12,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.*;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +28,7 @@ public class WebParser extends JasonParser {
 
     private String apiUrl;
     private HttpClient client;
+    DateTimeFormatter formatter; // YYYY-MM-DD
 
     public WebParser(String url) {
         apiUrl = url;
@@ -35,6 +38,8 @@ public class WebParser extends JasonParser {
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .connectTimeout(Duration.ofSeconds(20))
                 .build();
+        
+        formatter = DateTimeFormatter.ISO_LOCAL_DATE;	
     }
 
     public void setApiUrl(String url) {
@@ -69,6 +74,15 @@ public class WebParser extends JasonParser {
 		builder.append(settings.precision);
 		builder.append("?scientificname=");
 		builder.append(settings.species.scientificName);
+		
+		if(settings.startDate != null && settings.endDate != null) {
+			builder.append("&startdate=");
+			builder.append(settings.startDate.format(formatter));
+			builder.append("&enddate=");
+			builder.append(settings.endDate.format(formatter));
+		}
+		
+		System.out.println("uri: " + builder.toString());
 		
 		URI uri;
 		try {
