@@ -10,6 +10,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -53,6 +54,8 @@ public class Controller {
     @FXML
     private Slider sliderColorRangeOpacity;
 
+    // Reaally didn't want to rewrite code for this
+    // I screwed your implementation, sorry not sorry..
     @FXML
     private VBox boxColorRange;
 
@@ -214,7 +217,10 @@ public class Controller {
 
         for (Color color : colors) {
             Rectangle rect = new Rectangle(width, height, color);
-            boxColorRange.getChildren().add(0, rect);
+            // from green -> Red
+            // I could have re-written the code for HBox, but meh.
+            // or rotate +90deg, also meh.
+            boxColorRange.getChildren().add(boxColorRange.getChildren().size(), rect);
         }
     }
 
