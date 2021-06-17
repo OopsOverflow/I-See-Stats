@@ -13,234 +13,170 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
-<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
    <children>
-      <SplitPane fx:id="splitPane" dividerPositions="0.5" prefHeight="701.0" prefWidth="1058.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <SplitPane fx:id="splitPane" dividerPositions="0.6963927855711423" prefHeight="700.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <items>
-             <AnchorPane fx:id="anchorPane" prefHeight="699.0" prefWidth="818.0" SplitPane.resizableWithParent="false">
+             <AnchorPane fx:id="anchorPane" SplitPane.resizableWithParent="false">
                  <children>
                  <!--Resize the pane -->
-                 <Pane fx:id="earthPane" prefHeight="699.0" prefWidth="816.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-36.0" AnchorPane.topAnchor="0.0" SplitPane.resizableWithParent="true" />
-                  <HBox fx:id="boxColorRange" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0" />
+                 <Pane fx:id="earthPane" style="-fx-background-color: green;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-36.0" AnchorPane.topAnchor="0.0" SplitPane.resizableWithParent="true" />
+                  <HBox fx:id="boxColorRange" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" style="-fx-background-color: red;" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0" />
                  </children>
              </AnchorPane>
 
-            <AnchorPane maxWidth="270.0" prefHeight="699.0" prefWidth="250.0">
+            <AnchorPane maxWidth="500.0" minHeight="-Infinity" minWidth="0.0" prefHeight="698.0" prefWidth="355.0">
                <children>
 
-                   <TabPane id="tab" fx:id="tab" maxWidth="250.0" prefHeight="699.0" prefWidth="250.0" side="LEFT" stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                     <TabPane id="tab" fx:id="tab" side="LEFT" stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <tabs>
                             <Tab text="Earth view">
                                 <content>
-                              <VBox id="card" fx:id="card" alignment="CENTER" maxHeight="700.0" maxWidth="250.0" minHeight="699.0" minWidth="250.0" prefHeight="699.0" prefWidth="250.0" spacing="10.0">
+                              <VBox fx:id="card" styleClass="my-tab">
                                  <children>
-                                            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Zoom :">
-                                                <font>
-                                                    <Font name="Calibri" size="15.0" />
-                                                </font>
+                                    <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="Zoom" />
+                                            <Slider showTickLabels="true" showTickMarks="true">
                                        <VBox.margin>
-                                          <Insets bottom="20.0" left="-160.0" />
-                                       </VBox.margin>
-                                            </Text>
-                                            <Slider prefWidth="348.0" showTickLabels="true" showTickMarks="true">
-                                       <VBox.margin>
-                                          <Insets left="20.0" right="20.0" />
+                                          <Insets />
                                        </VBox.margin>
                                     </Slider>
-                                    <Separator prefWidth="200.0">
+                                    <Separator>
                                        <VBox.margin>
-                                          <Insets top="30.0" />
+                                          <Insets />
                                        </VBox.margin>
                                        <padding>
-                                          <Insets bottom="30.0" top="30.0" />
+                                          <Insets bottom="10.0" top="70.0" />
                                        </padding>
                                     </Separator>
-                                    <Label alignment="CENTER" text="View Feature :">
-                                       <VBox.margin>
-                                          <Insets bottom="10.0" left="-140.0" />
-                                       </VBox.margin>
-                                    </Label>
-                                    <CheckBox mnemonicParsing="false" text="Sun">
-                                       <padding>
-                                          <Insets right="120.0" />
-                                       </padding>
-                                    </CheckBox>
-                                    <CheckBox mnemonicParsing="false" text="Histogram">
-                                       <padding>
-                                          <Insets right="85.0" />
-                                       </padding>
-                                    </CheckBox>
+                                    <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="View Features" />
+                                    <CheckBox mnemonicParsing="false" text="Sun" />
+                                    <CheckBox mnemonicParsing="false" text="Histogram" />
                                     <CheckBox fx:id="btnToggleColorRange" mnemonicParsing="false" onAction="#onColorRangeToggled" text="View Color Range">
                                        <VBox.margin>
                                           <Insets right="47.0" />
                                        </VBox.margin>
                                     </CheckBox>
-                                              <HBox alignment="CENTER_RIGHT" prefHeight="31.0" prefWidth="348.0">
-                                                  <children>
-                                                      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Opacity : ">
-                                                          <HBox.margin>
-                                                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                          </HBox.margin>
-                                                      </Text>
-                                                      <Slider fx:id="sliderColorRangeOpacity" blockIncrement="0.01" max="1.0" onDragDetected="#onColorRangeChanged" prefHeight="16.0" prefWidth="209.0" />
-                                                  </children>
-                                                  <padding>
-                                                      <Insets left="10.0" right="10.0" />
-                                                  </padding>
+                                              <HBox alignment="CENTER_RIGHT">
                                        <VBox.margin>
                                           <Insets left="15.0" right="25.0" />
                                        </VBox.margin>
                                               </HBox>
-                                            <Separator prefHeight="11.0" prefWidth="440.0">
+                                    <BorderPane>
+                                       <left>
+                                                      <Text text="Opacity : " BorderPane.alignment="CENTER" />
+                                       </left>
+                                       <right>
+                                                      <Slider fx:id="sliderColorRangeOpacity" blockIncrement="0.01" max="1.0" onDragDetected="#onColorRangeChanged" prefWidth="100.0" BorderPane.alignment="CENTER" />
+                                       </right>
+                                    </BorderPane>
+                                            <Separator>
                                        <padding>
-                                          <Insets bottom="50.0" top="50.0" />
+                                          <Insets bottom="10.0" top="70.0" />
                                        </padding>
                                     </Separator>
-                                            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Color Grade :">
-                                                <font>
-                                                    <Font size="13.0" />
-                                                </font>
-                                       <VBox.margin>
-                                          <Insets left="-140.0" />
-                                       </VBox.margin>
-                                            </Text>
-                                            <HBox alignment="CENTER_LEFT" prefHeight="47.0" prefWidth="234.0">
-                                                <children>
-                                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Min color : ">
-                                                        <HBox.margin>
-                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                        </HBox.margin>
-                                                    </Text>
-                                                    <ColorPicker fx:id="btnMinColor" onAction="#onColorRangeChanged" prefHeight="26.0" prefWidth="80.0">
+                                    <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="Color Grade" />
+                                    <BorderPane>
+                                       <left>
+                                                    <Text text="Min color : " BorderPane.alignment="CENTER" />
+                                       </left>
+                                       <right>
+                                                    <ColorPicker fx:id="btnMinColor" onAction="#onColorRangeChanged" prefWidth="80.0" promptText="Minimum Color" BorderPane.alignment="CENTER">
                                                         <value>
                                                             <Color green="1.0" />
                                                         </value>
                                                     </ColorPicker>
-                                                </children>
-                                                <padding>
-                                                    <Insets bottom="10.0" left="10.0" top="10.0" />
-                                                </padding>
-                                       <VBox.margin>
-                                          <Insets left="21.0" />
-                                       </VBox.margin>
-                                            </HBox>
-                                            <HBox alignment="CENTER_LEFT" prefHeight="31.0" prefWidth="348.0">
-                                                <children>
-                                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Max color : ">
-                                                        <HBox.margin>
-                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                        </HBox.margin>
-                                                    </Text>
-                                                    <ColorPicker fx:id="btnMaxColor" onAction="#onColorRangeChanged" prefHeight="26.0" prefWidth="80.0">
+                                       </right>
+                                    </BorderPane>
+                                    <BorderPane>
+                                       <left>
+                                          <Text text="Max color : " BorderPane.alignment="CENTER" />
+                                       </left>
+                                       <right>
+                                                    <ColorPicker fx:id="btnMaxColor" onAction="#onColorRangeChanged" prefWidth="80.0" promptText="Maximum Color" BorderPane.alignment="CENTER">
                                                         <value>
                                                             <Color red="1.0" />
                                                         </value>
                                                     </ColorPicker>
-                                                </children>
-                                                <padding>
-                                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                                </padding>
-                                       <VBox.margin>
-                                          <Insets left="20.0" />
-                                       </VBox.margin>
-                                            </HBox>
+                                       </right>
+                                    </BorderPane>
                                  </children>
                               </VBox>
                                 </content>
                             </Tab>
                             <Tab text="Search">
                                 <content>
-                              <VBox alignment="CENTER" prefHeight="699.0" prefWidth="241.0" spacing="20.0">
+                              <VBox styleClass="my-tab">
                                  <children>
-                                            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Search : ">
-                                       <font>
-                                          <Font size="14.0" />
-                                       </font>
-                                       <VBox.margin>
-                                          <Insets left="-160.0" />
-                                       </VBox.margin>
-                                            </Text>
-                                            <TextField prefWidth="338.0">
-                                       <VBox.margin>
-                                          <Insets left="20.0" right="20.0" />
-                                       </VBox.margin>
-                                    </TextField>
-                                            <Button mnemonicParsing="false" text="Add">
-                                       <VBox.margin>
-                                          <Insets left="150.0" />
-                                       </VBox.margin>
-                                            </Button>
-                                    <Separator prefWidth="200.0">
-                                       <VBox.margin>
-                                          <Insets bottom="20.0" top="20.0" />
-                                       </VBox.margin>
-                                    </Separator>
-                                            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Precision : ">
-                                                <font>
-                                                    <Font size="14.0" />
-                                                </font>
-                                       <VBox.margin>
-                                          <Insets left="-140.0" />
-                                       </VBox.margin>
-                                            </Text>
-                                            <Slider prefHeight="24.0" prefWidth="348.0" showTickLabels="true" showTickMarks="true">
-                                                <padding>
-                                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                </padding>
-                                       <VBox.margin>
-                                          <Insets left="20.0" right="20.0" />
-                                       </VBox.margin>
-                                            </Slider>
-                                    <Separator prefWidth="200.0">
+                                    <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="Search" />
+                                    <VBox alignment="TOP_RIGHT" spacing="10.0">
+                                       <children>
+                                                  <TextField>
+                                             <VBox.margin>
+                                                <Insets />
+                                             </VBox.margin>
+                                          </TextField>
+                                                  <Button maxWidth="-Infinity" mnemonicParsing="false" text="Add">
+                                             <VBox.margin>
+                                                <Insets />
+                                             </VBox.margin>
+                                                  </Button>
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                       </padding>
+                                    </VBox>
+                                    <Separator>
                                        <VBox.margin>
                                           <Insets bottom="20.0" top="20.0" />
                                        </VBox.margin>
                                     </Separator>
-                                            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Time :">
-                                                <font>
-                                                    <Font size="14.0" />
-                                                </font>
+                                    <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="Precision" />
+                                            <Slider showTickLabels="true" showTickMarks="true">
                                        <VBox.margin>
-                                          <Insets left="-160.0" />
-                                       </VBox.margin>
-                                            </Text>
-                                            <Slider prefWidth="348.0" showTickLabels="true" showTickMarks="true">
-                                                <padding>
-                                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                </padding>
-                                       <VBox.margin>
-                                          <Insets left="15.0" right="15.0" />
+                                          <Insets left="20.0" right="20.0" />
                                        </VBox.margin>
                                             </Slider>
-                                            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="From : 01/01/1970">
+                                    <Separator>
                                        <VBox.margin>
-                                          <Insets top="-20.0" />
+                                          <Insets bottom="20.0" top="20.0" />
                                        </VBox.margin>
-                                            </Text>
-                                            <Slider prefWidth="348.0" showTickLabels="true" showTickMarks="true">
-                                                <padding>
-                                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                </padding>
-                                       <VBox.margin>
-                                          <Insets left="15.0" right="15.0" />
-                                       </VBox.margin>
-                                            </Slider>
-                                            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="To : 16/04/2001">
-                                       <VBox.margin>
-                                          <Insets top="-20.0" />
-                                       </VBox.margin>
-                                            </Text>
+                                    </Separator>
+                                    <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="Time" />
+                                    <VBox spacing="20.0">
+                                       <children>
+                                                  <Slider showTickLabels="true" showTickMarks="true">
+                                             <VBox.margin>
+                                                <Insets />
+                                             </VBox.margin>
+                                                  </Slider>
+                                                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="From : 01/01/1970">
+                                             <VBox.margin>
+                                                <Insets top="-20.0" />
+                                             </VBox.margin>
+                                                  </Text>
+                                                  <Slider prefWidth="348.0" showTickLabels="true" showTickMarks="true">
+                                             <VBox.margin>
+                                                <Insets />
+                                             </VBox.margin>
+                                                  </Slider>
+                                                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="To : 16/04/2001">
+                                             <VBox.margin>
+                                                <Insets top="-20.0" />
+                                             </VBox.margin>
+                                                  </Text>
+                                       </children>
+                                       <padding>
+                                          <Insets top="20.0" />
+                                       </padding>
+                                    </VBox>
                                  </children>
-                                 <padding>
-                                    <Insets left="5.0" right="5.0" />
-                                 </padding>
                               </VBox>
                                 </content>
                             </Tab>
