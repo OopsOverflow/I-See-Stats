@@ -39,6 +39,8 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+import model.Model;
+import model.geo.ColorScale;
 import model.geo.GeoHash;
 import model.geo.Region;
 import model.parser.JasonParser;

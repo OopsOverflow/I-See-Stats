@@ -98,7 +98,7 @@
                                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                         </HBox.margin>
                                                     </Text>
-                                                    <ColorPicker prefHeight="26.0" prefWidth="80.0">
+                                                    <ColorPicker fx:id="btnMinColor" onAction="#onColorRangeChanged" prefHeight="26.0" prefWidth="80.0">
                                                         <value>
                                                             <Color green="1.0" />
                                                         </value>
@@ -118,7 +118,7 @@
                                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                         </HBox.margin>
                                                     </Text>
-                                                    <ColorPicker prefHeight="26.0" prefWidth="80.0">
+                                                    <ColorPicker fx:id="btnMaxColor" onAction="#onColorRangeChanged" prefHeight="26.0" prefWidth="80.0">
                                                         <value>
                                                             <Color red="1.0" />
                                                         </value>

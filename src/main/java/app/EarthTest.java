@@ -11,6 +11,7 @@ public class EarthTest extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
+        // gui2D.fxml is now obsolete!
         Parent root = FXMLLoader.load(getClass().getResource("/gui/gui.fxml"));
 		Scene scene = new Scene(root);
         scene.getStylesheets().add("/gui/style.css");
