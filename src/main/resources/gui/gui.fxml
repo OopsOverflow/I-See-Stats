@@ -117,12 +117,12 @@
                                     <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="Search" />
                                     <VBox alignment="TOP_RIGHT" spacing="10.0">
                                        <children>
-                                                  <TextField>
+                                                  <TextField fx:id="searchBar">
                                              <VBox.margin>
                                                 <Insets />
                                              </VBox.margin>
                                           </TextField>
-                                                  <Button maxWidth="-Infinity" mnemonicParsing="false" text="Add">
+                                                  <Button fx:id="btnSearchAdd" maxWidth="-Infinity" mnemonicParsing="false" onAction="#onSearchAddClicked" text="Add">
                                              <VBox.margin>
                                                 <Insets />
                                              </VBox.margin>

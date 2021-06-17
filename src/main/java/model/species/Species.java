@@ -5,4 +5,8 @@ public class Species {
     public String scientificName;
     public String order;
     public String superclass;
+    
+    public Species(String scientificName) {
+    	this.scientificName = scientificName;
+    }
 }
