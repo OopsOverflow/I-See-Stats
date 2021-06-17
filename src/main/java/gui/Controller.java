@@ -6,9 +6,11 @@ import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import javafx.fxml.FXML;
 import javafx.geometry.Point3D;
 import javafx.scene.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -26,6 +28,7 @@ import model.parser.JasonParser;
 import model.parser.Parser;
 import model.parser.ParserException;
 import model.parser.ParserSettings;
+import model.parser.WebParser;
 import model.species.Species;
 import model.species.SpeciesData;
 
@@ -55,6 +58,11 @@ public class Controller {
 
     @FXML
     private HBox boxColorRange;
+    
+    @FXML
+    private TextField searchBar;
+    @FXML
+    private Button btnSearchAdd;
 
 
     private Group root3D;
@@ -126,9 +134,9 @@ public class Controller {
     private SpeciesData getInitialSpeciesData() {
         Parser parser = new JasonParser();
         ParserSettings settings = new ParserSettings();
-        Species dolphin = new Species();
-        dolphin.name = "Delphinidae";
+        Species dolphin = new Species("Delphinidae");
         settings.species = dolphin;
+        settings.precision = 3;
 
         SpeciesData data = null;
         try {
@@ -223,6 +231,14 @@ public class Controller {
         boolean state = btnToggleColorRange.isSelected();
         boxColorRange.setVisible(state);
     }
+    
+    private void updateAllRegions() {
+        currentRegions.getChildren().clear();
+
+        for (SpeciesData data : model.getSpecies()) {
+            currentRegions.getChildren().add(createGeoHashes(data));
+        }
+    }
 
     @FXML
     private void onColorRangeChanged() {
@@ -232,12 +248,7 @@ public class Controller {
         colScale.setInterpolatedColors(minColor, maxColor, colScale.getColorCount());
 
         updatePaneColorRange(model.getColorScale().getColors());
-
-        currentRegions.getChildren().clear();
-
-        for (SpeciesData data : model.getSpecies()) {
-            currentRegions.getChildren().add(createGeoHashes(data));
-        }
+        updateAllRegions();
     }
 
     private void onOpacityChanged() {
@@ -250,11 +261,31 @@ public class Controller {
             mat.setDiffuseColor(col);
         });
     }
+    
+    @FXML
+    private void onSearchAddClicked() {
+    	model.getSpecies().clear();
+    	
+        ParserSettings settings = new ParserSettings();
+        Species species = new Species(searchBar.getText());
+        settings.species = species;
+        settings.precision = 4;
+        SpeciesData data = null;
+        
+    	try {
+			data = model.getParser().load(settings);
+		} catch (ParserException e) {
+			e.printStackTrace();
+		}
+    	
+    	model.getSpecies().add(data);
+    	updateAllRegions();
+    }
 
     @FXML
     public void initialize() {
         model = new Model();
-        model.addSpecies(getInitialSpeciesData());
+        model.getSpecies().add(getInitialSpeciesData());
 
         root3D = new Group();
         camera = new PerspectiveCamera(true);

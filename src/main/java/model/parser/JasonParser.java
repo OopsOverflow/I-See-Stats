@@ -47,17 +47,17 @@ public class JasonParser implements Parser {
 	@Override
 	public SpeciesData load(ParserSettings settings) throws ParserException {
 		String text = null;
-		String filename = root + settings.species.name + ".json";
+		String filename = root + settings.species.scientificName + ".json";
 
 		try(Reader reader = new FileReader(filename)) {
 			BufferedReader rd = new BufferedReader(reader);
 			text = readAll(rd);
 		}
 		catch(IOException e) {
-			throw new ParserException("JSON file not found or unreadable: " + filename);
+			throw new ParserException("JSON file not found or unreadable: " + filename, e);
 		}
 
-		ArrayList<Region> regions =  loadRegionsFromJSON(new JSONObject(text));
+		ArrayList<Region> regions = loadRegionsFromJSON(new JSONObject(text));
 
 		SpeciesData data = new SpeciesData(
 				settings.precision,
@@ -108,7 +108,7 @@ public class JasonParser implements Parser {
 			}
 		}
 		catch (JSONException e) {
-			throw new ParserException("Malformed JSON file");
+			throw new ParserException("Malformed JSON file", e);
 		}
 
 		return regions;

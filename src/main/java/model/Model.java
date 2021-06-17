@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import model.geo.ColorScale;
 import model.parser.JasonParser;
 import model.parser.Parser;
+import model.parser.WebParser;
 import model.species.SpeciesData;
 
 public class Model {
@@ -19,7 +20,7 @@ public class Model {
         colorScale = new ColorScale(0, 1000, minCol, maxCol, 10);
         colorScale.setInterpolationType(ColorScale.Interpolation.LOGARITHMIC);
         species = new HashSet<SpeciesData>();
-        parser = new JasonParser();
+        parser = new WebParser("https://api.obis.org/v3/");
     }
 
     public ColorScale getColorScale() {
@@ -36,23 +37,5 @@ public class Model {
      */
     public Set<SpeciesData> getSpecies() {
         return species;
-    }
-
-    /**
-     * Add a given species
-     * @param species species to add
-     * @return true if the species have been added
-     */
-    public boolean addSpecies(SpeciesData species){
-        return this.species.add(species);
-    }
-
-    /**
-     * Remove a given species
-     * @param species species to remove
-     * @return true if the species have been removed
-     */
-    public boolean removeSpecies(SpeciesData species){
-        return this.species.remove(species);
     }
 }
