@@ -33,6 +33,10 @@ public class ColorScale {
     public ColorScale(int minRange, int maxRange, Color minColor, Color maxColor, int count) {
         this(minRange, maxRange, interpolateColors(minColor, maxColor, count));
     }
+    
+    public ArrayList<Color> getColors() {
+    	return colors;
+    }
 
     /**
      * Return the color for a given value
@@ -170,11 +174,15 @@ public class ColorScale {
     /**
      * Makes a color with the given opacity.
      * linearly interpolated between 'minColor' and 'maxColor'.
-     * @param minColor - the first color of the range
-     * @param maxColor - the last color of the range
-     * @param count - the total number of colors, including min and max
+     * @param opaque - the input color (opaque)
+     * @param opacity - the opacity to set
+     * @return the output color
      */
     public static Color setOpacity(Color opaque, double opacity) {
-    	return opaque.deriveColor(0, 1, 1, opacity);
+		double red   = opacity * opaque.getRed();
+		double green = opacity * opaque.getGreen();
+		double blue  = opacity * opaque.getBlue();
+    	return new Color(red, green, blue, opacity);
+//    	return opaque.deriveColor(0, 1, opacity, opacity);
     }
 }
