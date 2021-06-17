@@ -1,5 +1,3 @@
-<!-- THIS IS NOW OBSOLETE >
-
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
@@ -14,13 +12,17 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <SplitPane dividerPositions="0.63636363636363" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
   <items>
-    <AnchorPane fx:id="earthPane" maxWidth="1.7976931348623157E308" minHeight="500.0" minWidth="500.0" prefHeight="699.0" prefWidth="615.0" />
+    <AnchorPane fx:id="earthPane" maxWidth="1.7976931348623157E308" minHeight="500.0" minWidth="500.0" prefHeight="699.0" prefWidth="615.0">
+         <children>
+            <VBox fx:id="boxColorRange" layoutX="14.0" layoutY="484.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="50.0" style="-fx-background-color: white;" />
+         </children></AnchorPane>
       <TabPane prefHeight="699.0" prefWidth="449.0" side="LEFT" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Earth view">
@@ -54,7 +56,7 @@
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
                         </CheckBox>
-                        <CheckBox layoutX="10.0" layoutY="194.0" mnemonicParsing="false" text="View color range">
+                        <CheckBox fx:id="btnToggleColorRange" layoutX="10.0" layoutY="194.0" mnemonicParsing="false" onAction="#onColorRangeToggled" text="View color range">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -103,6 +105,22 @@
                                     <Color red="1.0" />
                                  </value>
                               </ColorPicker>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </HBox>
+                        <HBox alignment="CENTER_RIGHT" layoutX="10.0" layoutY="439.0" prefHeight="31.0" prefWidth="348.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Opacity : ">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </Text>
+                              <Slider fx:id="sliderColorRangeOpacity" blockIncrement="0.01" max="1.0" prefHeight="16.0" prefWidth="209.0" value="0.5" />
                            </children>
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
