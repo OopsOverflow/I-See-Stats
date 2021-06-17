@@ -28,7 +28,7 @@
                  <children>
                  <!--Resize the pane -->
                  <Pane fx:id="earthPane" prefHeight="699.0" prefWidth="816.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-36.0" AnchorPane.topAnchor="0.0" SplitPane.resizableWithParent="true" />
-                     <VBox fx:id="boxColorRange" layoutX="14.0" layoutY="484.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="25.0" rotate="-90.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="-40.0" AnchorPane.rightAnchor="90.0" />
+                  <HBox fx:id="boxColorRange" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0" />
                  </children>
              </AnchorPane>
 

@@ -12,7 +12,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
@@ -54,10 +53,8 @@ public class Controller {
     @FXML
     private Slider sliderColorRangeOpacity;
 
-    // Reaally didn't want to rewrite code for this
-    // I screwed your implementation, sorry not sorry..
     @FXML
-    private VBox boxColorRange;
+    private HBox boxColorRange;
 
 
     private Group root3D;
@@ -212,15 +209,12 @@ public class Controller {
         boxColorRange.getChildren().clear();
         boxColorRange.toFront();
 
-        double width = boxColorRange.getPrefWidth();
-        double height = boxColorRange.getPrefHeight() / colors.size();
+        double width = boxColorRange.getPrefWidth() / colors.size();
+        double height = boxColorRange.getPrefHeight();
 
         for (Color color : colors) {
             Rectangle rect = new Rectangle(width, height, color);
-            // from green -> Red
-            // I could have re-written the code for HBox, but meh.
-            // or rotate +90deg, also meh.
-            boxColorRange.getChildren().add(boxColorRange.getChildren().size(), rect);
+            boxColorRange.getChildren().add(rect);
         }
     }
 
