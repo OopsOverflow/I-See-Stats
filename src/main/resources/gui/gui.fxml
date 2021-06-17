@@ -22,20 +22,20 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.Controller">
    <children>
-      <SplitPane fx:id="splitPane" dividerPositions="0.5" prefHeight="701.0" prefWidth="1058.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <SplitPane fx:id="splitPane" dividerPositions="0.6963927855711423" prefHeight="700.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <items>
-             <AnchorPane fx:id="anchorPane" prefHeight="699.0" prefWidth="818.0" SplitPane.resizableWithParent="false">
+             <AnchorPane fx:id="anchorPane" SplitPane.resizableWithParent="false">
                  <children>
                  <!--Resize the pane -->
-                 <Pane fx:id="earthPane" prefHeight="699.0" prefWidth="816.0" style="-fx-background-color: green;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-36.0" AnchorPane.topAnchor="0.0" SplitPane.resizableWithParent="true" />
+                 <Pane fx:id="earthPane" style="-fx-background-color: green;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-36.0" AnchorPane.topAnchor="0.0" SplitPane.resizableWithParent="true" />
                   <HBox fx:id="boxColorRange" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" style="-fx-background-color: red;" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0" />
                  </children>
              </AnchorPane>
 
-            <AnchorPane maxWidth="270.0" prefHeight="699.0" prefWidth="250.0">
+            <AnchorPane maxWidth="500.0" minHeight="-Infinity" minWidth="0.0" prefHeight="698.0" prefWidth="355.0">
                <children>
 
-                   <TabPane id="tab" fx:id="tab" maxWidth="250.0" prefHeight="699.0" prefWidth="250.0" side="LEFT" stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                     <TabPane id="tab" fx:id="tab" side="LEFT" stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <tabs>
                             <Tab text="Earth view">
                                 <content>
