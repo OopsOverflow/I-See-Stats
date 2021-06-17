@@ -1,3 +1,21 @@
+/* WHY THE HELL THIS IS NOT BLOODY WORKINB
+GFDGGFDGFDEGFDSSGFDS r/ihadastroke
+ */
+/* UPDATE: WORKS BETTER NOW, JUST NEED TO CHANGE
+anchorPane dimensions.
+ */
+.split-pane:vertical > * > .split-pane-divider {
+    -fx-border-color:  transparent;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.split-pane *.vertical-grabber {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-shape: " ";
+}
 .tab-pane *.tab-header-area *.tab-header-background {
     -fx-background-color:transparent;
 }

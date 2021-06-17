@@ -13,6 +13,7 @@ public class EarthTest extends Application {
     public void start(Stage primaryStage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/gui/gui.fxml"));
 		Scene scene = new Scene(root);
+        scene.getStylesheets().add("/gui/style.css");
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("tuto ihm");
 		primaryStage.show();

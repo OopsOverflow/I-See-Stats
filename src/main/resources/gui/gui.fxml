@@ -24,9 +24,9 @@
    <children>
       <SplitPane fx:id="splitPane" dividerPositions="0.5" prefHeight="701.0" prefWidth="1058.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <items>
-             <AnchorPane fx:id="anchorPane" SplitPane.resizableWithParent="false">
+             <AnchorPane fx:id="anchorPane" prefHeight="699.0" prefWidth="818.0" SplitPane.resizableWithParent="false">
                  <!--Resize the pane -->
-                 <Pane fx:id="earthPane" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" SplitPane.resizableWithParent="true" />
+                 <Pane fx:id="earthPane" prefHeight="699.0" prefWidth="816.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-36.0" AnchorPane.topAnchor="0.0" SplitPane.resizableWithParent="true" />
              </AnchorPane>
             <AnchorPane maxWidth="270.0" prefHeight="699.0" prefWidth="250.0">
                <children>
