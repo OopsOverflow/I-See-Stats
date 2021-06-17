@@ -275,6 +275,10 @@ public class Controller {
         scene.widthProperty().bind(earthPane.widthProperty());
         createEarthScene();
 
+        // Start with drawn geos
+        sliderColorRangeOpacity.setValue(1);
+        onOpacityChanged();
+
         sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());
     }
 }
