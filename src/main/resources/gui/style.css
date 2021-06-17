@@ -1,0 +1,16 @@
+.tab-pane *.tab-header-area *.tab-header-background {
+    -fx-background-color:transparent;
+}
+.split-pane *.split-pane-divider{
+    -fx-background-color: transparent;
+}
+.tab-pane *.tab-content-area{
+    -fx-background-color: #e8e8e8;
+}
+@font-face {
+    font-family: SourceSansPro;
+    src: url('/gui/SourceSansPro-Bold.ttf');
+}
+.label *.text{
+    -fx-font-family: "SourceSansPro";
+}

@@ -19,10 +19,12 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
@@ -44,10 +46,10 @@ import model.species.Species;
 import model.species.SpeciesData;
 
 public class Controller {
-	
-	@FXML
+
+    @FXML
 	private Pane earthPane;
-	
+
 	private Group root3D;
 	private PerspectiveCamera camera;
 	
@@ -172,13 +174,15 @@ public class Controller {
 	public void initialize() {
 		root3D = new Group();
         camera = new PerspectiveCamera(true);
-        SubScene scene = new SubScene(root3D, 600, 600);
+        SubScene scene = new SubScene(root3D, 500, 600);
+
         
         new CameraManager(camera, earthPane, root3D);
         scene.setCamera(camera);
         scene.setFill(Color.GREY);
         earthPane.getChildren().add(scene);
-		
+        scene.heightProperty().bind(earthPane.heightProperty());
+        scene.widthProperty().bind(earthPane.widthProperty());
 		createEarthScene();
 	}
 }
