@@ -61,7 +61,7 @@ public class JasonParser implements Parser {
 			return res.fireError(parserException);
 		}
 		catch(JSONException e) {
-			ParserException parserException = new ParserException(ParserException.Type.JSON_INVALID, e);
+			ParserException parserException = new ParserException(ParserException.Type.JSON_PARSE_ERROR, e);
 			return res.fireError(parserException);
 		}
 		catch (ParserException e) {
