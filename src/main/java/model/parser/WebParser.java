@@ -1,25 +1,21 @@
 package model.parser;
 
-import model.geo.Region;
-import model.species.Species;
-import model.species.SpeciesData;
-import org.json.*;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.http.*;
-import java.text.SimpleDateFormat;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+
+import org.json.JSONObject;
+
+import model.geo.Region;
+import model.species.Species;
+import model.species.SpeciesData;
 
 
 /**

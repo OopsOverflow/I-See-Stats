@@ -1,10 +1,10 @@
 package model;
 
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
+
 import javafx.scene.paint.Color;
 import model.geo.ColorScale;
-import model.parser.JasonParser;
 import model.parser.Parser;
 import model.parser.WebParser;
 import model.species.SpeciesData;

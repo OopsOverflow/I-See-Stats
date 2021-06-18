@@ -2,8 +2,6 @@ package model.geo;
 
 import java.util.BitSet;
 
-import org.json.JSONArray;
-
 import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 

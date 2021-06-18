@@ -1,13 +1,16 @@
 package gui;
 
-import app.EarthTest;
-import com.interactivemesh.jfx.importer.ImportException;
-import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
+import java.io.InputStream;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
-import javafx.application.Platform;
+import app.EarthTest;
 import javafx.fxml.FXML;
-import javafx.geometry.Point3D;
-import javafx.scene.*;
+import javafx.scene.AmbientLight;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
@@ -19,31 +22,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Material;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.TriangleMesh;
 import model.Model;
 import model.geo.ColorScale;
-import model.geo.GeoHash;
-import model.geo.Region;
 import model.parser.JasonParser;
 import model.parser.Parser;
-import model.parser.ParserException;
-import model.parser.ParserListener;
-import model.parser.ParserQuery;
 import model.parser.ParserSettings;
-import model.parser.WebParser;
 import model.species.Species;
-import model.species.SpeciesData;
-
-import java.io.InputStream;
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Controller {
 
