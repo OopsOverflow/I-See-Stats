@@ -117,13 +117,12 @@ public class Controller {
         double opacity = sliderColorRangeOpacity.getValue();
         earthScene = new EarthScene(model, opacity);
         root3D.getChildren().add(earthScene);
-
-        loadInitialSpeciesData();
         
         // update model state based on initial button states
         onColorRangeChanged(); // update the currently visible regions
         onColorRangeToggled(); // update color range widget visibility
         onToggleTimeRestriction(); // enable / disable datepickers
+        loadInitialSpeciesData();
     }
 
     private void updatePaneColorRange(ArrayList<Color> colors) {
