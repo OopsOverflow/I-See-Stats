@@ -36,6 +36,10 @@ public class GeoHash {
 	 * @see https://en.wikipedia.org/wiki/Geohash#Textual_representation
 	 */
 	public static GeoHash fromString(String str) {
+		if(str.length()<=0) {
+			throw new RuntimeException("invalid string length");
+		}
+
 		GeoHash hash = new GeoHash(str.length());
 		boolean found = false;
 
@@ -52,6 +56,8 @@ public class GeoHash {
 				throw new RuntimeException("invalid geohash character: " + digit);
 			}
 		}
+
+
 
 		return hash;
 	}
@@ -155,17 +161,29 @@ public class GeoHash {
 		double lat = 0;
 		double lon = 0;
 		int bits = precision * 5;
-		double div = 1.0;
+
+		double minLon = -180.0;
+		double maxLon = 180.0;
+		double minLat = -90.0;
+		double maxLat = 90;
 
 		// consume the hash bits into latitude & longitude
-		for(int i = bits - 1; i >= 0; i -= 2) {
-			lon += 180.0 / div * (hash.get(i - 0) ? 1 : 0);
-			if(i - 1 >= 0) lat += 90.0  / div * (hash.get(i - 1) ? 1 : 0);
-			div *= 2.0;
+		for(int i = bits - 1; i >= 2; i -= 2) {//i>=2 because we don't count iteration 0
+			if(hash.get(i - 0)){
+				minLon = lon;
+			}else{
+				maxLon=lon;
+			}
+			lon = (minLon+maxLon)/2.0;
+			if(i - 1 >= 2){
+				if(hash.get(i - 1)){
+					 minLat = lat;
+				}else {
+					maxLat=lat;
+				}
+				lat=(minLat+maxLat)/2.0;
+			}
 		}
-
-		lat -= 90.0;
-		lon -= 180.0;
 
 		return new Point2D(lat, lon);
 	}
@@ -276,5 +294,6 @@ public class GeoHash {
 
 		return new Point2D(lat * 180.0 / Math.PI, lon * 180.0 / Math.PI);
 	}
+
 
 }
