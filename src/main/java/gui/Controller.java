@@ -1,11 +1,16 @@
 package gui;
 
+import java.io.InputStream;
+import java.time.LocalDate;
+import java.util.ArrayList;
+
 import app.EarthTest;
-import com.interactivemesh.jfx.importer.ImportException;
-import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import javafx.fxml.FXML;
-import javafx.geometry.Point3D;
-import javafx.scene.*;
+import javafx.scene.AmbientLight;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
@@ -17,35 +22,21 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Material;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.TriangleMesh;
 import model.Model;
 import model.geo.ColorScale;
-import model.geo.GeoHash;
-import model.geo.Region;
 import model.parser.JasonParser;
 import model.parser.Parser;
-import model.parser.ParserException;
 import model.parser.ParserSettings;
-import model.parser.WebParser;
 import model.species.Species;
-import model.species.SpeciesData;
-
-import java.io.InputStream;
-import java.net.URL;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Controller {
 
     private Model model;
+    private EarthScene earthScene;
 
-    private Group currentRegions;
+    private Group root3D;
+    private PerspectiveCamera camera;
 
     @FXML
     private Pane earthPane;
@@ -77,12 +68,6 @@ public class Controller {
     @FXML
     private VBox boxTimeRestriction;
 
-
-    private Group root3D;
-    private PerspectiveCamera camera;
-
-    private Map<Color, Material> materials;
-
     private static Skybox initSkybox(PerspectiveCamera camera) {
         InputStream stream = EarthTest.class.getResourceAsStream("/skybox/py(2).png");
         InputStream stream1 = EarthTest.class.getResourceAsStream("/skybox/ny(2).png");
@@ -99,100 +84,15 @@ public class Controller {
         return new Skybox(imageTop, imageBtm, imageLeft, imageRight, imageFront, imageBack, 2048, camera);
     }
 
-    private MeshView createQuad(Point3D topRight, Point3D bottomRight, Point3D bottomLeft, Point3D topLeft, Material mat) {
-        final float[] points = {
-                (float) topRight.getX(), (float) topRight.getY(), (float) topRight.getZ(),
-                (float) topLeft.getX(), (float) topLeft.getY(), (float) topLeft.getZ(),
-                (float) bottomLeft.getX(), (float) bottomLeft.getY(), (float) bottomLeft.getZ(),
-                (float) bottomRight.getX(), (float) bottomRight.getY(), (float) bottomRight.getZ(),
-        };
-
-        final float[] texCoords = {
-                1, 1,
-                1, 0,
-                0, 1,
-                0, 0,
-        };
-
-        final int[] faces = {
-                0, 1, 1, 0, 2, 2,
-                0, 1, 2, 2, 3, 3
-        };
-
-        TriangleMesh mesh = new TriangleMesh();
-        mesh.getPoints().setAll(points);
-        mesh.getTexCoords().setAll(texCoords);
-        mesh.getFaces().setAll(faces);
-
-        MeshView view = new MeshView(mesh);
-        view.setMaterial(mat);
-        return view;
-    }
-
-    private Group createEarth() {
-        ObjModelImporter objModelImporter = new ObjModelImporter();
-        try {
-            URL modelURL = this.getClass().getResource("/earth/earth.obj");
-            objModelImporter.read(modelURL);
-        } catch (ImportException e) {
-            e.printStackTrace();
-        }
-
-        MeshView[] meshView = objModelImporter.getImport();
-        Group earth = new Group(meshView);
-
-        return earth;
-    }
-
-    private SpeciesData getInitialSpeciesData() {
+    private void loadInitialSpeciesData() {
         Parser parser = new JasonParser();
         ParserSettings settings = new ParserSettings();
         Species dolphin = new Species("Delphinidae");
         settings.species = dolphin;
         settings.precision = 3;
 
-        SpeciesData data = null;
-        try {
-            data = parser.load(settings);
-        } catch (ParserException e) {
-            e.printStackTrace();
-        }
-
-        return data;
-    }
-
-    private Group createGeoHashes(SpeciesData data) {
-        Group regions = new Group();
-        ColorScale colScale = model.getColorScale();
-        double opacity = sliderColorRangeOpacity.getValue();
-        colScale.setRange(data.getMinCount(), data.getMaxCount());
-
-        // this stores the opaque colors of the color scale and associates them
-        // with a material.
-        materials = new HashMap<Color, Material>();
-
-        for (Region region : data.getRegions()) {
-            Color opaque = colScale.getColor(region.getCount());
-            Material mat = materials.get(opaque);
-
-            if (mat == null) {
-                Color color = ColorScale.setOpacity(opaque, opacity);
-                mat = new PhongMaterial(color);
-                materials.put(opaque, mat);
-            }
-
-            GeoHash hash = region.getGeoHash();
-            Point3D[] points = hash.getRectCoords();
-            points[0] = points[0].multiply(1.01);
-            points[1] = points[1].multiply(1.01);
-            points[2] = points[2].multiply(1.01);
-            points[3] = points[3].multiply(1.01);
-
-            MeshView quad = createQuad(points[0], points[1], points[2], points[3], mat);
-            regions.getChildren().add(quad);
-        }
-
-        return regions;
+        parser.load(settings)
+        	.addEventListener(earthScene);
     }
 
     private void createEarthScene() {
@@ -214,13 +114,12 @@ public class Controller {
         root3D.getChildren().add(sky);
 
         // Add earth
-        Group earth = createEarth();
-        root3D.getChildren().add(earth);
+        double opacity = sliderColorRangeOpacity.getValue();
+        earthScene = new EarthScene(model, opacity);
+        root3D.getChildren().add(earthScene);
 
-        // Add regions group
-        currentRegions = new Group();
-        root3D.getChildren().add(currentRegions);
-
+        loadInitialSpeciesData();
+        
         // update model state based on initial button states
         onColorRangeChanged(); // update the currently visible regions
         onColorRangeToggled(); // update color range widget visibility
@@ -245,14 +144,6 @@ public class Controller {
         boolean state = btnToggleColorRange.isSelected();
         boxColorRange.setVisible(state);
     }
-    
-    private void updateAllRegions() {
-        currentRegions.getChildren().clear();
-
-        for (SpeciesData data : model.getSpecies()) {
-            currentRegions.getChildren().add(createGeoHashes(data));
-        }
-    }
 
     @FXML
     private void onColorRangeChanged() {
@@ -262,18 +153,12 @@ public class Controller {
         colScale.setInterpolatedColors(minColor, maxColor, colScale.getColorCount());
 
         updatePaneColorRange(model.getColorScale().getColors());
-        updateAllRegions();
+        earthScene.updateAllRegions();
     }
 
     private void onOpacityChanged() {
         double opacity = sliderColorRangeOpacity.getValue();
-
-        materials.forEach((key, val) -> {
-            PhongMaterial mat = (PhongMaterial) val;
-            Color opaque = key;
-            Color col = ColorScale.setOpacity(opaque, opacity);
-            mat.setDiffuseColor(col);
-        });
+        earthScene.setRegionsOpacity(opacity);
     }
     
     @FXML
@@ -287,19 +172,11 @@ public class Controller {
         
         if(btnTimeRestriction.isSelected()) {
         	settings.startDate = startDate.getValue();
-        	settings.endDate = endDate.getValue();        	
+        	settings.endDate = endDate.getValue();
         }
         
-        SpeciesData data = null;
-        
-    	try {
-			data = model.getParser().load(settings);
-		} catch (ParserException e) {
-			e.printStackTrace();
-		}
-    	
-    	model.getSpecies().add(data);
-    	updateAllRegions();
+        model.getParser().load(settings)
+        	.addEventListener(earthScene);
     }
     
     @FXML
@@ -317,12 +194,9 @@ public class Controller {
     @FXML
     public void initialize() {
         model = new Model();
-        model.getSpecies().add(getInitialSpeciesData());
-
         root3D = new Group();
         camera = new PerspectiveCamera(true);
         SubScene scene = new SubScene(root3D, 500, 600);
-
 
         new CameraManager(camera, earthPane, root3D);
         scene.setCamera(camera);
