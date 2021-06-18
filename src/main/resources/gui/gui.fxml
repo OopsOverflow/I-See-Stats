@@ -58,7 +58,7 @@
                                     </Separator>
                                     <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="View Features" />
                                     <CheckBox mnemonicParsing="false" text="Sun" />
-                                    <CheckBox mnemonicParsing="false" text="Histogram" />
+                                    <CheckBox fx:id="btnToggleHistogramView" mnemonicParsing="false" onAction="#onHistogramViewToggled" selected="true" text="Histogram" />
                                     <CheckBox fx:id="btnToggleColorRange" mnemonicParsing="false" onAction="#onColorRangeToggled" selected="true" text="View Color Range">
                                        <VBox.margin>
                                           <Insets right="47.0" />

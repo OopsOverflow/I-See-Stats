@@ -34,19 +34,20 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
 	private Group regions;
 	private double opacity;
 	private Map<Color, Material> materials;
-	
+    private boolean histogramView;
+
 	/**
 	 * Creates the earth scene.
 	 * @param model - the model
 	 * @param opacity - the geohash regions opacityon the globe, in range [0, 1]
 	 */
-	public EarthScene(Model model, double opacity) {
+	public EarthScene(Model model, double opacity, boolean histogramView) {
 		this.model = model;
 		this.opacity = opacity;
+        this.histogramView = histogramView;
 		
 		this.materials = new HashMap<Color, Material>();
-		
-	    earth = createEarth();
+		earth = createEarth();
 		regions = new Group();
 		getChildren().addAll(earth, regions);
 	}
@@ -108,7 +109,8 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
     private Group createGeoHashes(SpeciesData data) {
         Group regions = new Group();
         ColorScale colScale = model.getColorScale();
-        colScale.setRange(data.getMinCount(), data.getMaxCount());
+        int maxCount = data.getMaxCount();
+        colScale.setRange(data.getMinCount(), maxCount);
 
         // this stores the opaque colors of the color scale and associates them
         // with a material.
@@ -133,6 +135,27 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
 
             MeshView quad = createQuad(points[0], points[1], points[2], points[3], mat);
             regions.getChildren().add(quad);
+
+            if(histogramView){
+
+                Point3D[] point = new Point3D[4];
+                Point3D midPoint = points[0].midpoint(points[2]);
+                float height =region.getCount()/(float)(maxCount);
+
+                point[0] = points[0].add(midPoint.multiply(height));
+                point[1] = points[1].add(midPoint.multiply(height));
+                point[2] = points[2].add(midPoint.multiply(height));
+                point[3] = points[3].add(midPoint.multiply(height));
+
+                MeshView quad2 = createQuad(point[0], point[1], point[2], point[3], mat);
+                MeshView quad3 = createQuad(point[0], points[0], points[1], point[1], mat);
+                MeshView quad4 = createQuad(point[1], points[1], points[2], point[2], mat);
+                MeshView quad5 = createQuad(point[2], points[2], points[3], point[3], mat);
+                MeshView quad6 = createQuad(point[3], points[3], points[0], point[0], mat);
+
+                regions.getChildren().addAll(quad2,quad3,quad4,quad5,quad6);
+            }
+
         }
 
         return regions;
@@ -166,5 +189,10 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
         MeshView view = new MeshView(mesh);
         view.setMaterial(mat);
         return view;
+    }
+
+    public void setHistogramView(boolean histogramView) {
+        this.histogramView = histogramView;
+        updateAllRegions();
     }
 }

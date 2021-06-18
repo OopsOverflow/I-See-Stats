@@ -6,11 +6,7 @@ import java.util.ArrayList;
 
 import app.EarthTest;
 import javafx.fxml.FXML;
-import javafx.scene.AmbientLight;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
@@ -47,6 +43,8 @@ public class Controller {
     private ColorPicker btnMaxColor;
     @FXML
     private CheckBox btnToggleColorRange;
+    @FXML
+    private CheckBox btnToggleHistogramView;
     @FXML
     private Slider sliderColorRangeOpacity;
 
@@ -115,7 +113,7 @@ public class Controller {
 
         // Add earth
         double opacity = sliderColorRangeOpacity.getValue();
-        earthScene = new EarthScene(model, opacity);
+        earthScene = new EarthScene(model, opacity, btnToggleHistogramView.isSelected());
         root3D.getChildren().add(earthScene);
 
         loadInitialSpeciesData();
@@ -143,6 +141,11 @@ public class Controller {
     private void onColorRangeToggled() {
         boolean state = btnToggleColorRange.isSelected();
         boxColorRange.setVisible(state);
+    }
+
+    @FXML
+    private void onHistogramViewToggled() {
+        earthScene.setHistogramView(btnToggleHistogramView.isSelected());
     }
 
     @FXML
@@ -196,7 +199,7 @@ public class Controller {
         model = new Model();
         root3D = new Group();
         camera = new PerspectiveCamera(true);
-        SubScene scene = new SubScene(root3D, 500, 600);
+        SubScene scene = new SubScene(root3D, 500, 600, true, SceneAntialiasing.BALANCED);
 
         new CameraManager(camera, earthPane, root3D);
         scene.setCamera(camera);
