@@ -238,8 +238,8 @@ public class GeoHash {
 
 		int latDivisions = (int)Math.floor(precision * 5.0 / 2.0);
 		int lonDivisions = (int)Math.ceil(precision * 5.0 / 2.0);
-		double lonError = 360.0 / Math.pow(2, lonDivisions);
-		double latError = 180.0 / Math.pow(2, latDivisions);
+		double lonError = 360.0 / Math.pow(2, lonDivisions-1);
+		double latError = 180.0 / Math.pow(2, latDivisions-1);
 
 		Point3D[] points = {
 				latLonToCoords(new Point2D( // top right
