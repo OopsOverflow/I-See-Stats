@@ -48,8 +48,10 @@ import java.util.Map;
 public class Controller {
 
     private Model model;
+    private EarthScene earthScene;
 
-    private Group currentRegions;
+    private Group root3D;
+    private PerspectiveCamera camera;
 
     @FXML
     private Pane earthPane;
@@ -81,34 +83,6 @@ public class Controller {
     @FXML
     private VBox boxTimeRestriction;
 
-
-    private Group root3D;
-    private PerspectiveCamera camera;
-
-    private Map<Color, Material> materials;
-    
-    private class DataLoadedListener implements ParserListener<SpeciesData> {
-
-		@Override
-		public void onSuccess(SpeciesData result) {
-			model.getSpecies().add(result);
-			
-			// Platform.runLater allows executing code on the ui thread.
-			// onSuccess may be called asynchronously on a thread, and javafx
-			// is not thread-safe.
-			Platform.runLater(() ->  {
-				currentRegions.getChildren().add(createGeoHashes(result));				
-			});
-		}
-
-		@Override
-		public void onError(ParserException e) {
-			e.printStackTrace(); // TODO: give feedback to user
-		}
-    }
-    
-    private DataLoadedListener dataLoadedListener;
-
     private static Skybox initSkybox(PerspectiveCamera camera) {
         InputStream stream = EarthTest.class.getResourceAsStream("/skybox/py(2).png");
         InputStream stream1 = EarthTest.class.getResourceAsStream("/skybox/ny(2).png");
@@ -125,51 +99,6 @@ public class Controller {
         return new Skybox(imageTop, imageBtm, imageLeft, imageRight, imageFront, imageBack, 2048, camera);
     }
 
-    private MeshView createQuad(Point3D topRight, Point3D bottomRight, Point3D bottomLeft, Point3D topLeft, Material mat) {
-        final float[] points = {
-                (float) topRight.getX(), (float) topRight.getY(), (float) topRight.getZ(),
-                (float) topLeft.getX(), (float) topLeft.getY(), (float) topLeft.getZ(),
-                (float) bottomLeft.getX(), (float) bottomLeft.getY(), (float) bottomLeft.getZ(),
-                (float) bottomRight.getX(), (float) bottomRight.getY(), (float) bottomRight.getZ(),
-        };
-
-        final float[] texCoords = {
-                1, 1,
-                1, 0,
-                0, 1,
-                0, 0,
-        };
-
-        final int[] faces = {
-                0, 1, 1, 0, 2, 2,
-                0, 1, 2, 2, 3, 3
-        };
-
-        TriangleMesh mesh = new TriangleMesh();
-        mesh.getPoints().setAll(points);
-        mesh.getTexCoords().setAll(texCoords);
-        mesh.getFaces().setAll(faces);
-
-        MeshView view = new MeshView(mesh);
-        view.setMaterial(mat);
-        return view;
-    }
-
-    private Group createEarth() {
-        ObjModelImporter objModelImporter = new ObjModelImporter();
-        try {
-            URL modelURL = this.getClass().getResource("/earth/earth.obj");
-            objModelImporter.read(modelURL);
-        } catch (ImportException e) {
-            e.printStackTrace();
-        }
-
-        MeshView[] meshView = objModelImporter.getImport();
-        Group earth = new Group(meshView);
-
-        return earth;
-    }
-
     private void loadInitialSpeciesData() {
         Parser parser = new JasonParser();
         ParserSettings settings = new ParserSettings();
@@ -178,41 +107,7 @@ public class Controller {
         settings.precision = 3;
 
         parser.load(settings)
-        	.addEventListener(dataLoadedListener);
-    }
-
-    private Group createGeoHashes(SpeciesData data) {
-        Group regions = new Group();
-        ColorScale colScale = model.getColorScale();
-        double opacity = sliderColorRangeOpacity.getValue();
-        colScale.setRange(data.getMinCount(), data.getMaxCount());
-
-        // this stores the opaque colors of the color scale and associates them
-        // with a material.
-        materials = new HashMap<Color, Material>();
-
-        for (Region region : data.getRegions()) {
-            Color opaque = colScale.getColor(region.getCount());
-            Material mat = materials.get(opaque);
-
-            if (mat == null) {
-                Color color = ColorScale.setOpacity(opaque, opacity);
-                mat = new PhongMaterial(color);
-                materials.put(opaque, mat);
-            }
-
-            GeoHash hash = region.getGeoHash();
-            Point3D[] points = hash.getRectCoords();
-            points[0] = points[0].multiply(1.01);
-            points[1] = points[1].multiply(1.01);
-            points[2] = points[2].multiply(1.01);
-            points[3] = points[3].multiply(1.01);
-
-            MeshView quad = createQuad(points[0], points[1], points[2], points[3], mat);
-            regions.getChildren().add(quad);
-        }
-
-        return regions;
+        	.addEventListener(earthScene);
     }
 
     private void createEarthScene() {
@@ -234,12 +129,9 @@ public class Controller {
         root3D.getChildren().add(sky);
 
         // Add earth
-        Group earth = createEarth();
-        root3D.getChildren().add(earth);
-
-        // Add regions group
-        currentRegions = new Group();
-        root3D.getChildren().add(currentRegions);
+        double opacity = sliderColorRangeOpacity.getValue();
+        earthScene = new EarthScene(model, opacity);
+        root3D.getChildren().add(earthScene);
 
         loadInitialSpeciesData();
         
@@ -267,14 +159,6 @@ public class Controller {
         boolean state = btnToggleColorRange.isSelected();
         boxColorRange.setVisible(state);
     }
-    
-    private void updateAllRegions() {
-        currentRegions.getChildren().clear();
-
-        for (SpeciesData data : model.getSpecies()) {
-            currentRegions.getChildren().add(createGeoHashes(data));
-        }
-    }
 
     @FXML
     private void onColorRangeChanged() {
@@ -284,24 +168,17 @@ public class Controller {
         colScale.setInterpolatedColors(minColor, maxColor, colScale.getColorCount());
 
         updatePaneColorRange(model.getColorScale().getColors());
-        updateAllRegions();
+        earthScene.updateAllRegions();
     }
 
     private void onOpacityChanged() {
         double opacity = sliderColorRangeOpacity.getValue();
-
-        materials.forEach((key, val) -> {
-            PhongMaterial mat = (PhongMaterial) val;
-            Color opaque = key;
-            Color col = ColorScale.setOpacity(opaque, opacity);
-            mat.setDiffuseColor(col);
-        });
+        earthScene.setRegionsOpacity(opacity);
     }
     
     @FXML
     private void onSearchAddClicked() {
     	model.getSpecies().clear();
-    	currentRegions.getChildren().clear();
     	
         ParserSettings settings = new ParserSettings();
         Species species = new Species(searchBar.getText());
@@ -314,7 +191,7 @@ public class Controller {
         }
         
         model.getParser().load(settings)
-        	.addEventListener(dataLoadedListener);
+        	.addEventListener(earthScene);
     }
     
     @FXML
@@ -332,9 +209,6 @@ public class Controller {
     @FXML
     public void initialize() {
         model = new Model();
-        dataLoadedListener = new DataLoadedListener();
-        materials = new HashMap<Color, Material>();
-
         root3D = new Group();
         camera = new PerspectiveCamera(true);
         SubScene scene = new SubScene(root3D, 500, 600);
