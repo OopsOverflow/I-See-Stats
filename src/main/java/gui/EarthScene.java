@@ -23,6 +23,10 @@ import model.parser.ParserException;
 import model.parser.ParserListener;
 import model.species.SpeciesData;
 
+/**
+ * The earth scene creates a 3D globe with geohash regions shown on top.
+ */
+
 public class EarthScene extends Group implements ParserListener<SpeciesData> {
 	
 	private Model model;
@@ -31,6 +35,11 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
 	private double opacity;
 	private Map<Color, Material> materials;
 	
+	/**
+	 * Creates the earth scene.
+	 * @param model - the model
+	 * @param opacity - the geohash regions opacityon the globe, in range [0, 1]
+	 */
 	public EarthScene(Model model, double opacity) {
 		this.model = model;
 		this.opacity = opacity;
@@ -42,6 +51,10 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
 		getChildren().addAll(earth, regions);
 	}
 	
+	/**
+	 * Changes the opacity of the the regions (geohash squares).
+	 * @param opacity - the regions opacity in range [0, 1]
+	 */
 	public void setRegionsOpacity(double opacity) {
         materials.forEach((key, val) -> {
             PhongMaterial mat = (PhongMaterial) val;
@@ -51,6 +64,9 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
         });
 	}
 	
+	/**
+	 * Updates the visible data on the globe according to the model state.
+	 */
     public void updateAllRegions() {
         regions.getChildren().clear();
 
@@ -73,7 +89,7 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
 	public void onError(ParserException e) {
 		e.printStackTrace(); // TODO: give feedback to user
 	}
-	
+
     private Group createEarth() {
         ObjModelImporter objModelImporter = new ObjModelImporter();
         try {

@@ -2,6 +2,11 @@ package model.parser;
 
 import java.util.ArrayList;
 
+/**
+ * A asynchronous wrapper around {@link Parser} queries.
+ *
+ * @param <T> - the type of the async result
+ */
 public class ParserQuery<T> {
 	
 	private ArrayList<ParserListener<T>> listeners;
@@ -12,6 +17,11 @@ public class ParserQuery<T> {
 		listeners = new ArrayList<ParserListener<T>>();
 	}
 	
+	/**
+	 * Adds an event listener called in case of success / error.
+	 * If the query was already resolved, the listener will be fired immediatly.
+	 * @param listener - the success / error event listener
+	 */
 	public void addEventListener(ParserListener<T> listener) {
 		listeners.add(listener);
 		if(res != null) listener.onSuccess(res);

@@ -1,8 +1,16 @@
 package model.parser;
 
+
+/**
+ * An exception thrown by {@link Parser} methods.
+ */
+
 public class ParserException extends Exception {
 	private static final long serialVersionUID = 2804740549723047963L;
 	
+	/**
+	 * The type of parser exception.
+	 */
 	public enum Type {
 		FILE_NOT_FOUND,
 		JSON_MALFORMED,
@@ -22,6 +30,9 @@ public class ParserException extends Exception {
 		this.type = type;
 	}
 	
+	/**
+	 * Gets the String message associated with the parser {@link ParserException#Type type}.
+	 */
 	private static String getMessage(Type type) {
 		String str;
 		
@@ -39,6 +50,9 @@ public class ParserException extends Exception {
 		return str;
 	}
 	
+	/**
+	 * Gets the exception {@link ParserException#Type type}.
+	 */
 	public Type getType() {
 		return type;
 	}
