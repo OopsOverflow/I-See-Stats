@@ -3,6 +3,8 @@ package gui;
 import app.EarthTest;
 import com.interactivemesh.jfx.importer.ImportException;
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
+
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Point3D;
 import javafx.scene.*;
@@ -29,6 +31,8 @@ import model.geo.Region;
 import model.parser.JasonParser;
 import model.parser.Parser;
 import model.parser.ParserException;
+import model.parser.ParserListener;
+import model.parser.ParserQuery;
 import model.parser.ParserSettings;
 import model.parser.WebParser;
 import model.species.Species;
@@ -82,6 +86,28 @@ public class Controller {
     private PerspectiveCamera camera;
 
     private Map<Color, Material> materials;
+    
+    private class DataLoadedListener implements ParserListener<SpeciesData> {
+
+		@Override
+		public void onSuccess(SpeciesData result) {
+			model.getSpecies().add(result);
+			
+			// Platform.runLater allows executing code on the ui thread.
+			// onSuccess may be called asynchronously on a thread, and javafx
+			// is not thread-safe.
+			Platform.runLater(() ->  {
+				currentRegions.getChildren().add(createGeoHashes(result));				
+			});
+		}
+
+		@Override
+		public void onError(ParserException e) {
+			e.printStackTrace(); // TODO: give feedback to user
+		}
+    }
+    
+    private DataLoadedListener dataLoadedListener;
 
     private static Skybox initSkybox(PerspectiveCamera camera) {
         InputStream stream = EarthTest.class.getResourceAsStream("/skybox/py(2).png");
@@ -144,21 +170,15 @@ public class Controller {
         return earth;
     }
 
-    private SpeciesData getInitialSpeciesData() {
+    private void loadInitialSpeciesData() {
         Parser parser = new JasonParser();
         ParserSettings settings = new ParserSettings();
         Species dolphin = new Species("Delphinidae");
         settings.species = dolphin;
         settings.precision = 3;
 
-        SpeciesData data = null;
-        try {
-            data = parser.load(settings);
-        } catch (ParserException e) {
-            e.printStackTrace();
-        }
-
-        return data;
+        parser.load(settings)
+        	.addEventListener(dataLoadedListener);
     }
 
     private Group createGeoHashes(SpeciesData data) {
@@ -221,6 +241,8 @@ public class Controller {
         currentRegions = new Group();
         root3D.getChildren().add(currentRegions);
 
+        loadInitialSpeciesData();
+        
         // update model state based on initial button states
         onColorRangeChanged(); // update the currently visible regions
         onColorRangeToggled(); // update color range widget visibility
@@ -279,6 +301,7 @@ public class Controller {
     @FXML
     private void onSearchAddClicked() {
     	model.getSpecies().clear();
+    	currentRegions.getChildren().clear();
     	
         ParserSettings settings = new ParserSettings();
         Species species = new Species(searchBar.getText());
@@ -287,19 +310,11 @@ public class Controller {
         
         if(btnTimeRestriction.isSelected()) {
         	settings.startDate = startDate.getValue();
-        	settings.endDate = endDate.getValue();        	
+        	settings.endDate = endDate.getValue();
         }
         
-        SpeciesData data = null;
-        
-    	try {
-			data = model.getParser().load(settings);
-		} catch (ParserException e) {
-			e.printStackTrace();
-		}
-    	
-    	model.getSpecies().add(data);
-    	updateAllRegions();
+        model.getParser().load(settings)
+        	.addEventListener(dataLoadedListener);
     }
     
     @FXML
@@ -317,12 +332,12 @@ public class Controller {
     @FXML
     public void initialize() {
         model = new Model();
-        model.getSpecies().add(getInitialSpeciesData());
+        dataLoadedListener = new DataLoadedListener();
+        materials = new HashMap<Color, Material>();
 
         root3D = new Group();
         camera = new PerspectiveCamera(true);
         SubScene scene = new SubScene(root3D, 500, 600);
-
 
         new CameraManager(camera, earthPane, root3D);
         scene.setCamera(camera);

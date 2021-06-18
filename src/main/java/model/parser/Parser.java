@@ -8,11 +8,11 @@ import java.util.ArrayList;
 public interface Parser {
 
 
-    public SpeciesData load(ParserSettings settings) throws ParserException;
+    public ParserQuery<SpeciesData> load(ParserSettings settings);
 
-    public ArrayList<String> querySpeciesNames();
+    public ParserQuery<ArrayList<String>> querySpeciesNames();
 
-    public ArrayList<Species> querySpeciesByName(String name);
+    public ParserQuery<Species> querySpeciesByScientificName(String name);
 
 //    public void onDataLoaded(Callback cb);
 }

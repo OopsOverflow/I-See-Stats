@@ -45,19 +45,28 @@ public class JasonParser implements Parser {
 	}
 
 	@Override
-	public SpeciesData load(ParserSettings settings) throws ParserException {
+	public ParserQuery<SpeciesData> load(ParserSettings settings) {
+		ParserQuery<SpeciesData> res = new ParserQuery<SpeciesData>();
 		String text = null;
 		String filename = root + settings.species.scientificName + ".json";
 
+		ArrayList<Region> regions;
 		try(Reader reader = new FileReader(filename)) {
 			BufferedReader rd = new BufferedReader(reader);
 			text = readAll(rd);
-		}
+			regions = loadRegionsFromJSON(new JSONObject(text));
+		} 
 		catch(IOException e) {
-			throw new ParserException("JSON file not found or unreadable: " + filename, e);
+			ParserException parserException = new ParserException(ParserException.Type.FILE_NOT_FOUND, e);
+			return res.fireError(parserException);
 		}
-
-		ArrayList<Region> regions = loadRegionsFromJSON(new JSONObject(text));
+		catch(JSONException e) {
+			ParserException parserException = new ParserException(ParserException.Type.JSON_INVALID, e);
+			return res.fireError(parserException);
+		}
+		catch (ParserException e) {
+			return res.fireError(e);
+		}
 
 		SpeciesData data = new SpeciesData(
 				settings.precision,
@@ -65,7 +74,7 @@ public class JasonParser implements Parser {
 				settings.startDate,
 				regions);
 
-		return data;
+		return res.fireSuccess(data);
 	}
 
 	protected ArrayList<Region> loadRegionsFromJSON(JSONObject root) throws ParserException {
@@ -73,7 +82,7 @@ public class JasonParser implements Parser {
 
 		try {
 			if(!root.getString("type").equals("FeatureCollection")) {
-				throw new ParserException("Incompatible JSON file");
+				throw new ParserException(ParserException.Type.JSON_MALFORMED);
 			}
 
 			JSONArray features = root.getJSONArray("features");
@@ -108,21 +117,21 @@ public class JasonParser implements Parser {
 			}
 		}
 		catch (JSONException e) {
-			throw new ParserException("Malformed JSON file", e);
+			throw new ParserException(ParserException.Type.JSON_MALFORMED);
 		}
 
 		return regions;
 	}
 
 	@Override
-	public ArrayList<String> querySpeciesNames() {
+	public ParserQuery<ArrayList<String>> querySpeciesNames() {
 		// TODO Auto-generated method stub
 		// TODO: must list the files in root directory.
 		return null;
 	}
 
 	@Override
-	public ArrayList<Species> querySpeciesByName(String name) {
+	public ParserQuery<Species> querySpeciesByScientificName(String name) {
 		// TODO Auto-generated method stub
 		// TODO: idk
 		return null;
