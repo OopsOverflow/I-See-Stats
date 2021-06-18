@@ -1,11 +1,15 @@
 package gui;
 
+import java.awt.*;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 import app.EarthTest;
+import com.sun.scenario.effect.light.DistantLight;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
@@ -34,6 +38,8 @@ public class Controller {
 
     private Model model;
     private EarthScene earthScene;
+    private PointLight light;
+    private AmbientLight ambientLight;
 
     private Group root3D;
     private PerspectiveCamera camera;
@@ -47,6 +53,8 @@ public class Controller {
     private ColorPicker btnMaxColor;
     @FXML
     private CheckBox btnToggleColorRange;
+    @FXML
+    private CheckBox btnToggleSun;
     @FXML
     private Slider sliderColorRangeOpacity;
 
@@ -97,7 +105,7 @@ public class Controller {
 
     private void createEarthScene() {
         // Add point light
-        PointLight light = new PointLight(Color.WHITE);
+        light = new PointLight(Color.WHITE);
         light.setTranslateX(-180);
         light.setTranslateY(-90);
         light.setTranslateZ(-120);
@@ -105,7 +113,7 @@ public class Controller {
         root3D.getChildren().add(light);
 
         // Add ambient light
-        AmbientLight ambientLight = new AmbientLight(Color.WHITE);
+        ambientLight = new AmbientLight(new Color(0.2,0.2,0.2,1.0));
         ambientLight.getScope().add(root3D);
         root3D.getChildren().add(ambientLight);
 
@@ -143,6 +151,22 @@ public class Controller {
     private void onColorRangeToggled() {
         boolean state = btnToggleColorRange.isSelected();
         boxColorRange.setVisible(state);
+    }
+
+    @FXML
+    private void onSunToggled() {
+        boolean state = btnToggleSun.isSelected();
+
+        light.setLightOn(state);
+        ambientLight.setColor((state ? new Color(0.2,0.2,0.2,1.0): new Color(1.0,1.0,1.0,1.0)));
+
+    }
+
+    public void setLightPos(){
+        light.setTranslateY(camera.getTranslateX());
+        light.setTranslateY(camera.getTranslateX());
+        light.setTranslateZ(camera.getTranslateX());
+
     }
 
     @FXML
@@ -190,13 +214,16 @@ public class Controller {
     			endDate.setValue(LocalDate.now());
     	}
     }
-    
+
+
+
     @FXML
     public void initialize() {
         model = new Model();
         root3D = new Group();
         camera = new PerspectiveCamera(true);
         SubScene scene = new SubScene(root3D, 500, 600);
+
 
         new CameraManager(camera, earthPane, root3D);
         scene.setCamera(camera);
