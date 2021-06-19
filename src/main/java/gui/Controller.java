@@ -6,11 +6,9 @@ import java.util.ArrayList;
 
 import app.EarthTest;
 import javafx.fxml.FXML;
-import javafx.scene.AmbientLight;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.SubScene;
+import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
+import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
@@ -18,13 +16,19 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.PickResult;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Sphere;
+import javafx.scene.transform.Translate;
 import model.Model;
 import model.geo.ColorScale;
+import model.geo.GeoHash;
 import model.parser.JasonParser;
 import model.parser.Parser;
 import model.parser.ParserSettings;
@@ -37,6 +41,8 @@ public class Controller {
 
     private Group root3D;
     private PerspectiveCamera camera;
+
+    private Node selectedHash;
 
     @FXML
     private Pane earthPane;
@@ -124,6 +130,39 @@ public class Controller {
         onColorRangeChanged(); // update the currently visible regions
         onColorRangeToggled(); // update color range widget visibility
         onToggleTimeRestriction(); // enable / disable datepickers
+
+        earthScene.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            PickResult pick = event.getPickResult();
+            selectedHash = pick.getIntersectedNode();
+        });
+
+
+        earthScene.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
+            if(event.getButton() == MouseButton.PRIMARY) {
+                PickResult pick = event.getPickResult();
+                if(selectedHash == pick.getIntersectedNode()) {
+                    Point3D point = pick.getIntersectedPoint();
+                    Point2D latLon = GeoHash.coordsToLatLon(point);
+                    GeoHash selectedArea = GeoHash.fromLatLon(latLon.getX(), latLon.getY(), 3);
+                    if (pick.getIntersectedNode().getParent().getParent() instanceof EarthScene) {
+                        System.out.println();
+                    } else {
+                        //on a geohash
+                        System.out.println(pick.getIntersectedNode().getParent().getParent().getParent().getClass().toString());
+                    }
+                }
+            }
+        });
+    }
+
+    public int multiply(int number1, int number2){
+        int result = 0;
+        for(int i=0; i < number2; i++){
+            for(int j=0; j<number1; j++){
+                result++;
+            }
+        }
+        return result;
     }
 
     private void updatePaneColorRange(ArrayList<Color> colors) {
@@ -197,7 +236,6 @@ public class Controller {
         root3D = new Group();
         camera = new PerspectiveCamera(true);
         SubScene scene = new SubScene(root3D, 500, 600);
-
         new CameraManager(camera, earthPane, root3D);
         scene.setCamera(camera);
         scene.setFill(Color.GREY);
@@ -206,6 +244,9 @@ public class Controller {
         scene.widthProperty().bind(earthPane.widthProperty());
         createEarthScene();
 
+
+
         sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());
+
     }
 }
