@@ -57,8 +57,9 @@ class ColorScaleTest {
         Assertions.assertThrows(Exception.class, () -> {colorScale.setMinColor(Color.LEMONCHIFFON);});
         test.add(Color.LEMONCHIFFON);
         test.add(Color.ROYALBLUE);
-        colorScale.setColors(test);
-        Assertions.assertThrows(Exception.class, () -> {colorScale.setMinColor(Color.RED);});
+        colorScale.setMinColor(Color.RED);
+        Assertions.assertEquals(Color.RED, colorScale.getColors().get(0));
+        Assertions.assertEquals(Color.ROYALBLUE, colorScale.getColors().get(colorScale.getColorCount()-1));
     }
 
     @Test
@@ -67,7 +68,9 @@ class ColorScaleTest {
         test.add(Color.LEMONCHIFFON);
         test.add(Color.ROYALBLUE);
         colorScale.setColors(test);
-        Assertions.assertThrows(Exception.class, () -> {colorScale.setMaxColor(Color.RED);});
+        colorScale.setMaxColor(Color.RED);
+        Assertions.assertEquals(Color.LEMONCHIFFON, colorScale.getColors().get(0));
+        Assertions.assertEquals(Color.RED, colorScale.getColors().get(colorScale.getColorCount()-1));
     }
 
     @Test
