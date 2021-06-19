@@ -203,8 +203,11 @@ public class Controller {
         earthPane.getChildren().add(scene);
         scene.heightProperty().bind(earthPane.heightProperty());
         scene.widthProperty().bind(earthPane.widthProperty());
+        
         createEarthScene();
-
+        
+        new AutocompleteBox(searchBar, model.getParser());
+        
         sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());
     }
 }
