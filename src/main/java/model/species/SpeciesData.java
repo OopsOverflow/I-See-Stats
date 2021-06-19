@@ -18,7 +18,7 @@ public class SpeciesData {
 		this.date = date;
 		this.regions = regions;
 	}
-    
+
     /**
      * Gets the geohash precision of this region
      * @return the geohash precision
@@ -39,7 +39,10 @@ public class SpeciesData {
      *
      * @return minimum count of species in a region
      */
-    public int getMinCount(){
+    public int getMinCount() {
+        if(regions.size() == 0)
+          return 0;
+
         int min = Integer.MAX_VALUE;
         for(Region region : regions){
             if(region.getCount()<min)min=region.getCount();
@@ -51,7 +54,10 @@ public class SpeciesData {
      *
      * @return maximum count of species in a region
      */
-    public int getMaxCount(){
+    public int getMaxCount() {
+        if(regions.size() == 0)
+          return 0;
+          
         int max = Integer.MIN_VALUE;
         for(Region region : regions){
             if(region.getCount()>max)max=region.getCount();

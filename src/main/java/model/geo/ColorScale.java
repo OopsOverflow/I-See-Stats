@@ -8,7 +8,7 @@ public class ColorScale {
     private ArrayList<Color> colors;
     private int minRange;
     private int maxRange;
-    
+
     public enum Interpolation { LINEAR, LOGARITHMIC };
     private Interpolation interpolation;
 
@@ -33,7 +33,7 @@ public class ColorScale {
     public ColorScale(int minRange, int maxRange, Color minColor, Color maxColor, int count) {
         this(minRange, maxRange, interpolateColors(minColor, maxColor, count));
     }
-    
+
     public ArrayList<Color> getColors() {
     	return colors;
     }
@@ -44,9 +44,9 @@ public class ColorScale {
      * @return the color corresponding to the value
      */
     public Color getColor(int value) {
-		
+
     	double val, min, max;
-    	
+
     	if(interpolation == Interpolation.LINEAR) {
             val = value;
             min = minRange;
@@ -72,7 +72,7 @@ public class ColorScale {
      * @throws RuntimeException send exeption in case of error
      */
     public void setRange(int minRange, int maxRange) {
-        if(minRange >= maxRange)
+        if(minRange > maxRange)
             throw new RuntimeException("Ranges are invalid");
         this.minRange = minRange;
         this.maxRange = maxRange;
@@ -104,7 +104,7 @@ public class ColorScale {
         Color last = colors.get(colors.size() - 1);
         setInterpolatedColors(first, last, count);
     }
-    
+
 
     /**
      * Gets the number of colors in the scale.
@@ -113,12 +113,12 @@ public class ColorScale {
     public int getColorCount() {
     	return colors.size();
     }
-    
+
     public void setInterpolationType(Interpolation interpolation) {
     	this.interpolation = interpolation;
-    	
+
     }
-    
+
     public Interpolation getInterpolationType() {
     	return interpolation;
     }
@@ -170,7 +170,7 @@ public class ColorScale {
         colors.add(maxColor);
         return colors;
     }
-    
+
     /**
      * Makes a color with the given opacity.
      * linearly interpolated between 'minColor' and 'maxColor'.
