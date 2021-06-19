@@ -57,7 +57,7 @@
                                        </padding>
                                     </Separator>
                                     <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="View Features" />
-                                    <CheckBox mnemonicParsing="false" text="Sun" />
+                                    <CheckBox fx:id="btnToggleSun" mnemonicParsing="false" onAction="#onSunToggled" selected="true" text="Sun" />
                                     <CheckBox fx:id="btnToggleHistogramView" mnemonicParsing="false" onAction="#onHistogramViewToggled" selected="true" text="Histogram" />
                                     <CheckBox fx:id="btnToggleColorRange" mnemonicParsing="false" onAction="#onColorRangeToggled" selected="true" text="View Color Range">
                                        <VBox.margin>
@@ -74,7 +74,7 @@
                                                       <Text text="Opacity : " BorderPane.alignment="CENTER" />
                                        </left>
                                        <right>
-                                                      <Slider fx:id="sliderColorRangeOpacity" blockIncrement="0.01" max="1.0" onDragDetected="#onColorRangeChanged" prefWidth="100.0" value="0.75" BorderPane.alignment="CENTER" />
+                                                      <Slider fx:id="sliderColorRangeOpacity" blockIncrement="0.01" max="1.0" prefWidth="100.0" value="0.75" BorderPane.alignment="CENTER" />
                                        </right>
                                     </BorderPane>
                                             <Separator>

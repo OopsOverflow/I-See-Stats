@@ -1,12 +1,21 @@
 package gui;
 
+import java.awt.*;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 import app.EarthTest;
+import com.sun.scenario.effect.light.DistantLight;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
-import javafx.scene.*;
+import javafx.geometry.Point3D;
+import javafx.scene.AmbientLight;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.PointLight;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
@@ -28,8 +37,12 @@ import model.species.Species;
 
 public class Controller {
 
+	private final Point3D lightOffset = new Point3D(-10, -10, 0);
+
     private Model model;
     private EarthScene earthScene;
+    private PointLight light;
+    private AmbientLight ambientLight;
 
     private Group root3D;
     private PerspectiveCamera camera;
@@ -46,11 +59,13 @@ public class Controller {
     @FXML
     private CheckBox btnToggleHistogramView;
     @FXML
+    private CheckBox btnToggleSun;
+    @FXML
     private Slider sliderColorRangeOpacity;
 
     @FXML
     private HBox boxColorRange;
-    
+
     @FXML
     private TextField searchBar;
     @FXML
@@ -95,15 +110,19 @@ public class Controller {
 
     private void createEarthScene() {
         // Add point light
-        PointLight light = new PointLight(Color.WHITE);
-        light.setTranslateX(-180);
-        light.setTranslateY(-90);
-        light.setTranslateZ(-120);
+        light = new PointLight(Color.WHITE);
         light.getScope().add(root3D);
         root3D.getChildren().add(light);
 
+        camera.localToSceneTransformProperty().addListener((_1, _2, _3) -> {
+            Point3D point = camera.localToScene(lightOffset);
+            light.setTranslateX(point.getX());
+            light.setTranslateY(point.getY());
+            light.setTranslateZ(point.getZ());
+        });
+
         // Add ambient light
-        AmbientLight ambientLight = new AmbientLight(Color.WHITE);
+        ambientLight = new AmbientLight(Color.WHITE);
         ambientLight.getScope().add(root3D);
         root3D.getChildren().add(ambientLight);
 
@@ -116,12 +135,12 @@ public class Controller {
         earthScene = new EarthScene(model, opacity, btnToggleHistogramView.isSelected());
         root3D.getChildren().add(earthScene);
 
-        loadInitialSpeciesData();
-        
         // update model state based on initial button states
+        onSunToggled(); // update the lights
         onColorRangeChanged(); // update the currently visible regions
         onColorRangeToggled(); // update color range widget visibility
         onToggleTimeRestriction(); // enable / disable datepickers
+        loadInitialSpeciesData();
     }
 
     private void updatePaneColorRange(ArrayList<Color> colors) {
@@ -147,6 +166,22 @@ public class Controller {
     private void onHistogramViewToggled() {
         earthScene.setHistogramView(btnToggleHistogramView.isSelected());
     }
+  
+    @FXML
+    private void onSunToggled() {
+        boolean state = btnToggleSun.isSelected();
+
+        light.setLightOn(state);
+        final double low = 0.5;
+        
+        ambientLight.setColor(state ? Color.hsb(0, 0, low) : Color.WHITE);
+    }
+
+    public void setLightPos(){
+        light.setTranslateY(camera.getTranslateX());
+        light.setTranslateY(camera.getTranslateX());
+        light.setTranslateZ(camera.getTranslateX());
+    }
 
     @FXML
     private void onColorRangeChanged() {
@@ -163,29 +198,29 @@ public class Controller {
         double opacity = sliderColorRangeOpacity.getValue();
         earthScene.setRegionsOpacity(opacity);
     }
-    
+
     @FXML
     private void onSearchAddClicked() {
     	model.getSpecies().clear();
-    	
+
         ParserSettings settings = new ParserSettings();
         Species species = new Species(searchBar.getText());
         settings.species = species;
         settings.precision = (int)sliderPrecision.getValue();
-        
+
         if(btnTimeRestriction.isSelected()) {
         	settings.startDate = startDate.getValue();
         	settings.endDate = endDate.getValue();
         }
-        
+
         model.getParser().load(settings)
         	.addEventListener(earthScene);
     }
-    
+
     @FXML
     public void onToggleTimeRestriction() {
     	boxTimeRestriction.setDisable(!btnTimeRestriction.isSelected());
-    	
+
     	if(btnTimeRestriction.isSelected()) {
     		if(startDate.getValue() == null)
     			startDate.setValue(LocalDate.of(1900, 1, 1));
@@ -193,7 +228,7 @@ public class Controller {
     			endDate.setValue(LocalDate.now());
     	}
     }
-    
+
     @FXML
     public void initialize() {
         model = new Model();
@@ -207,8 +242,11 @@ public class Controller {
         earthPane.getChildren().add(scene);
         scene.heightProperty().bind(earthPane.heightProperty());
         scene.widthProperty().bind(earthPane.widthProperty());
+        
         createEarthScene();
-
+        
+        new AutocompleteBox(searchBar, model.getParser());
+        
         sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());
     }
 }

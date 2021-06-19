@@ -57,6 +57,7 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
 	 * @param opacity - the regions opacity in range [0, 1]
 	 */
 	public void setRegionsOpacity(double opacity) {
+		this.opacity = opacity;
         materials.forEach((key, val) -> {
             PhongMaterial mat = (PhongMaterial) val;
             Color opaque = key;

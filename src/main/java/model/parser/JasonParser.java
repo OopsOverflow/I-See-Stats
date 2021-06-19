@@ -122,6 +122,29 @@ public class JasonParser implements Parser {
 
 		return regions;
 	}
+	
+	protected ArrayList<Species> loadAutocompleteFromJSON(JSONArray root) throws ParserException {
+		ArrayList<Species> res = new ArrayList<Species>();
+		
+		
+		try {
+			for(Object obj : root) {
+				if(!(obj instanceof JSONObject)) continue;
+				JSONObject jsonSpecies = (JSONObject)obj;
+				
+				String scientificName = jsonSpecies.getString("scientificName");
+				Species species = new Species(scientificName);
+				res.add(species);
+//				species.order = jsonSpecies.getString("order");
+//				species.superclass = jsonSpecies.getString("class"); // TODO: what is "superclass" supposed to refer to ?
+			}			
+		}
+		catch (JSONException e) {
+			throw new ParserException(ParserException.Type.JSON_MALFORMED);
+		}
+
+		return res;
+	}
 
 	@Override
 	public ParserQuery<ArrayList<String>> querySpeciesNames() {
@@ -134,6 +157,12 @@ public class JasonParser implements Parser {
 	public ParserQuery<Species> querySpeciesByScientificName(String name) {
 		// TODO Auto-generated method stub
 		// TODO: idk
+		return null;
+	}
+
+	@Override
+	public ParserQuery<ArrayList<Species>> autocompleteSpecies(String partial) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

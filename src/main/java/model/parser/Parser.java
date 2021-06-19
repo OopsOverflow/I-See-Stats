@@ -27,11 +27,18 @@ public interface Parser {
 	 * @return a parser query that yields a list of scientific names when resolved.
 	 */
     public ParserQuery<ArrayList<String>> querySpeciesNames();
-
+    
     /**
      * Gets a {@link Species} from a scientific name.
      * @param name - the scientific name of the species to get
      * @return a parser query that yields a {@link Species} when resolved.
      */
     public ParserQuery<Species> querySpeciesByScientificName(String name);
+    
+    /**
+     * Autocomplete a string in input with the closest matching species
+     * @param partial - the text to autocomplete
+     * @return a parser query that yields a list of scientific names when resolved.
+     */
+    public ParserQuery<ArrayList<Species>> autocompleteSpecies(String partial);
 }
