@@ -132,13 +132,12 @@ public class Controller {
         earthScene = new EarthScene(model, opacity);
         root3D.getChildren().add(earthScene);
 
-        loadInitialSpeciesData();
-
         // update model state based on initial button states
         onSunToggled(); // update the lights
         onColorRangeChanged(); // update the currently visible regions
         onColorRangeToggled(); // update color range widget visibility
         onToggleTimeRestriction(); // enable / disable datepickers
+        loadInitialSpeciesData();
     }
 
     private void updatePaneColorRange(ArrayList<Color> colors) {
@@ -239,8 +238,11 @@ public class Controller {
         earthPane.getChildren().add(scene);
         scene.heightProperty().bind(earthPane.heightProperty());
         scene.widthProperty().bind(earthPane.widthProperty());
+        
         createEarthScene();
-
+        
+        new AutocompleteBox(searchBar, model.getParser());
+        
         sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());
     }
 }
