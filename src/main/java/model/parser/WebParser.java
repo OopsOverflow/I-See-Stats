@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import model.geo.Region;
@@ -112,6 +113,50 @@ public class WebParser extends JasonParser {
 		
 		return res;
 	}
+	
+    @Override
+    public ParserQuery<ArrayList<Species>> autocompleteSpecies(String partial) {
+    	ParserQuery<ArrayList<Species>> res = new ParserQuery<ArrayList<Species>>();
+		StringBuilder builder = new StringBuilder(apiUrl);
+		builder.append("/taxon/complete/verbose/");
+		builder.append(partial);
+		
+		URI uri;
+		
+		try {
+			uri = new URI(builder.toString());
+		} catch (URISyntaxException e) {
+			ParserException parserException = new ParserException(ParserException.Type.FILE_NOT_FOUND, e);
+			return res.fireError(parserException);
+		}
+		
+		makeRequest(uri)
+		.orTimeout(10, TimeUnit.SECONDS)
+		.whenCompleteAsync( (String body, Throwable err) -> {
+			
+			if(err != null) {
+				ParserException parserException = new ParserException(ParserException.Type.NETWORK_ERROR, err);
+				res.fireError(parserException);
+			}
+			
+			else {
+				JSONArray json = new JSONArray(body);
+				
+				ArrayList<Species> species;
+				try {
+					species = loadAutocompleteFromJSON(json);
+				} catch (ParserException e) {
+					res.fireError(e);
+					return;
+				}
+				
+				res.fireSuccess(species);
+			}
+		});
+		
+		return res;
+    }
+
 
 	@Override
 	public ParserQuery<ArrayList<String>> querySpeciesNames() {
