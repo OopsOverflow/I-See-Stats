@@ -9,6 +9,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -29,7 +30,7 @@
                  <children>
                  <!--Resize the pane -->
                  <Pane fx:id="earthPane" style="-fx-background-color: green;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-36.0" AnchorPane.topAnchor="0.0" SplitPane.resizableWithParent="true" />
-                  <HBox fx:id="boxColorRange" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" style="-fx-background-color: red;" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0" />
+                  <AnchorPane fx:id="boxColorRange" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" style="-fx-background-color: red;" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0" />
                  </children>
              </AnchorPane>
 
@@ -105,6 +106,14 @@
                                                             <Color red="1.0" />
                                                         </value>
                                                     </ColorPicker>
+                                       </right>
+                                    </BorderPane>
+                                    <BorderPane>
+                                       <left>
+                                          <Text text="Color count :" BorderPane.alignment="CENTER" />
+                                       </left>
+                                       <right>
+                                          <Spinner fx:id="btnColorCount" editable="true" initialValue="10" max="100" min="2" prefWidth="80.0" BorderPane.alignment="CENTER" />
                                        </right>
                                     </BorderPane>
                                  </children>

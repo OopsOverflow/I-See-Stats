@@ -1,13 +1,10 @@
 package gui;
 
-import java.awt.*;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 import app.EarthTest;
-import com.sun.scenario.effect.light.DistantLight;
-import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
@@ -21,9 +18,10 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -55,6 +53,8 @@ public class Controller {
     @FXML
     private ColorPicker btnMaxColor;
     @FXML
+    private Spinner<Integer> btnColorCount;
+    @FXML
     private CheckBox btnToggleColorRange;
     @FXML
     private CheckBox btnToggleHistogramView;
@@ -64,7 +64,7 @@ public class Controller {
     private Slider sliderColorRangeOpacity;
 
     @FXML
-    private HBox boxColorRange;
+    private AnchorPane boxColorRange;
 
     @FXML
     private TextField searchBar;
@@ -149,9 +149,15 @@ public class Controller {
 
         double width = boxColorRange.getPrefWidth() / colors.size();
         double height = boxColorRange.getPrefHeight();
+        
+        double left = 0;
 
         for (Color color : colors) {
-            Rectangle rect = new Rectangle(width, height, color);
+            // Make rect larger than necessary; It will avoid seeing the box underneath with AA.
+            // It means the last rect will overflow by one pixel, which is not noticeable.
+            Rectangle rect = new Rectangle(width + 1, height, color);
+            AnchorPane.setLeftAnchor(rect, left);
+            left += width;
             boxColorRange.getChildren().add(rect);
         }
     }
@@ -166,14 +172,14 @@ public class Controller {
     private void onHistogramViewToggled() {
         earthScene.setHistogramView(btnToggleHistogramView.isSelected());
     }
-  
+
     @FXML
     private void onSunToggled() {
         boolean state = btnToggleSun.isSelected();
 
         light.setLightOn(state);
         final double low = 0.5;
-        
+
         ambientLight.setColor(state ? Color.hsb(0, 0, low) : Color.WHITE);
     }
 
@@ -188,9 +194,10 @@ public class Controller {
         Color minColor = btnMinColor.getValue();
         Color maxColor = btnMaxColor.getValue();
         ColorScale colScale = model.getColorScale();
-        colScale.setInterpolatedColors(minColor, maxColor, colScale.getColorCount());
+        int count = btnColorCount.getValue();
+        colScale.setInterpolatedColors(minColor, maxColor, count);
 
-        updatePaneColorRange(model.getColorScale().getColors());
+        updatePaneColorRange(colScale.getColors());
         earthScene.updateAllRegions();
     }
 
@@ -242,11 +249,12 @@ public class Controller {
         earthPane.getChildren().add(scene);
         scene.heightProperty().bind(earthPane.heightProperty());
         scene.widthProperty().bind(earthPane.widthProperty());
-        
+
         createEarthScene();
-        
+
         new AutocompleteBox(searchBar, model.getParser());
-        
+
         sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());
+        btnColorCount.valueProperty().addListener((_1) -> onColorRangeChanged());
     }
 }
