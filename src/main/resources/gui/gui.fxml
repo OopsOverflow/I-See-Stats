@@ -44,7 +44,7 @@
                               <VBox fx:id="card" styleClass="my-tab">
                                  <children>
                                     <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="Zoom" />
-                                            <Slider showTickLabels="true" showTickMarks="true">
+                                            <Slider fx:id="sliderZoom" max="-1.12" min="-20.0" value="-10.0">
                                        <VBox.margin>
                                           <Insets />
                                        </VBox.margin>

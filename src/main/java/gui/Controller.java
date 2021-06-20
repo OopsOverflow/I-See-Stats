@@ -49,6 +49,8 @@ public class Controller {
     private Pane earthPane;
 
     @FXML
+    private Slider sliderZoom;
+    @FXML
     private ColorPicker btnMinColor;
     @FXML
     private ColorPicker btnMaxColor;
@@ -251,9 +253,10 @@ public class Controller {
         scene.widthProperty().bind(earthPane.widthProperty());
 
         createEarthScene();
-
+        
+        // some elements of interactivity
         new AutocompleteBox(searchBar, model.getParser());
-
+        camera.translateZProperty().bindBidirectional(sliderZoom.valueProperty());
         sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());
         btnColorCount.valueProperty().addListener((_1) -> onColorRangeChanged());
     }
