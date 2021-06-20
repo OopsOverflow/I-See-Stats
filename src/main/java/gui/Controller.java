@@ -2,7 +2,6 @@ package gui;
 
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 import app.EarthTest;
 import javafx.fxml.FXML;
@@ -26,6 +25,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import model.Model;
 import model.geo.ColorScale;
 import model.parser.JasonParser;
@@ -54,6 +54,10 @@ public class Controller {
     private ColorPicker btnMinColor;
     @FXML
     private ColorPicker btnMaxColor;
+    @FXML
+    private Text textMinColor;
+    @FXML
+    private Text textMaxColor;
     @FXML
     private Spinner<Integer> btnColorCount;
     @FXML
@@ -145,16 +149,19 @@ public class Controller {
         loadInitialSpeciesData();
     }
 
-    private void updatePaneColorRange(ArrayList<Color> colors) {
-        boxColorRange.getChildren().clear();
+    private void updatePaneColorRange(ColorScale colorScale) {
+        boxColorRange.getChildren().retainAll(textMinColor, textMaxColor);
         boxColorRange.toFront();
+        
+        textMinColor.setText(colorScale.getMinRange() + "");
+        textMaxColor.setText(colorScale.getMaxRange() + "");
 
-        double width = boxColorRange.getPrefWidth() / colors.size();
+        double width = boxColorRange.getPrefWidth() / colorScale.getColorCount();
         double height = boxColorRange.getPrefHeight();
         
         double left = 0;
 
-        for (Color color : colors) {
+        for (Color color : colorScale.getColors()) {
             // Make rect larger than necessary; It will avoid seeing the box underneath with AA.
             // It means the last rect will overflow by one pixel, which is not noticeable.
             Rectangle rect = new Rectangle(width + 1, height, color);
@@ -199,7 +206,7 @@ public class Controller {
         int count = btnColorCount.getValue();
         colScale.setInterpolatedColors(minColor, maxColor, count);
 
-        updatePaneColorRange(colScale.getColors());
+//        updatePaneColorRange(colScale);
         earthScene.updateAllRegions();
     }
 
@@ -259,5 +266,6 @@ public class Controller {
         camera.translateZProperty().bindBidirectional(sliderZoom.valueProperty());
         sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());
         btnColorCount.valueProperty().addListener((_1) -> onColorRangeChanged());
+        model.getColorScale().addListener((_1) -> updatePaneColorRange((ColorScale) _1));
     }
 }

@@ -30,7 +30,11 @@
                  <children>
                  <!--Resize the pane -->
                  <Pane fx:id="earthPane" style="-fx-background-color: green;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-36.0" AnchorPane.topAnchor="0.0" SplitPane.resizableWithParent="true" />
-                  <AnchorPane fx:id="boxColorRange" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" style="-fx-background-color: red;" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0" />
+                  <AnchorPane fx:id="boxColorRange" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" style="-fx-background-color: red;" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0">
+                     <children>
+                        <Text fx:id="textMinColor" layoutY="4.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-fill: white;" text="min" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="-20.0" />
+                        <Text fx:id="textMaxColor" layoutX="125.0" layoutY="5.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-fill: white;" text="max" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-20.0" />
+                     </children></AnchorPane>
                  </children>
              </AnchorPane>
 
