@@ -2,8 +2,11 @@ package gui;
 
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.Set;
 
 import app.EarthTest;
+import javafx.application.Platform;
+import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
@@ -32,6 +35,7 @@ import model.parser.JasonParser;
 import model.parser.Parser;
 import model.parser.ParserSettings;
 import model.species.Species;
+import model.species.SpeciesData;
 
 public class Controller {
 
@@ -47,6 +51,9 @@ public class Controller {
 
     @FXML
     private Pane earthPane;
+    
+    @FXML
+    private VBox layersBox;
 
     @FXML
     private Slider sliderZoom;
@@ -170,6 +177,15 @@ public class Controller {
             boxColorRange.getChildren().add(rect);
         }
     }
+    
+    private void updateLayersTab(Set<SpeciesData> species) {
+    	layersBox.getChildren().clear();
+    	
+    	for(SpeciesData data : species) {
+    		LayerInfo info = new LayerInfo(data);
+    		layersBox.getChildren().add(info);
+    	}
+    }
 
     @FXML
     private void onColorRangeToggled() {
@@ -206,7 +222,6 @@ public class Controller {
         int count = btnColorCount.getValue();
         colScale.setInterpolatedColors(minColor, maxColor, count);
 
-//        updatePaneColorRange(colScale);
         earthScene.updateAllRegions();
     }
 
@@ -217,20 +232,25 @@ public class Controller {
 
     @FXML
     private void onSearchAddClicked() {
-    	model.getSpecies().clear();
+    	model.getSpeciesData().clear();
 
-        ParserSettings settings = new ParserSettings();
-        Species species = new Species(searchBar.getText());
-        settings.species = species;
-        settings.precision = (int)sliderPrecision.getValue();
-
-        if(btnTimeRestriction.isSelected()) {
-        	settings.startDate = startDate.getValue();
-        	settings.endDate = endDate.getValue();
+        Species species = model.getSpeciesByName(searchBar.getText());
+        if(species == null) {
+        	// TODO: feedback to user
         }
-
-        model.getParser().load(settings)
-        	.addEventListener(earthScene);
+        else {        	
+        	ParserSettings settings = new ParserSettings();
+        	settings.species = species;
+        	settings.precision = (int)sliderPrecision.getValue();
+        	
+        	if(btnTimeRestriction.isSelected()) {
+        		settings.startDate = startDate.getValue();
+        		settings.endDate = endDate.getValue();
+        	}
+        	
+        	model.getParser().load(settings)
+        		.addEventListener(earthScene);
+        }
     }
 
     @FXML
@@ -262,10 +282,14 @@ public class Controller {
         createEarthScene();
         
         // some elements of interactivity
-        new AutocompleteBox(searchBar, model.getParser());
+        new AutocompleteBox(searchBar, model);
         camera.translateZProperty().bindBidirectional(sliderZoom.valueProperty());
         sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());
         btnColorCount.valueProperty().addListener((_1) -> onColorRangeChanged());
         model.getColorScale().addListener((_1) -> updatePaneColorRange((ColorScale) _1));
+        model.getSpeciesData().addListener((SetChangeListener.Change<? extends SpeciesData> _1) -> {
+        	Platform.runLater(() -> updateLayersTab(model.getSpeciesData()));
+        });
+        updateLayersTab(model.getSpeciesData());
     }
 }

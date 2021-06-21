@@ -135,8 +135,9 @@ public class JasonParser implements Parser {
 				String scientificName = jsonSpecies.getString("scientificName");
 				Species species = new Species(scientificName);
 				res.add(species);
-//				species.order = jsonSpecies.getString("order");
-//				species.superclass = jsonSpecies.getString("class"); // TODO: what is "superclass" supposed to refer to ?
+
+				try { species.order = jsonSpecies.getString("order"); } catch(JSONException e) {}
+				try { species.superclass = jsonSpecies.getString("class"); } catch(JSONException e) {} // TODO: what is "superclass" supposed to refer to ?
 			}			
 		}
 		catch (JSONException e) {

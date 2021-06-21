@@ -11,20 +11,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import model.parser.Parser;
+import model.Model;
 import model.parser.ParserException;
 import model.parser.ParserListener;
 import model.species.Species;
 
 public class AutocompleteBox implements EventHandler<KeyEvent>, ParserListener<ArrayList<Species>> {
-	private Parser parser;
+	private Model model;
 	private TextField searchBar;
 	private boolean requestCompleted;
 	private String lastRequest;
 	private ContextMenu contextMenu;
 
-    public AutocompleteBox(TextField searchBar, Parser parser) {
-    	this.parser = parser;
+    public AutocompleteBox(TextField searchBar, Model model) {
+    	this.model = model;
     	this.searchBar = searchBar;
     	this.requestCompleted = true;
     	
@@ -50,7 +50,7 @@ public class AutocompleteBox implements EventHandler<KeyEvent>, ParserListener<A
 		requestCompleted = false;
 		lastRequest = text;
 		
-		parser.autocompleteSpecies(text)
+		model.getParser().autocompleteSpecies(text)
 			.addEventListener(this);
 	}
 
@@ -62,6 +62,7 @@ public class AutocompleteBox implements EventHandler<KeyEvent>, ParserListener<A
 			
 			// update dropdown
 			for(Species species : result) {
+				model.registerSpecies(species);
 				String text = species.scientificName;
 				Label label = new Label(text);
 				CustomMenuItem item = new CustomMenuItem(label, true);
