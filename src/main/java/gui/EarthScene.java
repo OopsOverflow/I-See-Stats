@@ -108,9 +108,12 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
 			PhongMaterial mat = (PhongMaterial) mesh.getMaterial();
 			try {
 				mat.setBumpMap(new Image("/earth/bump_map.png"));
+				mat.setSpecularMap(new Image("/earth/EarthSpec.png"));
 			} catch (ImportException e) {
 				e.printStackTrace();
 			}
+
+			mat.setSpecularPower(10.0);
 		}
         Group earth = new Group(meshView);
         return earth;
