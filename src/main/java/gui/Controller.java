@@ -22,8 +22,10 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -33,13 +35,14 @@ import model.Model;
 import model.geo.ColorScale;
 import model.parser.JasonParser;
 import model.parser.Parser;
+import model.parser.ParserException;
 import model.parser.ParserSettings;
 import model.species.Species;
 import model.species.SpeciesData;
 
 public class Controller {
 
-	private final Point3D lightOffset = new Point3D(-10, -10, 0);
+	private final Point3D lightOffset = new Point3D(-20, -20, 0);
 
     private Model model;
     private EarthScene earthScene;
@@ -51,7 +54,7 @@ public class Controller {
 
     @FXML
     private Pane earthPane;
-    
+
     @FXML
     private VBox layersBox;
 
@@ -124,6 +127,7 @@ public class Controller {
     private void createEarthScene() {
         // Add point light
         light = new PointLight(Color.WHITE);
+        light.setConstantAttenuation(0.5);
         light.getScope().add(root3D);
         root3D.getChildren().add(light);
 
@@ -159,28 +163,28 @@ public class Controller {
     private void updatePaneColorRange(ColorScale colorScale) {
         boxColorRange.getChildren().retainAll(textMinColor, textMaxColor);
         boxColorRange.toFront();
-        
+
         textMinColor.setText(colorScale.getMinRange() + "");
         textMaxColor.setText(colorScale.getMaxRange() + "");
 
         double width = boxColorRange.getPrefWidth() / colorScale.getColorCount();
         double height = boxColorRange.getPrefHeight();
-        
+
         double left = 0;
 
         for (Color color : colorScale.getColors()) {
             // Make rect larger than necessary; It will avoid seeing the box underneath with AA.
             // It means the last rect will overflow by one pixel, which is not noticeable.
-            Rectangle rect = new Rectangle(width + 1, height, color);
+            Rectangle rect = new Rectangle(width + 1, height + 1, color);
             AnchorPane.setLeftAnchor(rect, left);
             left += width;
             boxColorRange.getChildren().add(rect);
         }
     }
-    
+
     private void updateLayersTab(Set<SpeciesData> species) {
     	layersBox.getChildren().clear();
-    	
+
     	for(SpeciesData data : species) {
     		LayerInfo info = new LayerInfo(data);
     		layersBox.getChildren().add(info);
@@ -203,7 +207,7 @@ public class Controller {
         boolean state = btnToggleSun.isSelected();
 
         light.setLightOn(state);
-        final double low = 0.5;
+        final double low = 0.1;
 
         ambientLight.setColor(state ? Color.hsb(0, 0, low) : Color.WHITE);
     }
@@ -236,18 +240,18 @@ public class Controller {
 
         Species species = model.getSpeciesByName(searchBar.getText());
         if(species == null) {
-        	// TODO: feedback to user
+        	AlertBaker.bakeError(ParserException.Type.JSON_MALFORMED);
         }
-        else {        	
+        else {
         	ParserSettings settings = new ParserSettings();
         	settings.species = species;
         	settings.precision = (int)sliderPrecision.getValue();
-        	
+
         	if(btnTimeRestriction.isSelected()) {
         		settings.startDate = startDate.getValue();
         		settings.endDate = endDate.getValue();
         	}
-        	
+
         	model.getParser().load(settings)
         		.addEventListener(earthScene);
         }
@@ -280,7 +284,7 @@ public class Controller {
         scene.widthProperty().bind(earthPane.widthProperty());
 
         createEarthScene();
-        
+
         // some elements of interactivity
         new AutocompleteBox(searchBar, model);
         camera.translateZProperty().bindBidirectional(sliderZoom.valueProperty());

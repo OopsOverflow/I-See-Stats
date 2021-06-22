@@ -12,6 +12,7 @@ import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import javafx.application.Platform;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
@@ -48,7 +49,6 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
 		this.model = model;
 		this.opacity = opacity;
         this.histogramView = histogramView;
-
 		this.materials = new HashMap<Color, Material>();
 		earth = createEarth();
 		regions = new Group();
@@ -103,10 +103,19 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
         } catch (ImportException e) {
             e.printStackTrace();
         }
-
         MeshView[] meshView = objModelImporter.getImport();
-        Group earth = new Group(meshView);
+        for(MeshView mesh : meshView){
+			PhongMaterial mat = (PhongMaterial) mesh.getMaterial();
+			try {
+				mat.setBumpMap(new Image("/earth/bump_map.png"));
+				mat.setSpecularMap(new Image("/earth/EarthSpec.png"));
+			} catch (ImportException e) {
+				e.printStackTrace();
+			}
 
+			mat.setSpecularPower(10.0);
+		}
+        Group earth = new Group(meshView);
         return earth;
     }
 
@@ -133,17 +142,18 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
 
             GeoHash hash = region.getGeoHash();
             Point3D[] points = hash.getRectCoords();
-            points[0] = points[0].multiply(1.01);
-            points[1] = points[1].multiply(1.01);
-            points[2] = points[2].multiply(1.01);
-            points[3] = points[3].multiply(1.01);
+            double elevation = 1+Math.pow(10.0,-region.getGeoHash().getPrecision());
+            points[0] = points[0].multiply(elevation);
+            points[1] = points[1].multiply(elevation);
+            points[2] = points[2].multiply(elevation);
+            points[3] = points[3].multiply(elevation);
 
             MeshView quad = createQuad(points, mat);
             regions.getChildren().add(quad);
 
             if(histogramView) {
                 Point3D[] elevated = new Point3D[4];
-				float height = region.getCount() / (float)(maxCount);
+				float height =  region.getCount() / (float)(maxCount * region.getGeoHash().getPrecision());
 
 				if(height > histogramThresold) {
 					Point3D offset = points[0].midpoint(points[2]).multiply(height);

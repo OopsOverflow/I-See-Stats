@@ -201,6 +201,8 @@ public class ColorScale implements Observable {
      * @return the output color
      */
     public static Color setOpacity(Color opaque, double opacity) {
+        if(opacity<0.0 || opacity>1.0)
+            throw new RuntimeException("Opacity must be between 0 and 1");
 		double red   = opacity * opaque.getRed();
 		double green = opacity * opaque.getGreen();
 		double blue  = opacity * opaque.getBlue();
