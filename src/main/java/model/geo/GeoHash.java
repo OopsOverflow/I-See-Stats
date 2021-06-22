@@ -251,7 +251,7 @@ public class GeoHash {
 		return new Point3D(
 				-Math.sin(lon_cor) * Math.cos(lat_cor),
 				-Math.sin(lat_cor),
-				Math.cos(lon_cor) * Math.cos(lat_cor));
+				 Math.cos(lon_cor) * Math.cos(lat_cor));
 	}
 
 	/**
@@ -261,18 +261,13 @@ public class GeoHash {
 	 */
 	public static Point2D coordsToLatLon(Point3D p) {
 		double lat, lon;
-
-		lat = Math.asin(-p.getY());
-		lon = Math.asin(-p.getX() * Math.cos(lat));
-
-		lat += latOffset;
-		lon += lonOffset;
-
-		if(p.getZ() < 0) {
-			lon = Math.PI - lon;
-		}
-
-		return new Point2D(lat * 180.0 / Math.PI, lon * 180.0 / Math.PI);
+				
+		lat = Math.PI/2.0 - Math.acos(-p.getY());
+		lon = -Math.atan2(p.getX(), p.getZ());
+		
+		Point2D res = new Point2D(Math.toDegrees(lat) - latOffset, Math.toDegrees(lon) - lonOffset);
+		
+		return res;
 	}
 
 }

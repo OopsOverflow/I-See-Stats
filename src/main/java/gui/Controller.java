@@ -2,15 +2,26 @@ package gui;
 
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Set;
 
 import app.EarthTest;
+import javafx.application.Platform;
+import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
+import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Slider;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -18,6 +29,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import model.Model;
 import model.geo.ColorScale;
 import model.parser.JasonParser;
@@ -25,11 +37,16 @@ import model.parser.Parser;
 import model.parser.ParserException;
 import model.parser.ParserSettings;
 import model.species.Species;
+import model.species.SpeciesData;
 
 public class Controller {
 
+	private final Point3D lightOffset = new Point3D(-10, -10, 0);
+
     private Model model;
     private EarthScene earthScene;
+    private PointLight light;
+    private AmbientLight ambientLight;
 
     private Group root3D;
     private PerspectiveCamera camera;
@@ -38,16 +55,31 @@ public class Controller {
     private Pane earthPane;
 
     @FXML
+    private VBox layersBox;
+
+    @FXML
+    private Slider sliderZoom;
+    @FXML
     private ColorPicker btnMinColor;
     @FXML
     private ColorPicker btnMaxColor;
     @FXML
+    private Text textMinColor;
+    @FXML
+    private Text textMaxColor;
+    @FXML
+    private Spinner<Integer> btnColorCount;
+    @FXML
     private CheckBox btnToggleColorRange;
+    @FXML
+    private CheckBox btnToggleHistogramView;
+    @FXML
+    private CheckBox btnToggleSun;
     @FXML
     private Slider sliderColorRangeOpacity;
 
     @FXML
-    private HBox boxColorRange;
+    private AnchorPane boxColorRange;
 
     @FXML
     private TextField searchBar;
@@ -93,15 +125,19 @@ public class Controller {
 
     private void createEarthScene() {
         // Add point light
-        PointLight light = new PointLight(Color.WHITE);
-        light.setTranslateX(-180);
-        light.setTranslateY(-90);
-        light.setTranslateZ(-120);
+        light = new PointLight(Color.WHITE);
         light.getScope().add(root3D);
         root3D.getChildren().add(light);
 
+        camera.localToSceneTransformProperty().addListener((_1, _2, _3) -> {
+            Point3D point = camera.localToScene(lightOffset);
+            light.setTranslateX(point.getX());
+            light.setTranslateY(point.getY());
+            light.setTranslateZ(point.getZ());
+        });
+
         // Add ambient light
-        AmbientLight ambientLight = new AmbientLight(Color.WHITE);
+        ambientLight = new AmbientLight(Color.WHITE);
         ambientLight.getScope().add(root3D);
         root3D.getChildren().add(ambientLight);
 
@@ -111,34 +147,73 @@ public class Controller {
 
         // Add earth
         double opacity = sliderColorRangeOpacity.getValue();
-        earthScene = new EarthScene(model, opacity);
+        earthScene = new EarthScene(model, opacity, btnToggleHistogramView.isSelected());
         root3D.getChildren().add(earthScene);
 
-        loadInitialSpeciesData();
-
         // update model state based on initial button states
+        onSunToggled(); // update the lights
         onColorRangeChanged(); // update the currently visible regions
         onColorRangeToggled(); // update color range widget visibility
         onToggleTimeRestriction(); // enable / disable datepickers
+        loadInitialSpeciesData();
     }
 
-    private void updatePaneColorRange(ArrayList<Color> colors) {
-        boxColorRange.getChildren().clear();
+    private void updatePaneColorRange(ColorScale colorScale) {
+        boxColorRange.getChildren().retainAll(textMinColor, textMaxColor);
         boxColorRange.toFront();
 
-        double width = boxColorRange.getPrefWidth() / colors.size();
+        textMinColor.setText(colorScale.getMinRange() + "");
+        textMaxColor.setText(colorScale.getMaxRange() + "");
+
+        double width = boxColorRange.getPrefWidth() / colorScale.getColorCount();
         double height = boxColorRange.getPrefHeight();
 
-        for (Color color : colors) {
-            Rectangle rect = new Rectangle(width, height, color);
+        double left = 0;
+
+        for (Color color : colorScale.getColors()) {
+            // Make rect larger than necessary; It will avoid seeing the box underneath with AA.
+            // It means the last rect will overflow by one pixel, which is not noticeable.
+            Rectangle rect = new Rectangle(width + 1, height, color);
+            AnchorPane.setLeftAnchor(rect, left);
+            left += width;
             boxColorRange.getChildren().add(rect);
         }
+    }
+
+    private void updateLayersTab(Set<SpeciesData> species) {
+    	layersBox.getChildren().clear();
+
+    	for(SpeciesData data : species) {
+    		LayerInfo info = new LayerInfo(data);
+    		layersBox.getChildren().add(info);
+    	}
     }
 
     @FXML
     private void onColorRangeToggled() {
         boolean state = btnToggleColorRange.isSelected();
         boxColorRange.setVisible(state);
+    }
+
+    @FXML
+    private void onHistogramViewToggled() {
+        earthScene.setHistogramView(btnToggleHistogramView.isSelected());
+    }
+
+    @FXML
+    private void onSunToggled() {
+        boolean state = btnToggleSun.isSelected();
+
+        light.setLightOn(state);
+        final double low = 0.5;
+
+        ambientLight.setColor(state ? Color.hsb(0, 0, low) : Color.WHITE);
+    }
+
+    public void setLightPos(){
+        light.setTranslateY(camera.getTranslateX());
+        light.setTranslateY(camera.getTranslateX());
+        light.setTranslateZ(camera.getTranslateX());
     }
 
     @FXML
@@ -159,20 +234,25 @@ public class Controller {
 
     @FXML
     private void onSearchAddClicked() {
-    	model.getSpecies().clear();
+    	model.getSpeciesData().clear();
 
-        ParserSettings settings = new ParserSettings();
-        Species species = new Species(searchBar.getText());
-        settings.species = species;
-        settings.precision = (int)sliderPrecision.getValue();
-
-        if(btnTimeRestriction.isSelected()) {
-        	settings.startDate = startDate.getValue();
-        	settings.endDate = endDate.getValue();
+        Species species = model.getSpeciesByName(searchBar.getText());
+        if(species == null) {
+        	// TODO: feedback to user
         }
+        else {
+        	ParserSettings settings = new ParserSettings();
+        	settings.species = species;
+        	settings.precision = (int)sliderPrecision.getValue();
 
-        model.getParser().load(settings)
-        	.addEventListener(earthScene);
+        	if(btnTimeRestriction.isSelected()) {
+        		settings.startDate = startDate.getValue();
+        		settings.endDate = endDate.getValue();
+        	}
+
+        	model.getParser().load(settings)
+        		.addEventListener(earthScene);
+        }
     }
 
     @FXML
@@ -192,7 +272,8 @@ public class Controller {
         model = new Model();
         root3D = new Group();
         camera = new PerspectiveCamera(true);
-        SubScene scene = new SubScene(root3D, 500, 600);
+        SubScene scene = new SubScene(root3D, 500, 600, true, SceneAntialiasing.BALANCED);
+
         AlertBaker.bakeError(ParserException.Type.FILE_NOT_FOUND);
         new CameraManager(camera, earthPane, root3D);
         scene.setCamera(camera);
@@ -200,8 +281,18 @@ public class Controller {
         earthPane.getChildren().add(scene);
         scene.heightProperty().bind(earthPane.heightProperty());
         scene.widthProperty().bind(earthPane.widthProperty());
+
         createEarthScene();
 
+        // some elements of interactivity
+        new AutocompleteBox(searchBar, model);
+        camera.translateZProperty().bindBidirectional(sliderZoom.valueProperty());
         sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());
+        btnColorCount.valueProperty().addListener((_1) -> onColorRangeChanged());
+        model.getColorScale().addListener((_1) -> updatePaneColorRange((ColorScale) _1));
+        model.getSpeciesData().addListener((SetChangeListener.Change<? extends SpeciesData> _1) -> {
+        	Platform.runLater(() -> updateLayersTab(model.getSpeciesData()));
+        });
+        updateLayersTab(model.getSpeciesData());
     }
 }
