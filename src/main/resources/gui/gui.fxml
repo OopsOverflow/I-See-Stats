@@ -42,7 +42,7 @@
             <AnchorPane maxWidth="500.0" minHeight="-Infinity" minWidth="0.0" prefHeight="698.0" prefWidth="355.0">
                <children>
 
-                                     <TabPane id="tab" fx:id="tab" side="LEFT" stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                     <TabPane id="tab" fx:id="tab" side="LEFT" styleClass="tab-header-background" stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <tabs>
                             <Tab text="Display">
                                 <content>

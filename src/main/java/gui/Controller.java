@@ -143,7 +143,7 @@ public class Controller {
 
     private void createEarthScene() {
         // Add point light
-        light = new PointLight(Color.WHITE);
+        light = new PointLight(Color.WHITESMOKE);
         light.setConstantAttenuation(0.5);
         light.getScope().add(root3D);
         root3D.getChildren().add(light);
@@ -278,6 +278,7 @@ public class Controller {
         Species species = model.getSpeciesByName(searchBar.getText());
         if(species == null) {
         	AlertBaker.bakeError(ParserException.Type.JSON_MALFORMED);
+        	searchBar.setText("");
         }
         else {
         	ParserSettings settings = new ParserSettings();

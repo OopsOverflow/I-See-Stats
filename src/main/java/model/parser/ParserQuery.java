@@ -44,7 +44,8 @@ public class ParserQuery<T> {
 			listener.onError(e);
 		}
 		err = e;
-		AlertBaker.bakeError(err.getType());
+		if (err.getType() != ParserException.Type.FILE_NOT_FOUND)
+			AlertBaker.bakeError(err.getType());
 
 		return this;
 	}
