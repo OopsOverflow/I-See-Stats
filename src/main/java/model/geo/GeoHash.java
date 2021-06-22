@@ -168,14 +168,14 @@ public class GeoHash {
 		double maxLat = 90;
 
 		// consume the hash bits into latitude & longitude
-		for(int i = bits - 1; i >= 2; i -= 2) {//i>=2 because we don't count iteration 0
+		for(int i = bits - 1; i >= 0; i -= 2) {
 			if(hash.get(i - 0)){
 				minLon = lon;
 			}else{
 				maxLon=lon;
 			}
 			lon = (minLon+maxLon)/2.0;
-			if(i - 1 >= 2){
+			if(i - 1 >= 0){
 				if(hash.get(i - 1)){
 					 minLat = lat;
 				}else {
@@ -238,8 +238,8 @@ public class GeoHash {
 
 		int latDivisions = (int)Math.floor(precision * 5.0 / 2.0);
 		int lonDivisions = (int)Math.ceil(precision * 5.0 / 2.0);
-		double lonError = 360.0 / Math.pow(2, lonDivisions-1);
-		double latError = 180.0 / Math.pow(2, latDivisions-1);
+		double lonError = 360.0 / Math.pow(2, lonDivisions);
+		double latError = 180.0 / Math.pow(2, latDivisions);
 
 		Point3D[] points = {
 				latLonToCoords(new Point2D( // top right

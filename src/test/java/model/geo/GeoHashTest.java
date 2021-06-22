@@ -41,11 +41,11 @@ class GeoHashTest {
 
     @Test
     void getLatLon() {
-        Assertions.assertEquals(42.583, geoHash.getLatLon().getX(), .001);//real expected value : 42,5830078125
-        Assertions.assertEquals(-5.581, geoHash.getLatLon().getY(), .001);//real expected value : -5,5810546875
+        Assertions.assertEquals(42.605, geoHash.getLatLon().getX(), .001);//real expected value : 42.60498046875
+        Assertions.assertEquals(-5.603, geoHash.getLatLon().getY(), .001);//real expected value : -5.60302734375
         GeoHash geoTest = GeoHash.fromString("ez");
-        Assertions.assertEquals(39.375, geoTest.getLatLon().getX(), .001);
-        Assertions.assertEquals(-11.250, geoTest.getLatLon().getY(), .001);
+        Assertions.assertEquals(42.188, geoTest.getLatLon().getX(), .001);//real expected value : 42.1875
+        Assertions.assertEquals(-5.625, geoTest.getLatLon().getY(), .001);//real expected value : -5.625
     }
 
     @Test
