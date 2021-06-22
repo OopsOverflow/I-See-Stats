@@ -133,10 +133,12 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
 
             GeoHash hash = region.getGeoHash();
             Point3D[] points = hash.getRectCoords();
-            points[0] = points[0].multiply(1.01);
-            points[1] = points[1].multiply(1.01);
-            points[2] = points[2].multiply(1.01);
-            points[3] = points[3].multiply(1.01);
+            double elevation = 1+Math.pow(10.0,-region.getGeoHash().getPrecision());
+            System.out.println(elevation);
+            points[0] = points[0].multiply(elevation);
+            points[1] = points[1].multiply(elevation);
+            points[2] = points[2].multiply(elevation);
+            points[3] = points[3].multiply(elevation);
 
             MeshView quad = createQuad(points, mat);
             regions.getChildren().add(quad);
