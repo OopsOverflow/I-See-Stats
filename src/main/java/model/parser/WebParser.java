@@ -1,7 +1,9 @@
 package model.parser;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -55,6 +57,17 @@ public class WebParser extends JasonParser {
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
         		.thenApply(HttpResponse::body);
     }
+    
+    private String urlencode(String raw) throws ParserException {
+    	String res;
+		try {
+			res = URLEncoder.encode(raw, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new ParserException(ParserException.Type.NETWORK_ERROR, e);
+		}
+		
+		return res;
+    }
 
 	@Override
 	public ParserQuery<SpeciesData> load(ParserSettings settings) {
@@ -63,7 +76,11 @@ public class WebParser extends JasonParser {
 		builder.append("/occurrence/grid/");
 		builder.append(settings.precision);
 		builder.append("?scientificname=");
-		builder.append(settings.species.scientificName);
+		try {
+			builder.append(urlencode(settings.species.scientificName));
+		} catch (ParserException e) {
+			return res.fireError(e);
+		}
 		
 		if(settings.startDate != null && settings.endDate != null) {
 			builder.append("&startdate=");
@@ -119,6 +136,11 @@ public class WebParser extends JasonParser {
     	ParserQuery<ArrayList<Species>> res = new ParserQuery<ArrayList<Species>>();
 		StringBuilder builder = new StringBuilder(apiUrl);
 		builder.append("/taxon/complete/verbose/");
+		try {
+			builder.append(urlencode(partial));
+		} catch (ParserException e) {
+			return res.fireError(e);
+		}
 		builder.append(partial);
 		
 		URI uri;
@@ -156,17 +178,4 @@ public class WebParser extends JasonParser {
 		
 		return res;
     }
-
-
-	@Override
-	public ParserQuery<ArrayList<String>> querySpeciesNames() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ParserQuery<Species> querySpeciesByScientificName(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
