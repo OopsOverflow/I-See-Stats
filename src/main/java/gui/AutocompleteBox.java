@@ -85,7 +85,6 @@ public class AutocompleteBox implements EventHandler<KeyEvent>, ParserListener<A
 	public void onError(ParserException e) {
 		requestCompleted = true;
 		System.out.println("search failed: " + e);
-		searchBar.setText("");
 
 	}
 }
