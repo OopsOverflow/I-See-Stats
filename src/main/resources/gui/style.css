@@ -37,6 +37,27 @@ anchorPane dimensions.
     -fx-background-color: #e8e8e8;
 }
 
+/*.btnPlay {
+    -fx-background-image: url('/img/play.png');
+    -fx-background-size: 30px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: 90%;
+}
+*/
+
+#infoPane{
+    -fx-background-color: rgba(195, 196, 196, 0.73), linear-gradient(rgba(214, 214, 214, 0.73) 50%, rgba(255, 255, 255, 0.64) 100%);
+    -fx-background-radius: 10;
+    -fx-background-insets: 0,1,1;
+    -fx-text-fill: black;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 3, 0.0 , 0 , 1 );
+}
+
+#infoPane:hover{
+    -fx-background-color: linear-gradient(#f1f7f8, #ffffff);
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 10, 0.0 , 0 , 5 );
+}
+
 #btnPlay, #btnPause, #btnStop{
     -fx-padding: 8 8 8 8;
     -fx-background-radius: 8;
@@ -49,7 +70,7 @@ anchorPane dimensions.
 #btnPlay:hover, #btnPause:hover, #btnStop:hover {
     -fx-background-color:
             linear-gradient(from 0% 93% to 0% 100%, #666361 0%, #5e5e5e 100%),
-            radial-gradient(center 50% 50%, radius 100%, #423e3e, #443939);
+            radial-gradient(center 50% 50%, radius 100%, #de1919, #e22828);
 }
 
 #btnPlay:pressed, #btnPause:pressed, #btnStop:pressed {
