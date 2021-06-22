@@ -13,6 +13,8 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -165,35 +167,93 @@
                                     <CheckBox fx:id="btnTimeRestriction" mnemonicParsing="false" onAction="#onToggleTimeRestriction" text="Restrict to time interval" />
                                     <VBox fx:id="boxTimeRestriction" spacing="15.0">
                                        <children>
-                                                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="From :">
-                                             <VBox.margin>
-                                                <Insets />
-                                             </VBox.margin>
-                                                  </Text>
-                                          <DatePicker fx:id="startDate">
-                                             <VBox.margin>
-                                                <Insets top="-10.0" />
-                                             </VBox.margin>
-                                          </DatePicker>
-                                                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="To :">
-                                             <VBox.margin>
-                                                <Insets />
-                                             </VBox.margin>
-                                                  </Text>
-                                          <DatePicker fx:id="endDate" editable="false">
-                                             <VBox.margin>
-                                                <Insets top="-10.0" />
-                                             </VBox.margin>
-                                          </DatePicker>
+                                          <HBox spacing="10.0">
+                                             <children>
+                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="From :">
+                                                   <HBox.margin>
+                                                      <Insets top="3.5" />
+                                                   </HBox.margin>
+                                                        </Text>
+                                                <DatePicker fx:id="startDate" />
+                                                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="To :">
+                                                   <HBox.margin>
+                                                      <Insets top="3.5" />
+                                                   </HBox.margin>
+                                                        </Text>
+                                                <DatePicker fx:id="endDate" editable="false" prefHeight="25.0" />
+                                             </children>
+                                          </HBox>
                                        </children>
                                        <padding>
-                                          <Insets top="20.0" />
+                                          <Insets bottom="10.0" top="10.0" />
                                        </padding>
                                     </VBox>
+                                    <Separator>
+                                       <VBox.margin>
+                                          <Insets bottom="20.0" top="20.0" />
+                                       </VBox.margin>
+                                    </Separator>
                                  </children>
                               </VBox>
                                 </content>
                             </Tab>
+                        <Tab text="Player">
+                           <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="Player" />
+                                          <BorderPane>
+                                             <center>
+                                                <Slider blockIncrement="5.0" showTickLabels="true" showTickMarks="true" BorderPane.alignment="CENTER" />
+                                             </center>
+                                             <bottom>
+                                                <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" BorderPane.alignment="CENTER">
+                                                   <children>
+                                                      <Button fx:id="btnPlay" mnemonicParsing="false">
+                                                         <graphic>
+                                                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="https://img.icons8.com/ios-glyphs/24/000000/play--v1.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic>
+                                                      </Button>
+                                                      <Button fx:id="btnPause" mnemonicParsing="false">
+                                                         <graphic>
+                                                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="https://img.icons8.com/android/24/000000/pause.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic>
+                                                      </Button>
+                                                      <Button fx:id="btnStop" mnemonicParsing="false">
+                                                         <graphic>
+                                                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                               <image>
+                                                                  <Image url="https://img.icons8.com/ios-glyphs/24/000000/stop.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic>
+                                                      </Button>
+                                                   </children>
+                                                   <BorderPane.margin>
+                                                      <Insets top="10.0" />
+                                                   </BorderPane.margin>
+                                                </HBox>
+                                             </bottom>
+                                          </BorderPane>
+                                       </children>
+                                       <padding>
+                                          <Insets left="20.0" right="20.0" />
+                                       </padding>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                           </content>
+                        </Tab>
                         <Tab text="Layers">
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
