@@ -29,13 +29,10 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Sphere;
@@ -63,6 +60,9 @@ public class Controller {
     private Group root3D;
     private PerspectiveCamera camera;
     private Point2D clickPos;
+
+    @FXML
+    private Pane infoPane;
 
     @FXML
     private Pane earthPane;
@@ -171,9 +171,11 @@ public class Controller {
         onToggleTimeRestriction(); // enable / disable datepickers
         loadInitialSpeciesData();
 
-        earthScene.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+        earthPane.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             clickPos = new Point2D(event.getSceneX(),event.getSceneY());
-
+            System.out.println(event.getPickResult().getIntersectedNode());
+            if(!(event.getPickResult().getIntersectedNode() instanceof Pane))
+                infoPane.setVisible(false);
         });
 
 
@@ -185,6 +187,10 @@ public class Controller {
                     Point3D point = pick.getIntersectedPoint();
                     Point2D latLon = GeoHash.coordsToLatLon(point);
                     GeoHash selectedArea = GeoHash.fromLatLon(latLon.getX(), latLon.getY(), 3);
+                    infoPane.setTranslateX(event.getSceneX());
+                    infoPane.setTranslateY(event.getSceneY());
+                    infoPane.toFront();
+                    infoPane.setVisible(true);
                     if (pick.getIntersectedNode().getParent().getParent() instanceof EarthScene) {
                         //on earth
                         System.out.println(pick.getIntersectedNode().getParent().getParent().getClass().toString());
