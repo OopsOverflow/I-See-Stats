@@ -118,12 +118,7 @@ public class WebParser extends JasonParser {
 					return;
 				}
 				
-				SpeciesData data = new SpeciesData(
-						settings.precision,
-						settings.species,
-						settings.startDate,
-						regions);
-				
+				SpeciesData data = new SpeciesData(settings, regions);
 				res.fireSuccess(data);
 			}
 		});
@@ -141,7 +136,6 @@ public class WebParser extends JasonParser {
 		} catch (ParserException e) {
 			return res.fireError(e);
 		}
-		builder.append(partial);
 		
 		URI uri;
 		

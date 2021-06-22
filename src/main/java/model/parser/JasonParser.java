@@ -68,12 +68,7 @@ public class JasonParser extends Parser {
 			return res.fireError(e);
 		}
 
-		SpeciesData data = new SpeciesData(
-				settings.precision,
-				settings.species,
-				settings.startDate,
-				regions);
-
+		SpeciesData data = new SpeciesData(settings, regions);
 		return res.fireSuccess(data);
 	}
 

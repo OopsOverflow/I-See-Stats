@@ -1,21 +1,16 @@
 package model.species;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-
 import model.geo.Region;
+import model.parser.ParserSettings;
 
 public class SpeciesData {
-    private int precision;
-	private Species species;
-    private LocalDate date;
     private ArrayList<Region> regions;
+    private ParserSettings settings;
 
-    public SpeciesData(int precision, Species species, LocalDate date, ArrayList<Region> regions) {
+    public SpeciesData(ParserSettings settings, ArrayList<Region> regions) {
 		super();
-		this.precision = precision;
-		this.species = species;
-		this.date = date;
+		this.settings = settings;
 		this.regions = regions;
 	}
 
@@ -24,7 +19,7 @@ public class SpeciesData {
      * @return the geohash precision
      */
     public int getPrecision() {
-		return precision;
+		return settings.precision;
 	}
 
     /**
@@ -32,7 +27,7 @@ public class SpeciesData {
      * @return the species
      */
 	public Species getSpecies() {
-		return species;
+		return settings.species;
 	}
 
     /**
@@ -69,7 +64,7 @@ public class SpeciesData {
      *
      * @return total count of species in region
      */
-    public int getTotalCount(){
+    public int getTotalCount() {
         int total = 0;
         for(Region region : regions){
             total+=region.getCount();
@@ -84,12 +79,8 @@ public class SpeciesData {
     public ArrayList<Region> getRegions() {
         return regions;
     }
-
-    /**
-     *
-     * @return date of the measure
-     */
-    public LocalDate getDate() {
-        return date;
+    
+    public ParserSettings getParserSettings() {
+    	return settings;
     }
 }

@@ -2,6 +2,7 @@ package model.parser;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import model.species.Species;
@@ -42,14 +43,15 @@ public abstract class Parser {
     	ArrayList<SpeciesData> loadedData = new ArrayList<SpeciesData>();
     	ArrayList<ParserQuery<SpeciesData>> allQueries = new ArrayList<ParserQuery<SpeciesData>>();
     	
-    	Duration delta = Duration.between(settings.startDate, settings.endDate).dividedBy(steps);
-    	LocalDate date = settings.startDate;
+    	Duration delta = Duration.between(settings.startDate.atStartOfDay(), settings.endDate.atStartOfDay()).dividedBy(steps);
+    	LocalDateTime date = settings.startDate.atStartOfDay();
     	LocalDate end = settings.endDate;
 
 		for(int i = 0; i < steps; i++) {
 			date = date.plus(delta);
-			settings.endDate = date;
-			allQueries.add(load(settings));
+			settings.endDate = date.toLocalDate();
+			settings.animStep = i;
+			allQueries.add(load(settings.clone()));
 		}
 		
 		ParserListener<SpeciesData> myListener = new ParserListener<SpeciesData>() {
@@ -57,6 +59,9 @@ public abstract class Parser {
 			public void onSuccess(SpeciesData result) {
 				loadedData.add(result);
 				if(loadedData.size() == allQueries.size()) {
+					loadedData.sort((a, b) -> { 
+						return Integer.compare(a.getParserSettings().animStep, b.getParserSettings().animStep); 
+					});
 					res.fireSuccess(loadedData);
 				}
 			}
