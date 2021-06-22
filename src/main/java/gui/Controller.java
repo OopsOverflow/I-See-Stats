@@ -3,6 +3,8 @@ package gui;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Set;
 
 import app.EarthTest;
 import javafx.application.Platform;
@@ -60,8 +62,7 @@ public class Controller {
 
     private Group root3D;
     private PerspectiveCamera camera;
-
-    private Node selectedHash;
+    private Point2D clickPos;
 
     @FXML
     private Pane earthPane;
@@ -171,23 +172,26 @@ public class Controller {
         loadInitialSpeciesData();
 
         earthScene.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
-            PickResult pick = event.getPickResult();
-            selectedHash = pick.getIntersectedNode();
+            clickPos = new Point2D(event.getSceneX(),event.getSceneY());
+
         });
 
 
         earthScene.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
             if(event.getButton() == MouseButton.PRIMARY) {
-                PickResult pick = event.getPickResult();
-                if(selectedHash == pick.getIntersectedNode()) {
+
+                if(clickPos.getX()==event.getSceneX() && clickPos.getY()==event.getSceneY()) {
+                    PickResult pick = event.getPickResult();
                     Point3D point = pick.getIntersectedPoint();
                     Point2D latLon = GeoHash.coordsToLatLon(point);
                     GeoHash selectedArea = GeoHash.fromLatLon(latLon.getX(), latLon.getY(), 3);
                     if (pick.getIntersectedNode().getParent().getParent() instanceof EarthScene) {
-                        System.out.println();
-                    } else {
+                        //on earth
+                        System.out.println(pick.getIntersectedNode().getParent().getParent().getClass().toString());
+                    }else {
                         //on a geohash
-                        System.out.println(pick.getIntersectedNode().getParent().getParent().getParent().getClass().toString());
+                        System.out.println(pick.getIntersectedNode().getClass().toString());
+
                     }
                 }
             }
