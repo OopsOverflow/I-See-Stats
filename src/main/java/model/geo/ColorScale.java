@@ -1,23 +1,27 @@
 package model.geo;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
-public class ColorScale {
+public class ColorScale implements Observable {
     private ArrayList<Color> colors;
     private int minRange;
     private int maxRange;
-    
+
     public enum Interpolation { LINEAR, LOGARITHMIC };
     private Interpolation interpolation;
 
+    private ArrayList<InvalidationListener> listeners;
 
     public ColorScale(int minRange, int maxRange, ArrayList<Color> colors) {
         this.minRange = minRange;
         this.maxRange = maxRange;
         this.colors = colors;
         this.interpolation = Interpolation.LINEAR;
+        this.listeners = new ArrayList<InvalidationListener>();
     }
 
     /**
@@ -33,7 +37,7 @@ public class ColorScale {
     public ColorScale(int minRange, int maxRange, Color minColor, Color maxColor, int count) {
         this(minRange, maxRange, interpolateColors(minColor, maxColor, count));
     }
-    
+
     public ArrayList<Color> getColors() {
     	return colors;
     }
@@ -44,9 +48,8 @@ public class ColorScale {
      * @return the color corresponding to the value
      */
     public Color getColor(int value) {
-		
     	double val, min, max;
-    	
+
     	if(interpolation == Interpolation.LINEAR) {
             val = value;
             min = minRange;
@@ -72,10 +75,27 @@ public class ColorScale {
      * @throws RuntimeException send exeption in case of error
      */
     public void setRange(int minRange, int maxRange) {
-        if(minRange >= maxRange)
+        if(minRange > maxRange)
             throw new RuntimeException("Ranges are invalid");
         this.minRange = minRange;
         this.maxRange = maxRange;
+        fireInvalidation();
+    }
+    
+    /**
+     * Get the minimum of the range
+     * @return minimum of the range
+     */
+    public int getMinRange() {
+    	return minRange;
+    }
+    
+    /**
+     * Get the maximum of the range
+     * @return maximum of the range
+     */
+    public int getMaxRange() {
+    	return maxRange;
     }
 
     /**
@@ -89,6 +109,7 @@ public class ColorScale {
             throw new RuntimeException("The color scale must contain at least two colors");
 
         this.colors = colors;
+        fireInvalidation();
     }
 
     /**
@@ -104,7 +125,7 @@ public class ColorScale {
         Color last = colors.get(colors.size() - 1);
         setInterpolatedColors(first, last, count);
     }
-    
+
 
     /**
      * Gets the number of colors in the scale.
@@ -113,12 +134,12 @@ public class ColorScale {
     public int getColorCount() {
     	return colors.size();
     }
-    
+
     public void setInterpolationType(Interpolation interpolation) {
     	this.interpolation = interpolation;
-    	
+    	fireInvalidation();
     }
-    
+
     public Interpolation getInterpolationType() {
     	return interpolation;
     }
@@ -156,6 +177,7 @@ public class ColorScale {
         if(count < 2)
             throw new RuntimeException("The color scale must contain at least two colors");
         colors = interpolateColors(minColor, maxColor, count);
+        fireInvalidation();
     }
 
     private static ArrayList<Color> interpolateColors(Color minColor, Color maxColor, int count) {
@@ -170,7 +192,7 @@ public class ColorScale {
         colors.add(maxColor);
         return colors;
     }
-    
+
     /**
      * Makes a color with the given opacity.
      * linearly interpolated between 'minColor' and 'maxColor'.
@@ -179,10 +201,27 @@ public class ColorScale {
      * @return the output color
      */
     public static Color setOpacity(Color opaque, double opacity) {
+        if(opacity<0.0 || opacity>1.0)
+            throw new RuntimeException("Opacity must be between 0 and 1");
 		double red   = opacity * opaque.getRed();
 		double green = opacity * opaque.getGreen();
 		double blue  = opacity * opaque.getBlue();
     	return new Color(red, green, blue, opacity);
-//    	return opaque.deriveColor(0, 1, opacity, opacity);
     }
+
+	@Override
+	public void addListener(InvalidationListener listener) {
+		listeners.add(listener);
+	}
+
+	@Override
+	public void removeListener(InvalidationListener listener) {
+		listeners.remove(listener);
+	}
+	
+	private void fireInvalidation() {
+		for(InvalidationListener listener : listeners) {
+			listener.invalidated(this);
+		}
+	}
 }
