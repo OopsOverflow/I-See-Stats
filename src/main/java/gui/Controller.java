@@ -237,20 +237,23 @@ public class Controller {
     private void onSearchAddClicked() {
     	model.getSpeciesData().clear();
 
-    Species species = model.getSpeciesByName(searchBar.getText());
-
-        ParserSettings settings = new ParserSettings();
-        settings.species = species;
-        settings.precision = (int)sliderPrecision.getValue();
-
-        if(btnTimeRestriction.isSelected()) {
-            settings.startDate = startDate.getValue();
-            settings.endDate = endDate.getValue();
+        Species species = model.getSpeciesByName(searchBar.getText());
+        if(species == null) {
+        	AlertBaker.bakeError(ParserException.Type.JSON_MALFORMED);
         }
+        else {
+        	ParserSettings settings = new ParserSettings();
+        	settings.species = species;
+        	settings.precision = (int)sliderPrecision.getValue();
 
-        model.getParser().load(settings)
-            .addEventListener(earthScene);
+        	if(btnTimeRestriction.isSelected()) {
+        		settings.startDate = startDate.getValue();
+        		settings.endDate = endDate.getValue();
+        	}
 
+        	model.getParser().load(settings)
+        		.addEventListener(earthScene);
+        }
     }
 
     @FXML
