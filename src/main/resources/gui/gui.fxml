@@ -6,9 +6,9 @@
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -29,7 +29,11 @@
                  <children>
                  <!--Resize the pane -->
                  <Pane fx:id="earthPane" style="-fx-background-color: green;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-36.0" AnchorPane.topAnchor="0.0" SplitPane.resizableWithParent="true" />
-                  <HBox fx:id="boxColorRange" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" style="-fx-background-color: red;" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0" />
+                  <AnchorPane fx:id="boxColorRange" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" style="-fx-background-color: red;" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0">
+                     <children>
+                        <Text fx:id="textMinColor" layoutY="4.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-fill: white;" text="min" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="-20.0" />
+                        <Text fx:id="textMaxColor" layoutX="125.0" layoutY="5.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-fill: white;" text="max" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-20.0" />
+                     </children></AnchorPane>
                  </children>
              </AnchorPane>
 
@@ -43,7 +47,7 @@
                               <VBox fx:id="card" styleClass="my-tab">
                                  <children>
                                     <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="Zoom" />
-                                            <Slider showTickLabels="true" showTickMarks="true">
+                                            <Slider fx:id="sliderZoom" max="-1.12" min="-20.0" value="-10.0">
                                        <VBox.margin>
                                           <Insets />
                                        </VBox.margin>
@@ -105,6 +109,14 @@
                                                             <Color red="1.0" />
                                                         </value>
                                                     </ColorPicker>
+                                       </right>
+                                    </BorderPane>
+                                    <BorderPane>
+                                       <left>
+                                          <Text text="Color count :" BorderPane.alignment="CENTER" />
+                                       </left>
+                                       <right>
+                                          <Spinner fx:id="btnColorCount" editable="true" initialValue="10" max="100" min="2" prefWidth="80.0" BorderPane.alignment="CENTER" />
                                        </right>
                                     </BorderPane>
                                  </children>
@@ -182,15 +194,19 @@
                               </VBox>
                                 </content>
                             </Tab>
-                            <Tab text="Observable list">
-                                <content>
-                              <ListView prefHeight="392.0" prefWidth="200.0">
-                                 <opaqueInsets>
-                                    <Insets />
-                                 </opaqueInsets>
-                              </ListView>
-                                </content>
-                            </Tab>
+                        <Tab text="Layers">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <VBox fx:id="layersBox" layoutX="85.0" layoutY="118.0" spacing="10.0" styleClass="my-tab" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <padding>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </padding>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </Tab>
                         </tabs>
                     </TabPane>
                </children>

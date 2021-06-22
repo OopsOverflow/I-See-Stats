@@ -75,14 +75,14 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
     public void updateAllRegions() {
         regions.getChildren().clear();
 
-        for (SpeciesData data : model.getSpecies()) {
+        for (SpeciesData data : model.getSpeciesData()) {
         	regions.getChildren().add(createGeoHashes(data));
         }
     }
 
 	@Override
 	public void onSuccess(SpeciesData result) {
-		model.getSpecies().add(result);
+		model.getSpeciesData().add(result);
 
 		// Platform.runLater allows executing code on the ui thread.
 		// onSuccess may be called asynchronously on a thread, and javafx
