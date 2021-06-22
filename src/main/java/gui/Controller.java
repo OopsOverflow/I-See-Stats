@@ -39,7 +39,7 @@ import model.species.SpeciesData;
 
 public class Controller {
 
-	private final Point3D lightOffset = new Point3D(-10, -10, 0);
+	private final Point3D lightOffset = new Point3D(-20, -10, 0);
 
     private Model model;
     private EarthScene earthScene;
@@ -203,7 +203,7 @@ public class Controller {
         boolean state = btnToggleSun.isSelected();
 
         light.setLightOn(state);
-        final double low = 0.5;
+        final double low = 0.4;
 
         ambientLight.setColor(state ? Color.hsb(0, 0, low) : Color.WHITE);
     }

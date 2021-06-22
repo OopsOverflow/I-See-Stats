@@ -12,6 +12,7 @@ import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import javafx.application.Platform;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
@@ -48,7 +49,6 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
 		this.model = model;
 		this.opacity = opacity;
         this.histogramView = histogramView;
-
 		this.materials = new HashMap<Color, Material>();
 		earth = createEarth();
 		regions = new Group();
@@ -103,10 +103,16 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
         } catch (ImportException e) {
             e.printStackTrace();
         }
-
         MeshView[] meshView = objModelImporter.getImport();
+        for(MeshView mesh : meshView){
+			PhongMaterial mat = (PhongMaterial) mesh.getMaterial();
+			try {
+				mat.setBumpMap(new Image("/earth/bump_map.png"));
+			} catch (ImportException e) {
+				e.printStackTrace();
+			}
+		}
         Group earth = new Group(meshView);
-
         return earth;
     }
 
@@ -134,7 +140,6 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
             GeoHash hash = region.getGeoHash();
             Point3D[] points = hash.getRectCoords();
             double elevation = 1+Math.pow(10.0,-region.getGeoHash().getPrecision());
-            System.out.println(elevation);
             points[0] = points[0].multiply(elevation);
             points[1] = points[1].multiply(elevation);
             points[2] = points[2].multiply(elevation);
