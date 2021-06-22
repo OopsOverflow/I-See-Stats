@@ -178,8 +178,10 @@ public class Controller {
 
         earthPane.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             clickPos = new Point2D(event.getSceneX(),event.getSceneY());
-            if(!(event.getPickResult().getIntersectedNode() instanceof Pane))
+            if(!(event.getPickResult().getIntersectedNode() instanceof Pane)) {
                 infoPane.setVisible(false);
+                infoPane.getChildren().clear();
+            }
         });
 
 
@@ -198,6 +200,7 @@ public class Controller {
                         //on earth
                         for (SpeciesData species : model.getSpeciesData()) {
                             GeoHash selectedArea = GeoHash.fromLatLon(latLon.getX(), latLon.getY(), species.getPrecision());
+
                         }
 
 
@@ -209,7 +212,15 @@ public class Controller {
                             for(int i=0; i<regions.size(); i+=1 ) {
                                 GeoHash geoHash = regions.get(i).getGeoHash();
                                 if (geoHash.toString().equals(selectedArea.toString())) {
-                                    System.out.println(regions.get(i).getCount());
+                                    TextField name = new TextField(species.getSpecies().scientificName);
+                                    TextField order = new TextField("Order: " + species.getSpecies().order);
+                                    TextField superclass = new TextField("Superclass: " + species.getSpecies().superclass);
+                                    TextField recordedBy = new TextField("RecordedBy: " + species.getSpecies().recordedBy);//TODO
+
+                                    TextField number = new TextField("Number: " + regions.get(i).getCount());
+                                    VBox text = new VBox();
+                                    text.getChildren().addAll(name,order,superclass,recordedBy,number);
+                                    infoPane.getChildren().add(text);
                                 }
                             }
                         }

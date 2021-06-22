@@ -138,7 +138,8 @@ public class JasonParser implements Parser {
 
 				try { species.order = jsonSpecies.getString("order"); } catch(JSONException e) {}
 				try { species.superclass = jsonSpecies.getString("class"); } catch(JSONException e) {} // TODO: what is "superclass" supposed to refer to ?
-			}			
+				try { species.recordedBy = jsonSpecies.getString("basisOfRecord"); } catch(JSONException e) {}
+			}
 		}
 		catch (JSONException e) {
 			throw new ParserException(ParserException.Type.JSON_MALFORMED);
