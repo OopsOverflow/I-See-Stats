@@ -14,7 +14,7 @@ public class GeoHash {
 	private int precision;
 	private BitSet hash;
 
-	private static final double latOffset = 0.2;
+	private static final double latOffset = -0.3;
 	private static final double lonOffset = 2.8;
 	private static final char[] conversionTable = {
 			'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f', 'g',

@@ -42,7 +42,7 @@ import model.species.SpeciesData;
 
 public class Controller {
 
-	private final Point3D lightOffset = new Point3D(-10, -10, 0);
+	private final Point3D lightOffset = new Point3D(-20, -20, 0);
 
     private Model model;
     private EarthScene earthScene;
@@ -127,6 +127,7 @@ public class Controller {
     private void createEarthScene() {
         // Add point light
         light = new PointLight(Color.WHITE);
+        light.setConstantAttenuation(0.5);
         light.getScope().add(root3D);
         root3D.getChildren().add(light);
 
@@ -174,7 +175,7 @@ public class Controller {
         for (Color color : colorScale.getColors()) {
             // Make rect larger than necessary; It will avoid seeing the box underneath with AA.
             // It means the last rect will overflow by one pixel, which is not noticeable.
-            Rectangle rect = new Rectangle(width + 1, height, color);
+            Rectangle rect = new Rectangle(width + 1, height + 1, color);
             AnchorPane.setLeftAnchor(rect, left);
             left += width;
             boxColorRange.getChildren().add(rect);
@@ -206,7 +207,7 @@ public class Controller {
         boolean state = btnToggleSun.isSelected();
 
         light.setLightOn(state);
-        final double low = 0.5;
+        final double low = 0.1;
 
         ambientLight.setColor(state ? Color.hsb(0, 0, low) : Color.WHITE);
     }
