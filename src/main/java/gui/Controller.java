@@ -65,7 +65,7 @@ public class Controller {
     private Point2D clickPos;
 
     @FXML
-    private Pane infoPane;
+    private AnchorPane infoPane;
 
     @FXML
     private Pane earthPane;
@@ -199,7 +199,7 @@ public class Controller {
                         for (SpeciesData species : model.getSpeciesData()) {
                             GeoHash selectedArea = GeoHash.fromLatLon(latLon.getX(), latLon.getY(), species.getPrecision());
                         }
-                        
+
 
                     }else {
                         //on a geohash
