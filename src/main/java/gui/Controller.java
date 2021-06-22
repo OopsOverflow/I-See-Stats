@@ -11,12 +11,7 @@ import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.SubScene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -27,6 +22,7 @@ import model.Model;
 import model.geo.ColorScale;
 import model.parser.JasonParser;
 import model.parser.Parser;
+import model.parser.ParserException;
 import model.parser.ParserSettings;
 import model.species.Species;
 
@@ -52,7 +48,7 @@ public class Controller {
 
     @FXML
     private HBox boxColorRange;
-    
+
     @FXML
     private TextField searchBar;
     @FXML
@@ -119,7 +115,7 @@ public class Controller {
         root3D.getChildren().add(earthScene);
 
         loadInitialSpeciesData();
-        
+
         // update model state based on initial button states
         onColorRangeChanged(); // update the currently visible regions
         onColorRangeToggled(); // update color range widget visibility
@@ -160,29 +156,29 @@ public class Controller {
         double opacity = sliderColorRangeOpacity.getValue();
         earthScene.setRegionsOpacity(opacity);
     }
-    
+
     @FXML
     private void onSearchAddClicked() {
     	model.getSpecies().clear();
-    	
+
         ParserSettings settings = new ParserSettings();
         Species species = new Species(searchBar.getText());
         settings.species = species;
         settings.precision = (int)sliderPrecision.getValue();
-        
+
         if(btnTimeRestriction.isSelected()) {
         	settings.startDate = startDate.getValue();
         	settings.endDate = endDate.getValue();
         }
-        
+
         model.getParser().load(settings)
         	.addEventListener(earthScene);
     }
-    
+
     @FXML
     public void onToggleTimeRestriction() {
     	boxTimeRestriction.setDisable(!btnTimeRestriction.isSelected());
-    	
+
     	if(btnTimeRestriction.isSelected()) {
     		if(startDate.getValue() == null)
     			startDate.setValue(LocalDate.of(1900, 1, 1));
@@ -190,14 +186,14 @@ public class Controller {
     			endDate.setValue(LocalDate.now());
     	}
     }
-    
+
     @FXML
     public void initialize() {
         model = new Model();
         root3D = new Group();
         camera = new PerspectiveCamera(true);
         SubScene scene = new SubScene(root3D, 500, 600);
-
+        AlertBaker.bakeError(ParserException.Type.FILE_NOT_FOUND);
         new CameraManager(camera, earthPane, root3D);
         scene.setCamera(camera);
         scene.setFill(Color.GREY);
