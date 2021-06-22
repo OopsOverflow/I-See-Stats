@@ -15,4 +15,17 @@ public class ParserSettings {
     public LocalDate startDate;
     public LocalDate endDate;
     public GeoHash geoHash;
+    public int animStep;
+    
+    public ParserSettings clone() {  
+    	ParserSettings inst = new ParserSettings();
+    	inst.species = species;
+    	inst.precision = precision;
+    	inst.startDate = startDate;
+    	inst.endDate = endDate;
+    	inst.geoHash = geoHash;
+    	inst.animStep = animStep;
+    	return inst;
+	}  
+
 }

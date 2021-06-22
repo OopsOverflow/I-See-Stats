@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import javafx.geometry.Point2D;
 
 
-public class JasonParser implements Parser {
+public class JasonParser extends Parser {
 
 	private String root;
 
@@ -68,12 +68,7 @@ public class JasonParser implements Parser {
 			return res.fireError(e);
 		}
 
-		SpeciesData data = new SpeciesData(
-				settings.precision,
-				settings.species,
-				settings.startDate,
-				regions);
-
+		SpeciesData data = new SpeciesData(settings, regions);
 		return res.fireSuccess(data);
 	}
 
@@ -145,20 +140,6 @@ public class JasonParser implements Parser {
 		}
 
 		return res;
-	}
-
-	@Override
-	public ParserQuery<ArrayList<String>> querySpeciesNames() {
-		// TODO Auto-generated method stub
-		// TODO: must list the files in root directory.
-		return null;
-	}
-
-	@Override
-	public ParserQuery<Species> querySpeciesByScientificName(String name) {
-		// TODO Auto-generated method stub
-		// TODO: idk
-		return null;
 	}
 
 	@Override

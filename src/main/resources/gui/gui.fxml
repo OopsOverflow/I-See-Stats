@@ -44,9 +44,9 @@
 
                                      <TabPane id="tab" fx:id="tab" side="LEFT" styleClass="tab-header-background" stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <tabs>
-                            <Tab text="Earth view">
+                            <Tab text="Display">
                                 <content>
-                              <VBox fx:id="card" styleClass="my-tab">
+                              <VBox styleClass="my-tab">
                                  <children>
                                     <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="Zoom" />
                                             <Slider fx:id="sliderZoom" max="-1.12" min="-20.0" value="-10.0">
@@ -65,7 +65,7 @@
                                     <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="View Features" />
                                     <CheckBox fx:id="btnToggleSun" mnemonicParsing="false" onAction="#onSunToggled" selected="true" text="Sun" />
                                     <CheckBox fx:id="btnToggleHistogramView" mnemonicParsing="false" onAction="#onHistogramViewToggled" selected="true" text="Histogram" />
-                                    <CheckBox fx:id="btnToggleColorRange" mnemonicParsing="false" onAction="#onColorRangeToggled" selected="true" text="View Color Range">
+                                    <CheckBox fx:id="btnToggleColorRange" mnemonicParsing="false" onAction="#onColorRangeToggled" selected="true" text="Color Grade">
                                        <VBox.margin>
                                           <Insets right="47.0" />
                                        </VBox.margin>
@@ -197,58 +197,92 @@
                               </VBox>
                                 </content>
                             </Tab>
-                        <Tab text="Player">
+                        <Tab text="Animation">
                            <content>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" styleClass="my-tab" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <VBox spacing="20.0" styleClass="my-tab" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
-                                          <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="Player" />
+                                          <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="Animation Settings">
+                                             <VBox.margin>
+                                                <Insets bottom="20.0" />
+                                             </VBox.margin>
+                                          </Label>
+                                          <Label text="The computed animation will use the last searched species and the currently selected time interval." wrapText="true" />
+                                          <BorderPane />
                                           <BorderPane>
-                                             <center>
-                                                <Slider fx:id="playerSlider" blockIncrement="5.0" showTickLabels="true" showTickMarks="true" BorderPane.alignment="CENTER" />
-                                             </center>
-                                             <bottom>
-                                                <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" BorderPane.alignment="CENTER">
-                                                   <children>
-                                                      <Button fx:id="btnPlay" mnemonicParsing="false">
-                                                         <graphic>
-                                                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                                               <image>
-                                                                  <Image url="https://img.icons8.com/ios-glyphs/24/000000/play--v1.png" />
-                                                               </image>
-                                                            </ImageView>
-                                                         </graphic>
-                                                      </Button>
-                                                      <Button fx:id="btnPause" mnemonicParsing="false">
-                                                         <graphic>
-                                                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                                               <image>
-                                                                  <Image url="https://img.icons8.com/android/24/000000/pause.png" />
-                                                               </image>
-                                                            </ImageView>
-                                                         </graphic>
-                                                      </Button>
-                                                      <Button fx:id="btnStop" mnemonicParsing="false">
-                                                         <graphic>
-                                                            <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                                               <image>
-                                                                  <Image url="https://img.icons8.com/ios-glyphs/24/000000/stop.png" />
-                                                               </image>
-                                                            </ImageView>
-                                                         </graphic>
-                                                      </Button>
-                                                   </children>
-                                                   <BorderPane.margin>
-                                                      <Insets top="10.0" />
-                                                   </BorderPane.margin>
-                                                </HBox>
-                                             </bottom>
+                                             <left>
+                                                <Text text="Step Count :" BorderPane.alignment="CENTER" />
+                                             </left>
+                                             <right>
+                                                <Spinner fx:id="btnAnimationSteps" editable="true" initialValue="10" max="100" min="2" prefWidth="80.0" BorderPane.alignment="CENTER" />
+                                             </right>
                                           </BorderPane>
+                                          <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#computeAnimation" text="Compute Animation">
+                                             <padding>
+                                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                             </padding>
+                                          </Button>
+                                          <Separator>
+                                             <padding>
+                                                <Insets bottom="10.0" top="70.0" />
+                                             </padding>
+                                          </Separator>
+                                          <Label maxWidth="1.7976931348623157E308" styleClass="my-title" text="Player" />
+                                          <VBox fx:id="boxAnimPlayer">
+                                             <children>
+                                                <BorderPane>
+                                                   <center>
+                                                      <Slider fx:id="sliderAnimation" blockIncrement="5.0" showTickLabels="true" showTickMarks="true" BorderPane.alignment="CENTER" />
+                                                   </center>
+                                                   <bottom>
+                                                      <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" BorderPane.alignment="CENTER">
+                                                         <children>
+                                                            <Button fx:id="btnPlay" mnemonicParsing="false">
+                                                               <graphic>
+                                                                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                                     <image>
+                                                                        <Image url="https://img.icons8.com/ios-glyphs/24/000000/play--v1.png" />
+                                                                     </image>
+                                                                  </ImageView>
+                                                               </graphic>
+                                                            </Button>
+                                                            <Button fx:id="btnPause" mnemonicParsing="false">
+                                                               <graphic>
+                                                                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                                     <image>
+                                                                        <Image url="https://img.icons8.com/android/24/000000/pause.png" />
+                                                                     </image>
+                                                                  </ImageView>
+                                                               </graphic>
+                                                            </Button>
+                                                            <Button fx:id="btnStop" mnemonicParsing="false">
+                                                               <graphic>
+                                                                  <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                                     <image>
+                                                                        <Image url="https://img.icons8.com/ios-glyphs/24/000000/stop.png" />
+                                                                     </image>
+                                                                  </ImageView>
+                                                               </graphic>
+                                                            </Button>
+                                                         </children>
+                                                         <BorderPane.margin>
+                                                            <Insets top="10.0" />
+                                                         </BorderPane.margin>
+                                                      </HBox>
+                                                   </bottom>
+                                                </BorderPane>
+                                                <BorderPane>
+                                                   <left>
+                                                      <Text text="Anim Duration :" BorderPane.alignment="CENTER" />
+                                                   </left>
+                                                   <right>
+                                                      <Slider fx:id="sliderAnimDuration" max="50.0" min="1.0" prefWidth="80.0" showTickLabels="true" value="10.0" BorderPane.alignment="CENTER" />
+                                                   </right>
+                                                </BorderPane>
+                                             </children>
+                                          </VBox>
                                        </children>
-                                       <padding>
-                                          <Insets left="20.0" right="20.0" />
-                                       </padding>
                                     </VBox>
                                  </children>
                               </AnchorPane>
