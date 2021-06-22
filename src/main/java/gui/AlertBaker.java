@@ -20,7 +20,7 @@ public class AlertBaker extends Alert {
     public static void bakeError(ParserException.Type bread){
         AlertBaker alertBaker = new AlertBaker(AlertType.ERROR, bread.name(),
                 "Error Patrol: We Caught an Error", ParserException.getMessage(bread));
-        alertBaker.show();
+        alertBaker.showAndWait();
     }
 
 }

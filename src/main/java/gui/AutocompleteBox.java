@@ -27,15 +27,15 @@ public class AutocompleteBox implements EventHandler<KeyEvent>, ParserListener<A
     	this.model = model;
     	this.searchBar = searchBar;
     	this.requestCompleted = true;
-    	
+
     	contextMenu = new ContextMenu();
-    	
+
         MenuItem item1 = new MenuItem("About");
         MenuItem item2 = new MenuItem("Preferences");
         contextMenu.getItems().addAll(item1, item2);
 
         searchBar.setContextMenu(contextMenu);
-         
+
     	searchBar.setOnKeyPressed(this);
     }
 
@@ -44,22 +44,22 @@ public class AutocompleteBox implements EventHandler<KeyEvent>, ParserListener<A
 		String text = searchBar.getText();
 		sendRequest(text);
 	}
-	
+
 	private void sendRequest(String text) {
 		if(!requestCompleted) return;
 		requestCompleted = false;
 		lastRequest = text;
-		
+
 		model.getParser().autocompleteSpecies(text)
 			.addEventListener(this);
 	}
 
 	@Override
 	public void onSuccess(ArrayList<Species> result) {
-		Platform.runLater(() -> {			
+		Platform.runLater(() -> {
 			requestCompleted = true;
 			contextMenu.getItems().clear();
-			
+
 			// update dropdown
 			for(Species species : result) {
 				model.registerSpecies(species);
@@ -69,13 +69,13 @@ public class AutocompleteBox implements EventHandler<KeyEvent>, ParserListener<A
 				item.setOnAction((_1) -> searchBar.setText(text));
 				contextMenu.getItems().add(item);
 			}
-			
+
 			// eventually send new request
 			String text = searchBar.getText();
 			if(!text.equals(lastRequest)) {
 				sendRequest(text);
 			}
-			
+
 			// show ctx menu
 			contextMenu.show(searchBar, Side.BOTTOM, 0, 0);
 		});
@@ -85,5 +85,7 @@ public class AutocompleteBox implements EventHandler<KeyEvent>, ParserListener<A
 	public void onError(ParserException e) {
 		requestCompleted = true;
 		System.out.println("search failed: " + e);
+		searchBar.setText("");
+
 	}
 }

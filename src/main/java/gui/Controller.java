@@ -24,6 +24,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -221,9 +222,9 @@ public class Controller {
         Color minColor = btnMinColor.getValue();
         Color maxColor = btnMaxColor.getValue();
         ColorScale colScale = model.getColorScale();
-        colScale.setInterpolatedColors(minColor, maxColor, colScale.getColorCount());
+        int count = btnColorCount.getValue();
+        colScale.setInterpolatedColors(minColor, maxColor, count);
 
-        updatePaneColorRange(model.getColorScale().getColors());
         earthScene.updateAllRegions();
     }
 
@@ -236,23 +237,20 @@ public class Controller {
     private void onSearchAddClicked() {
     	model.getSpeciesData().clear();
 
-        Species species = model.getSpeciesByName(searchBar.getText());
-        if(species == null) {
-        	// TODO: feedback to user
-        }
-        else {
-        	ParserSettings settings = new ParserSettings();
-        	settings.species = species;
-        	settings.precision = (int)sliderPrecision.getValue();
+    Species species = model.getSpeciesByName(searchBar.getText());
 
-        	if(btnTimeRestriction.isSelected()) {
-        		settings.startDate = startDate.getValue();
-        		settings.endDate = endDate.getValue();
-        	}
+        ParserSettings settings = new ParserSettings();
+        settings.species = species;
+        settings.precision = (int)sliderPrecision.getValue();
 
-        	model.getParser().load(settings)
-        		.addEventListener(earthScene);
+        if(btnTimeRestriction.isSelected()) {
+            settings.startDate = startDate.getValue();
+            settings.endDate = endDate.getValue();
         }
+
+        model.getParser().load(settings)
+            .addEventListener(earthScene);
+
     }
 
     @FXML
@@ -274,7 +272,6 @@ public class Controller {
         camera = new PerspectiveCamera(true);
         SubScene scene = new SubScene(root3D, 500, 600, true, SceneAntialiasing.BALANCED);
 
-        AlertBaker.bakeError(ParserException.Type.FILE_NOT_FOUND);
         new CameraManager(camera, earthPane, root3D);
         scene.setCamera(camera);
         scene.setFill(Color.GREY);
