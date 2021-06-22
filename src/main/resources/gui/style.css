@@ -36,3 +36,24 @@ anchorPane dimensions.
     -fx-spacing: 10;
     -fx-background-color: #e8e8e8;
 }
+
+#btnPlay, #btnPause, #btnStop{
+    -fx-padding: 8 8 8 8;
+    -fx-background-radius: 8;
+    -fx-background-color: transparent;
+    -fx-border-style: none;
+    -fx-border-width: 0;
+    -fx-border-insets: 0;
+}
+
+#btnPlay:hover, #btnPause:hover, #btnStop:hover {
+    -fx-background-color:
+            linear-gradient(from 0% 93% to 0% 100%, #666361 0%, #5e5e5e 100%),
+            radial-gradient(center 50% 50%, radius 100%, #423e3e, #443939);
+}
+
+#btnPlay:pressed, #btnPause:pressed, #btnStop:pressed {
+    -fx-padding: 10 10 10 10;
+    -fx-background-insets: 2 0 0 0,2 0 3 0, 2 0 4 0, 2 0 5 0;
+}
+
