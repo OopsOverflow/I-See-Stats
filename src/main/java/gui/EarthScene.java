@@ -143,7 +143,7 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
 
             if(histogramView) {
                 Point3D[] elevated = new Point3D[4];
-				float height = region.getCount() / (float)(maxCount);
+				float height =  region.getCount() / (float)(maxCount * region.getGeoHash().getPrecision());
 
 				if(height > histogramThresold) {
 					Point3D offset = points[0].midpoint(points[2]).multiply(height);
