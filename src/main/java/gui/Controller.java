@@ -8,6 +8,8 @@ import java.util.Set;
 
 import app.EarthTest;
 import javafx.application.Platform;
+import javafx.collections.ObservableArray;
+import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -41,6 +43,7 @@ import javafx.scene.text.Text;
 import model.Model;
 import model.geo.ColorScale;
 import model.geo.GeoHash;
+import model.geo.Region;
 import model.parser.JasonParser;
 import model.parser.Parser;
 import model.parser.ParserException;
@@ -173,7 +176,6 @@ public class Controller {
 
         earthPane.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             clickPos = new Point2D(event.getSceneX(),event.getSceneY());
-            System.out.println(event.getPickResult().getIntersectedNode());
             if(!(event.getPickResult().getIntersectedNode() instanceof Pane))
                 infoPane.setVisible(false);
         });
@@ -186,17 +188,29 @@ public class Controller {
                     PickResult pick = event.getPickResult();
                     Point3D point = pick.getIntersectedPoint();
                     Point2D latLon = GeoHash.coordsToLatLon(point);
-                    GeoHash selectedArea = GeoHash.fromLatLon(latLon.getX(), latLon.getY(), 3);
                     infoPane.setTranslateX(event.getSceneX());
                     infoPane.setTranslateY(event.getSceneY());
                     infoPane.toFront();
                     infoPane.setVisible(true);
                     if (pick.getIntersectedNode().getParent().getParent() instanceof EarthScene) {
                         //on earth
-                        System.out.println(pick.getIntersectedNode().getParent().getParent().getClass().toString());
+                        for (SpeciesData species : model.getSpeciesData()) {
+                            GeoHash selectedArea = GeoHash.fromLatLon(latLon.getX(), latLon.getY(), species.getPrecision());
+                        }
+                        
+
                     }else {
                         //on a geohash
-                        System.out.println(pick.getIntersectedNode().getClass().toString());
+                        for (SpeciesData species : model.getSpeciesData()) {
+                            GeoHash selectedArea = GeoHash.fromLatLon(latLon.getX(), latLon.getY(), species.getPrecision());
+                            ArrayList<Region> regions = species.getRegions();
+                            for(int i=0; i<regions.size(); i+=1 ) {
+                                GeoHash geoHash = regions.get(i).getGeoHash();
+                                if (geoHash.toString().equals(selectedArea.toString())) {
+                                    System.out.println(regions.get(i).getCount());
+                                }
+                            }
+                        }
 
                     }
                 }
