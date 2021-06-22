@@ -171,7 +171,7 @@ public class Controller {
         for (Color color : colorScale.getColors()) {
             // Make rect larger than necessary; It will avoid seeing the box underneath with AA.
             // It means the last rect will overflow by one pixel, which is not noticeable.
-            Rectangle rect = new Rectangle(width + 1, height, color);
+            Rectangle rect = new Rectangle(width + 1, height + 1, color);
             AnchorPane.setLeftAnchor(rect, left);
             left += width;
             boxColorRange.getChildren().add(rect);
