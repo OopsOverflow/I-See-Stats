@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import model.geo.GeoHash;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -62,9 +63,14 @@ public class WebParser extends JasonParser {
 		StringBuilder builder = new StringBuilder(apiUrl);
 		builder.append("/occurrence/grid/");
 		builder.append(settings.precision);
-		builder.append("?scientificname=");
-		builder.append(settings.species.scientificName);
-		
+		if(settings.species != null ) {
+			builder.append("?scientificname=");
+			builder.append(settings.species.scientificName);
+		}
+		if(settings.geoHash != null ) {
+			builder.append("?scientificname=");
+			builder.append(settings.geoHash.toString());
+		}
 		if(settings.startDate != null && settings.endDate != null) {
 			builder.append("&startdate=");
 			builder.append(settings.startDate.format(formatter));
@@ -113,6 +119,9 @@ public class WebParser extends JasonParser {
 		
 		return res;
 	}
+
+
+
 	
     @Override
     public ParserQuery<ArrayList<Species>> autocompleteSpecies(String partial) {
