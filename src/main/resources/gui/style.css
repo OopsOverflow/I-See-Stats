@@ -72,13 +72,12 @@ anchorPane dimensions.
 }
 
 #btnPlay:hover, #btnPause:hover, #btnStop:hover {
-    -fx-background-color:
-            linear-gradient(from 0% 93% to 0% 100%, #666361 0%, #5e5e5e 100%),
-            radial-gradient(center 50% 50%, radius 100%, #de1919, #e22828);
+  -fx-background-color:
+              linear-gradient(from 0% 93% to 0% 100%, #666361 0%, #5e5e5e 100%),
+              radial-gradient(center 50% 50%, radius 100%, #acacac, #a5a4a4);
 }
 
 #btnPlay:pressed, #btnPause:pressed, #btnStop:pressed {
     -fx-padding: 10 10 10 10;
     -fx-background-insets: 2 0 0 0,2 0 3 0, 2 0 4 0, 2 0 5 0;
 }
-

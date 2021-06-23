@@ -13,7 +13,6 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.SceneAntialiasing;
@@ -281,7 +280,10 @@ public class Controller {
 
     @FXML
     private void computeAnimation() {
-        Species species = model.getSpeciesByName(searchBar.getText());
+        Species species = null;
+
+        for(SpeciesData data : model.getSpeciesData()) species = data.getSpecies();
+
         if(species == null) {
         	AlertBaker.bakeError(ParserException.Type.JSON_MALFORMED);
         }

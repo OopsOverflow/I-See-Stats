@@ -5,15 +5,11 @@ import java.util.function.Consumer;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import model.Model;
 import model.parser.ParserException;
 import model.parser.ParserListener;
-import model.parser.ParserSettings;
 import model.species.Species;
 
 public class InfoPane extends Pane implements ParserListener<ArrayList<Species>> {
