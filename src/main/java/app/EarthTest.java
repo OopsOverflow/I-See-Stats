@@ -16,7 +16,7 @@ public class EarthTest extends Application {
 		Scene scene = new Scene(root);
         scene.getStylesheets().add("/gui/style.css");
 		primaryStage.setScene(scene);
-		primaryStage.setTitle("tuto ihm");
+		primaryStage.setTitle("I See Stats");
 		primaryStage.show();
     }
 
