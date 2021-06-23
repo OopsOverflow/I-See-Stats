@@ -2,12 +2,14 @@ package gui;
 
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Set;
 
 import app.EarthTest;
 import javafx.application.Platform;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
 import javafx.scene.Group;
@@ -20,13 +22,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
-import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.PickResult;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -34,6 +38,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import model.Model;
 import model.geo.ColorScale;
+import model.geo.GeoHash;
+import model.geo.Region;
 import model.parser.JasonParser;
 import model.parser.Parser;
 import model.parser.ParserException;
@@ -53,6 +59,9 @@ public class Controller {
 
     private Group root3D;
     private PerspectiveCamera camera;
+    private Point2D clickPos;
+
+    private InfoPane infoPane;
 
     @FXML
     private Pane earthPane;
@@ -98,7 +107,7 @@ public class Controller {
     private CheckBox btnTimeRestriction;
     @FXML
     private VBox boxTimeRestriction;
-    
+
     @FXML
     private Button btnPlay;
     @FXML
@@ -177,6 +186,68 @@ public class Controller {
         loadInitialSpeciesData();
     }
 
+    private void createEventHandlers() {
+    	earthPane.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            clickPos = new Point2D(event.getSceneX(),event.getSceneY());
+            if(!(event.getPickResult().getIntersectedNode() instanceof Pane))
+                infoPane.hide();
+        });
+
+
+        earthScene.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> {
+            if(event.getButton() == MouseButton.PRIMARY) {
+
+                if(clickPos.getX()==event.getSceneX() && clickPos.getY()==event.getSceneY()) {
+                    PickResult pick = event.getPickResult();
+                    Point3D point = pick.getIntersectedPoint();
+                    Point2D latLon = GeoHash.coordsToLatLon(point);
+                    infoPane.showAt(event.getSceneX(), event.getSceneY());
+                    if (pick.getIntersectedNode().getParent().getParent() instanceof EarthScene) {
+                        //on earth
+                        for (SpeciesData data : model.getSpeciesData()) {
+                        	GeoHash selectedArea = GeoHash.fromLatLon(latLon.getX(), latLon.getY(), data.getPrecision());
+                            model.getParser()
+                            	.querySpeciesAtGeoHash(selectedArea, 10)
+                            	.addEventListener(infoPane);
+                        }
+                    }
+
+                    else {
+                        //on a geohash
+                        for (SpeciesData data : model.getSpeciesData()) {
+                            GeoHash selectedArea = GeoHash.fromLatLon(latLon.getX(), latLon.getY(), data.getPrecision());
+                            ArrayList<Region> regions = data.getRegions();
+                            for(int i=0; i<regions.size(); i+=1) {
+                                GeoHash geoHash = regions.get(i).getGeoHash();
+                                if (geoHash.toString().equals(selectedArea.toString())) {
+                                    Label name = new Label(data.getSpecies().scientificName);
+                                    Label order = new Label("Order: " + data.getSpecies().order);
+                                    Label superclass = new Label("Superclass: " + data.getSpecies().superclass);
+                                    Label recordedBy = new Label("RecordedBy: " + data.getSpecies().recordedBy);
+                                    Label number = new Label("Number: " + regions.get(i).getCount());
+                                    VBox text = new VBox();
+                                    text.setSpacing(10);
+                                    text.getChildren().addAll(name,order,superclass,recordedBy,number);
+                                    infoPane.setContent(text);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    public int multiply(int number1, int number2){
+        int result = 0;
+        for(int i=0; i < number2; i++){
+            for(int j=0; j<number1; j++){
+                result++;
+            }
+        }
+        return result;
+    }
+
     private void updatePaneColorRange(ColorScale colorScale) {
         boxColorRange.getChildren().retainAll(textMinColor, textMaxColor);
         boxColorRange.toFront();
@@ -207,7 +278,7 @@ public class Controller {
     		layersBox.getChildren().add(info);
     	}
     }
-	
+
     @FXML
     private void computeAnimation() {
         Species species = model.getSpeciesByName(searchBar.getText());
@@ -221,7 +292,7 @@ public class Controller {
 
     		settings.startDate = startDate.getValue();
     		settings.endDate = endDate.getValue();
-    		
+
     		animator.unload();
         	model.getParser().loadAnimation(settings, btnAnimationSteps.getValue())
         		.addEventListener(animator);
@@ -271,27 +342,30 @@ public class Controller {
         earthScene.setRegionsOpacity(opacity);
     }
 
+    private void loadSpecies(Species species) {
+    	model.getSpeciesData().clear();
+    	ParserSettings settings = new ParserSettings();
+    	settings.species = species;
+    	settings.precision = (int)sliderPrecision.getValue();
+
+    	if(btnTimeRestriction.isSelected()) {
+    		settings.startDate = startDate.getValue();
+    		settings.endDate = endDate.getValue();
+    	}
+
+    	model.getParser().load(settings)
+    		.addEventListener(earthScene);
+    }
+
     @FXML
     private void onSearchAddClicked() {
-    	model.getSpeciesData().clear();
-
         Species species = model.getSpeciesByName(searchBar.getText());
         if(species == null) {
         	AlertBaker.bakeError(ParserException.Type.JSON_MALFORMED);
         	searchBar.setText("");
         }
         else {
-        	ParserSettings settings = new ParserSettings();
-        	settings.species = species;
-        	settings.precision = (int)sliderPrecision.getValue();
-
-        	if(btnTimeRestriction.isSelected()) {
-        		settings.startDate = startDate.getValue();
-        		settings.endDate = endDate.getValue();
-        	}
-
-        	model.getParser().load(settings)
-        		.addEventListener(earthScene);
+        	loadSpecies(species);
         }
     }
 
@@ -306,6 +380,7 @@ public class Controller {
         root3D = new Group();
         camera = new PerspectiveCamera(true);
         animator = new Animator();
+        infoPane = new InfoPane();
         SubScene scene = new SubScene(root3D, 500, 600, true, SceneAntialiasing.BALANCED);
 
         new CameraManager(camera, earthPane, root3D);
@@ -314,21 +389,22 @@ public class Controller {
         earthPane.getChildren().add(scene);
         scene.heightProperty().bind(earthPane.heightProperty());
         scene.widthProperty().bind(earthPane.widthProperty());
-        
+
 		if(startDate.getValue() == null)
 			startDate.setValue(LocalDate.of(1900, 1, 1));
 		if(endDate.getValue() == null)
 			endDate.setValue(LocalDate.now());
 
         createEarthScene();
+        createEventHandlers();
+        earthPane.getChildren().add(infoPane);
 
         // some elements of interactivity
-        
         new AutocompleteBox(searchBar, model);
-        
+
         camera.translateZProperty().bindBidirectional(sliderZoom.valueProperty());
         sliderAnimation.valueProperty().bindBidirectional(animator.progressProperty());
-        
+
         animator.addListener(earthScene);
         boxAnimPlayer.disableProperty().bind(animator.loadedProperty().not());
         animator.durationProperty().bind(sliderAnimDuration.valueProperty());
@@ -339,11 +415,12 @@ public class Controller {
         	animator.progressProperty().set(0);
         	animator.stop();
         });
-        
+
+        infoPane.setOnClickAction((_1) -> loadSpecies(_1));
         sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());
         btnColorCount.valueProperty().addListener((_1) -> onColorRangeChanged());
         model.getColorScale().addListener((_1) -> updatePaneColorRange((ColorScale) _1));
-        
+
         model.getSpeciesData().addListener((SetChangeListener.Change<? extends SpeciesData> _1) -> {
         	Platform.runLater(() -> updateLayersTab(model.getSpeciesData()));
         });

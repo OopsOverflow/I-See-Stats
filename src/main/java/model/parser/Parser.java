@@ -5,12 +5,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import model.geo.GeoHash;
 import model.species.Species;
 import model.species.SpeciesData;
 
 /**
  * A parser is able to load OBIS data asynchronously.
- * Two backends are implemented: 
+ * Two backends are implemented:
  * <ul>
  * 	<li>{@link JasonParser} - loads OBIS data from json files</li>
  * 	<li>{@link WebParser} - loads OBIS data from an API endpoint</li>
@@ -24,14 +25,16 @@ public abstract class Parser {
 	 * @return a parser query that yields {@link SpeciesData} when resolved.
 	 */
     public abstract ParserQuery<SpeciesData> load(ParserSettings settings);
-    
+
+		public abstract ParserQuery<ArrayList<Species>> querySpeciesAtGeoHash(GeoHash geohash, int maxCount);
+
     /**
      * Autocomplete a string in input with the closest matching species
      * @param partial - the text to autocomplete
      * @return a parser query that yields a list of scientific names when resolved.
      */
     public abstract ParserQuery<ArrayList<Species>> autocompleteSpecies(String partial);
-    
+
     /**
      * Loads a range of species data. Animation will start at {@code settings.startDate}
      * and end at {@code settings.endDate}, with the number of {@code } provided.
@@ -42,7 +45,7 @@ public abstract class Parser {
     	ParserQuery<ArrayList<SpeciesData>> res = new ParserQuery<ArrayList<SpeciesData>>();
     	ArrayList<SpeciesData> loadedData = new ArrayList<SpeciesData>();
     	ArrayList<ParserQuery<SpeciesData>> allQueries = new ArrayList<ParserQuery<SpeciesData>>();
-    	
+
     	Duration delta = Duration.between(settings.startDate.atStartOfDay(), settings.endDate.atStartOfDay()).dividedBy(steps);
     	LocalDateTime date = settings.startDate.atStartOfDay();
     	LocalDate end = settings.endDate;
@@ -53,14 +56,14 @@ public abstract class Parser {
 			settings.animStep = i;
 			allQueries.add(load(settings.clone()));
 		}
-		
+
 		ParserListener<SpeciesData> myListener = new ParserListener<SpeciesData>() {
 			@Override
 			public void onSuccess(SpeciesData result) {
 				loadedData.add(result);
 				if(loadedData.size() == allQueries.size()) {
-					loadedData.sort((a, b) -> { 
-						return Integer.compare(a.getParserSettings().animStep, b.getParserSettings().animStep); 
+					loadedData.sort((a, b) -> {
+						return Integer.compare(a.getParserSettings().animStep, b.getParserSettings().animStep);
 					});
 					res.fireSuccess(loadedData);
 				}
@@ -72,13 +75,13 @@ public abstract class Parser {
 				allQueries.clear();
 			}
 		};
-		
+
 		for(ParserQuery<SpeciesData> query : allQueries) {
 			query.addEventListener(myListener);
 		}
-		
+
 		settings.endDate = end;
-		
+
     	return res;
     }
 }
