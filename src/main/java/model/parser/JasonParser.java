@@ -55,7 +55,7 @@ public class JasonParser implements Parser {
 			BufferedReader rd = new BufferedReader(reader);
 			text = readAll(rd);
 			regions = loadRegionsFromJSON(new JSONObject(text));
-		} 
+		}
 		catch(IOException e) {
 			ParserException parserException = new ParserException(ParserException.Type.FILE_NOT_FOUND, e);
 			return res.fireError(parserException);
@@ -75,6 +75,34 @@ public class JasonParser implements Parser {
 				regions);
 
 		return res.fireSuccess(data);
+	}
+
+	protected ArrayList<Species> loadSpeciesFromJSON(JSONObject root) throws ParserException {
+		ArrayList<Species> res = new ArrayList<Species>();
+
+		try {
+			JSONArray results = root.getJSONArray("results");
+
+			for(Object obj : results) {
+
+				if(!(obj instanceof JSONObject)) continue;
+
+				JSONObject jsonSpecies = (JSONObject)obj;
+
+				String scientificName = jsonSpecies.getString("scientificName");
+				Species species = new Species(scientificName);
+
+				try { species.order = jsonSpecies.getString("order"); } catch(JSONException e) {}
+				try { species.superclass = jsonSpecies.getString("class"); } catch(JSONException e) {} // TODO: what is "superclass" supposed to refer to ?
+
+				res.add(species);
+			}
+		}
+		catch (JSONException e) {
+			throw new ParserException(ParserException.Type.JSON_MALFORMED);
+		}
+
+		return res;
 	}
 
 	protected ArrayList<Region> loadRegionsFromJSON(JSONObject root) throws ParserException {
@@ -122,16 +150,16 @@ public class JasonParser implements Parser {
 
 		return regions;
 	}
-	
+
 	protected ArrayList<Species> loadAutocompleteFromJSON(JSONArray root) throws ParserException {
 		ArrayList<Species> res = new ArrayList<Species>();
-		
-		
+
+
 		try {
 			for(Object obj : root) {
 				if(!(obj instanceof JSONObject)) continue;
 				JSONObject jsonSpecies = (JSONObject)obj;
-				
+
 				String scientificName = jsonSpecies.getString("scientificName");
 				Species species = new Species(scientificName);
 				res.add(species);
@@ -147,6 +175,12 @@ public class JasonParser implements Parser {
 
 		return res;
 	}
+
+	@Override
+    public ParserQuery<ArrayList<Species>> querySpeciesAtGeoHash(GeoHash geohash, int maxCount) {
+		// TODO Auto-generated method stub
+		return null;
+    }
 
 	@Override
 	public ParserQuery<ArrayList<String>> querySpeciesNames() {

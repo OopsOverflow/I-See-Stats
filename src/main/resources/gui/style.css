@@ -45,7 +45,7 @@ anchorPane dimensions.
 }
 */
 
-#infoPane{
+#infoPane {
     -fx-background-color: rgba(195, 196, 196, 0.73), linear-gradient(rgba(214, 214, 214, 0.73) 50%, rgba(255, 255, 255, 0.64) 100%);
     -fx-background-radius: 10;
     -fx-background-insets: 0,1,1;
@@ -53,12 +53,16 @@ anchorPane dimensions.
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 3, 0.0 , 0 , 1 );
 }
 
-#infoPane:hover{
+#infoPane > VBox {
+    -fx-padding: 10;
+}
+
+#infoPane:hover {
     -fx-background-color: linear-gradient(#f1f7f8, #ffffff);
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 10, 0.0 , 0 , 5 );
 }
 
-#btnPlay, #btnPause, #btnStop{
+#btnPlay, #btnPause, #btnStop {
     -fx-padding: 8 8 8 8;
     -fx-background-radius: 8;
     -fx-background-color: transparent;

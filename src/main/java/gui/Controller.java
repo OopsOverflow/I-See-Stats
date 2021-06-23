@@ -3,18 +3,13 @@ package gui;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Set;
 
 import app.EarthTest;
 import javafx.application.Platform;
-import javafx.collections.ObservableArray;
-import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
-import javafx.geometry.Point3D;
-import javafx.scene.*;
 import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
 import javafx.scene.Group;
@@ -26,19 +21,19 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
-import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.layout.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Sphere;
-import javafx.scene.transform.Translate;
 import javafx.scene.text.Text;
 import model.Model;
 import model.geo.ColorScale;
@@ -64,8 +59,7 @@ public class Controller {
     private PerspectiveCamera camera;
     private Point2D clickPos;
 
-    @FXML
-    private AnchorPane infoPane;
+    private InfoPane infoPane;
 
     @FXML
     private Pane earthPane;
@@ -175,13 +169,13 @@ public class Controller {
         onColorRangeToggled(); // update color range widget visibility
         onToggleTimeRestriction(); // enable / disable datepickers
         loadInitialSpeciesData();
+    }
 
-        earthPane.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+    private void createEventHandlers() {
+    	earthPane.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
             clickPos = new Point2D(event.getSceneX(),event.getSceneY());
-            if(!(event.getPickResult().getIntersectedNode() instanceof Pane)) {
-                infoPane.setVisible(false);
-                infoPane.getChildren().clear();
-            }
+            if(!(event.getPickResult().getIntersectedNode() instanceof Pane))
+                infoPane.hide();
         });
 
 
@@ -192,39 +186,37 @@ public class Controller {
                     PickResult pick = event.getPickResult();
                     Point3D point = pick.getIntersectedPoint();
                     Point2D latLon = GeoHash.coordsToLatLon(point);
-                    infoPane.setTranslateX(event.getSceneX());
-                    infoPane.setTranslateY(event.getSceneY());
-                    infoPane.toFront();
-                    infoPane.setVisible(true);
+                    infoPane.showAt(event.getSceneX(), event.getSceneY());
                     if (pick.getIntersectedNode().getParent().getParent() instanceof EarthScene) {
                         //on earth
-                        for (SpeciesData species : model.getSpeciesData()) {
-                            GeoHash selectedArea = GeoHash.fromLatLon(latLon.getX(), latLon.getY(), species.getPrecision());
-
+                        for (SpeciesData data : model.getSpeciesData()) {
+                        	GeoHash selectedArea = GeoHash.fromLatLon(latLon.getX(), latLon.getY(), data.getPrecision());
+                            model.getParser()
+                            	.querySpeciesAtGeoHash(selectedArea, 10)
+                            	.addEventListener(infoPane);
                         }
+                    }
 
-
-                    }else {
+                    else {
                         //on a geohash
-                        for (SpeciesData species : model.getSpeciesData()) {
-                            GeoHash selectedArea = GeoHash.fromLatLon(latLon.getX(), latLon.getY(), species.getPrecision());
-                            ArrayList<Region> regions = species.getRegions();
-                            for(int i=0; i<regions.size(); i+=1 ) {
+                        for (SpeciesData data : model.getSpeciesData()) {
+                            GeoHash selectedArea = GeoHash.fromLatLon(latLon.getX(), latLon.getY(), data.getPrecision());
+                            ArrayList<Region> regions = data.getRegions();
+                            for(int i=0; i<regions.size(); i+=1) {
                                 GeoHash geoHash = regions.get(i).getGeoHash();
                                 if (geoHash.toString().equals(selectedArea.toString())) {
-                                    TextField name = new TextField(species.getSpecies().scientificName);
-                                    TextField order = new TextField("Order: " + species.getSpecies().order);
-                                    TextField superclass = new TextField("Superclass: " + species.getSpecies().superclass);
-                                    TextField recordedBy = new TextField("RecordedBy: " + species.getSpecies().recordedBy);//TODO
-
-                                    TextField number = new TextField("Number: " + regions.get(i).getCount());
+                                    Label name = new Label(data.getSpecies().scientificName);
+                                    Label order = new Label("Order: " + data.getSpecies().order);
+                                    Label superclass = new Label("Superclass: " + data.getSpecies().superclass);
+                                    Label recordedBy = new Label("RecordedBy: " + data.getSpecies().recordedBy);
+                                    Label number = new Label("Number: " + regions.get(i).getCount());
                                     VBox text = new VBox();
+                                    text.setSpacing(10);
                                     text.getChildren().addAll(name,order,superclass,recordedBy,number);
-                                    infoPane.getChildren().add(text);
+                                    infoPane.setContent(text);
                                 }
                             }
                         }
-
                     }
                 }
             }
@@ -314,28 +306,31 @@ public class Controller {
         double opacity = sliderColorRangeOpacity.getValue();
         earthScene.setRegionsOpacity(opacity);
     }
+    
+    private void loadSpecies(Species species) {
+    	model.getSpeciesData().clear();
+    	ParserSettings settings = new ParserSettings();
+    	settings.species = species;
+    	settings.precision = (int)sliderPrecision.getValue();
+
+    	if(btnTimeRestriction.isSelected()) {
+    		settings.startDate = startDate.getValue();
+    		settings.endDate = endDate.getValue();
+    	}
+
+    	model.getParser().load(settings)
+    		.addEventListener(earthScene);
+    }
 
     @FXML
     private void onSearchAddClicked() {
-    	model.getSpeciesData().clear();
-
         Species species = model.getSpeciesByName(searchBar.getText());
         if(species == null) {
         	AlertBaker.bakeError(ParserException.Type.JSON_MALFORMED);
         	searchBar.setText("");
         }
         else {
-        	ParserSettings settings = new ParserSettings();
-        	settings.species = species;
-        	settings.precision = (int)sliderPrecision.getValue();
-
-        	if(btnTimeRestriction.isSelected()) {
-        		settings.startDate = startDate.getValue();
-        		settings.endDate = endDate.getValue();
-        	}
-
-        	model.getParser().load(settings)
-        		.addEventListener(earthScene);
+        	loadSpecies(species);
         }
     }
 
@@ -356,6 +351,7 @@ public class Controller {
         model = new Model();
         root3D = new Group();
         camera = new PerspectiveCamera(true);
+        infoPane = new InfoPane();
         SubScene scene = new SubScene(root3D, 500, 600, true, SceneAntialiasing.BALANCED);
 
         new CameraManager(camera, earthPane, root3D);
@@ -364,9 +360,13 @@ public class Controller {
         earthPane.getChildren().add(scene);
         scene.heightProperty().bind(earthPane.heightProperty());
         scene.widthProperty().bind(earthPane.widthProperty());
+
         createEarthScene();
+        createEventHandlers();
+        earthPane.getChildren().add(infoPane);
 
         // some elements of interactivity
+        infoPane.setOnClickAction((_1) -> loadSpecies(_1));
         new AutocompleteBox(searchBar, model);
         camera.translateZProperty().bindBidirectional(sliderZoom.valueProperty());
         sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());

@@ -165,6 +165,51 @@ public class WebParser extends JasonParser {
 		
 		return res;
     }
+    
+	@Override
+    public ParserQuery<ArrayList<Species>> querySpeciesAtGeoHash(GeoHash geohash, int maxCount) {
+		ParserQuery<ArrayList<Species>> res = new ParserQuery<ArrayList<Species>>();
+		StringBuilder builder = new StringBuilder(apiUrl);
+		builder.append("/occurrence/?size=");
+		builder.append(maxCount);
+		builder.append("&geometry=");
+		builder.append(geohash.getString());
+		
+		URI uri;
+		
+		try {
+			uri = new URI(builder.toString());
+		} catch (URISyntaxException e) {
+			ParserException parserException = new ParserException(ParserException.Type.FILE_NOT_FOUND, e);
+			return res.fireError(parserException);
+		}
+		
+		makeRequest(uri)
+		.orTimeout(10, TimeUnit.SECONDS)
+		.whenCompleteAsync( (String body, Throwable err) -> {
+			
+			if(err != null) {
+				ParserException parserException = new ParserException(ParserException.Type.NETWORK_ERROR, err);
+				res.fireError(parserException);
+			}
+			
+			else {
+				JSONObject json = new JSONObject(body);
+				
+				ArrayList<Species> species;
+				try {
+					species = loadSpeciesFromJSON(json);
+				} catch (ParserException e) {
+					res.fireError(e);
+					return;
+				}
+				
+				res.fireSuccess(species);
+			}
+		});
+		
+		return res;
+    }
 
 
 	@Override
