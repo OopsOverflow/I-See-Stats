@@ -23,7 +23,6 @@ class ColorScaleTest {
     @Test
     void setRange() {
         Assertions.assertThrows(Exception.class, () -> {colorScale.setRange(500,200);});
-
     }
     @Test
     void setColors() {
