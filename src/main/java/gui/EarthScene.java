@@ -82,6 +82,7 @@ public class EarthScene extends Group implements ParserListener<SpeciesData> {
 
 	@Override
 	public void onSuccess(SpeciesData result) {
+		model.getSpeciesData().clear(); // TODO: remove when multiple layers are supported
 		model.getSpeciesData().add(result);
 
 		// Platform.runLater allows executing code on the ui thread.

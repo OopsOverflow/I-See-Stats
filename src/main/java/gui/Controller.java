@@ -13,6 +13,7 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.SceneAntialiasing;
@@ -51,6 +52,7 @@ public class Controller {
 	private final Point3D lightOffset = new Point3D(-20, -20, 0);
 
     private Model model;
+    private Animator animator;
     private EarthScene earthScene;
     private PointLight light;
     private AmbientLight ambientLight;
@@ -105,8 +107,21 @@ public class Controller {
     private CheckBox btnTimeRestriction;
     @FXML
     private VBox boxTimeRestriction;
+
     @FXML
-    private Slider playerSlider;
+    private Button btnPlay;
+    @FXML
+    private Button btnPause;
+    @FXML
+    private Button btnStop;
+    @FXML
+    private Slider sliderAnimation;
+    @FXML
+    private Spinner<Integer> btnAnimationSteps;
+    @FXML
+    private Slider sliderAnimDuration;
+    @FXML
+    private VBox boxAnimPlayer;
 
     private static Skybox initSkybox(PerspectiveCamera camera) {
         InputStream stream = EarthTest.class.getResourceAsStream("/skybox/py(2).png");
@@ -265,6 +280,26 @@ public class Controller {
     }
 
     @FXML
+    private void computeAnimation() {
+        Species species = model.getSpeciesByName(searchBar.getText());
+        if(species == null) {
+        	AlertBaker.bakeError(ParserException.Type.JSON_MALFORMED);
+        }
+        else {
+        	ParserSettings settings = new ParserSettings();
+        	settings.species = species;
+        	settings.precision = (int)sliderPrecision.getValue();
+
+    		settings.startDate = startDate.getValue();
+    		settings.endDate = endDate.getValue();
+
+    		animator.unload();
+        	model.getParser().loadAnimation(settings, btnAnimationSteps.getValue())
+        		.addEventListener(animator);
+        }
+    }
+
+    @FXML
     private void onColorRangeToggled() {
         boolean state = btnToggleColorRange.isSelected();
         boxColorRange.setVisible(state);
@@ -285,7 +320,7 @@ public class Controller {
         ambientLight.setColor(state ? Color.hsb(0, 0, low) : Color.WHITE);
     }
 
-    public void setLightPos(){
+    public void setLightPos() {
         light.setTranslateY(camera.getTranslateX());
         light.setTranslateY(camera.getTranslateX());
         light.setTranslateZ(camera.getTranslateX());
@@ -306,7 +341,7 @@ public class Controller {
         double opacity = sliderColorRangeOpacity.getValue();
         earthScene.setRegionsOpacity(opacity);
     }
-    
+
     private void loadSpecies(Species species) {
     	model.getSpeciesData().clear();
     	ParserSettings settings = new ParserSettings();
@@ -337,13 +372,6 @@ public class Controller {
     @FXML
     public void onToggleTimeRestriction() {
     	boxTimeRestriction.setDisable(!btnTimeRestriction.isSelected());
-
-    	if(btnTimeRestriction.isSelected()) {
-    		if(startDate.getValue() == null)
-    			startDate.setValue(LocalDate.of(1900, 1, 1));
-    		if(endDate.getValue() == null)
-    			endDate.setValue(LocalDate.now());
-    	}
     }
 
     @FXML
@@ -351,6 +379,7 @@ public class Controller {
         model = new Model();
         root3D = new Group();
         camera = new PerspectiveCamera(true);
+        animator = new Animator();
         infoPane = new InfoPane();
         SubScene scene = new SubScene(root3D, 500, 600, true, SceneAntialiasing.BALANCED);
 
@@ -361,17 +390,37 @@ public class Controller {
         scene.heightProperty().bind(earthPane.heightProperty());
         scene.widthProperty().bind(earthPane.widthProperty());
 
+		if(startDate.getValue() == null)
+			startDate.setValue(LocalDate.of(1900, 1, 1));
+		if(endDate.getValue() == null)
+			endDate.setValue(LocalDate.now());
+
         createEarthScene();
         createEventHandlers();
         earthPane.getChildren().add(infoPane);
 
         // some elements of interactivity
-        infoPane.setOnClickAction((_1) -> loadSpecies(_1));
         new AutocompleteBox(searchBar, model);
+
         camera.translateZProperty().bindBidirectional(sliderZoom.valueProperty());
+        sliderAnimation.valueProperty().bindBidirectional(animator.progressProperty());
+
+        animator.addListener(earthScene);
+        boxAnimPlayer.disableProperty().bind(animator.loadedProperty().not());
+        animator.durationProperty().bind(sliderAnimDuration.valueProperty());
+        sliderAnimation.setOnDragDetected((_1) -> animator.stop());
+        btnPlay.setOnMouseClicked((_1) -> animator.start());
+        btnPause.setOnMouseClicked((_1) -> animator.stop());
+        btnStop.setOnMouseClicked((_1) -> {
+        	animator.progressProperty().set(0);
+        	animator.stop();
+        });
+
+        infoPane.setOnClickAction((_1) -> loadSpecies(_1));
         sliderColorRangeOpacity.valueProperty().addListener((_1) -> onOpacityChanged());
         btnColorCount.valueProperty().addListener((_1) -> onColorRangeChanged());
         model.getColorScale().addListener((_1) -> updatePaneColorRange((ColorScale) _1));
+
         model.getSpeciesData().addListener((SetChangeListener.Change<? extends SpeciesData> _1) -> {
         	Platform.runLater(() -> updateLayersTab(model.getSpeciesData()));
         });

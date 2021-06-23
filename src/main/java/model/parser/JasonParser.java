@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import javafx.geometry.Point2D;
 
 
-public class JasonParser implements Parser {
+public class JasonParser extends Parser {
 
 	private String root;
 
@@ -68,12 +68,7 @@ public class JasonParser implements Parser {
 			return res.fireError(e);
 		}
 
-		SpeciesData data = new SpeciesData(
-				settings.precision,
-				settings.species,
-				settings.startDate,
-				regions);
-
+		SpeciesData data = new SpeciesData(settings, regions);
 		return res.fireSuccess(data);
 	}
 
@@ -166,7 +161,7 @@ public class JasonParser implements Parser {
 
 				try { species.order = jsonSpecies.getString("order"); } catch(JSONException e) {}
 				try { species.superclass = jsonSpecies.getString("class"); } catch(JSONException e) {} // TODO: what is "superclass" supposed to refer to ?
-				try { species.recordedBy = jsonSpecies.getString("basisOfRecord"); } catch(JSONException e) {}
+				try { species.recordedBy = jsonSpecies.getString("institutionCode"); } catch(JSONException e) {}
 			}
 		}
 		catch (JSONException e) {
@@ -176,23 +171,8 @@ public class JasonParser implements Parser {
 		return res;
 	}
 
-	@Override
-    public ParserQuery<ArrayList<Species>> querySpeciesAtGeoHash(GeoHash geohash, int maxCount) {
+	public ParserQuery<ArrayList<Species>> querySpeciesAtGeoHash(GeoHash geohash, int maxCount) {
 		// TODO Auto-generated method stub
-		return null;
-    }
-
-	@Override
-	public ParserQuery<ArrayList<String>> querySpeciesNames() {
-		// TODO Auto-generated method stub
-		// TODO: must list the files in root directory.
-		return null;
-	}
-
-	@Override
-	public ParserQuery<Species> querySpeciesByScientificName(String name) {
-		// TODO Auto-generated method stub
-		// TODO: idk
 		return null;
 	}
 
